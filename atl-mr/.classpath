@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/annotations-api.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/apacheds-i18n-2.0.0-M15.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/apacheds-kerberos-codec-2.0.0-M15.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/api-asn1-api-1.0.0-M20.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/api-util-1.0.0-M20.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/asm-3.2.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/avro-1.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/bootstrap.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/catalina.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/catalina-ant.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/catalina-ha.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/catalina-tribes.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-beanutils-core-1.8.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-compress-1.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-daemon.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-daemon-1.0.13.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-digester-1.8.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-el-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-math3-3.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/commons-net-3.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/ecj-3.7.2.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/el-api.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/guava-11.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/guice-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/guice-servlet-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-annotations-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-archives-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-archives-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-archives-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-auth-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-common-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-common-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-common-2.5.1-tests.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-common-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-datajoin-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-datajoin-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-datajoin-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-distcp-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-distcp-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-distcp-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-extras-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-extras-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-extras-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-gridmix-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-gridmix-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-gridmix-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-hdfs-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-hdfs-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-hdfs-2.5.1-tests.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-hdfs-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-hdfs-nfs-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-app-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-app-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-app-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-common-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-common-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-common-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-core-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-core-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-core-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-hs-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-hs-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-hs-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-hs-plugins-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-hs-plugins-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-hs-plugins-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-jobclient-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-jobclient-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-jobclient-2.5.1-tests.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-jobclient-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-shuffle-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-shuffle-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-client-shuffle-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-examples-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-examples-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-mapreduce-examples-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-nfs-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-openstack-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-rumen-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-rumen-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-rumen-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-sls-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-sls-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-sls-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-streaming-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-streaming-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-streaming-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-api-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-api-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-applications-distributedshell-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-applications-distributedshell-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-applications-distributedshell-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-applications-unmanaged-am-launcher-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-applications-unmanaged-am-launcher-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-applications-unmanaged-am-launcher-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-client-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-client-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-client-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-common-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-common-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-common-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-applicationhistoryservice-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-applicationhistoryservice-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-applicationhistoryservice-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-common-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-common-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-common-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-nodemanager-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-nodemanager-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-nodemanager-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-resourcemanager-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-resourcemanager-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-resourcemanager-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-tests-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-tests-2.5.1-tests.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-tests-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-web-proxy-2.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-web-proxy-2.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hadoop-yarn-server-web-proxy-2.5.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/hsqldb-2.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/httpclient-4.2.5.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/httpcore-4.2.5.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jackson-core-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jackson-jaxrs-1.9.13.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jackson-mapper-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jackson-xc-1.9.13.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jasper.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jasper-compiler-5.5.23.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jasper-el.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jasper-runtime-5.5.23.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/java-xmlbuilder-0.4.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jaxb-api-2.2.2.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jaxb-impl-2.2.3-1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jersey-client-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jersey-core-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jersey-guice-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jersey-json-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jersey-server-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jets3t-0.9.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jettison-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jetty-6.1.26.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jetty-util-6.1.26.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jline-0.9.94.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jsch-0.1.42.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/json-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jsp-api.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jsp-api-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/jsr305-1.3.9.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/leveldbjni-all-1.8.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/metrics-core-3.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/mockito-all-1.8.5.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/netty-3.6.2.Final.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/paranamer-2.3.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/protobuf-java-2.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/servlet-api.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/servlet-api-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/slf4j-api-1.7.5.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/slf4j-log4j12-1.7.5.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/snappy-java-1.0.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/tomcat-coyote.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/tomcat-dbcp.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/tomcat-i18n-es.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/tomcat-i18n-fr.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/tomcat-i18n-ja.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/tomcat-juli.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/xmlenc-0.52.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/xz-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/libs/zookeeper-3.4.6.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse_luna64/plugins/org.eclipse.emf.ecore.xmi_2.10.0.v20140514-1158.jar" sourcepath="C:/eclipse_luna64/plugins/org.eclipse.emf.ecore.xmi.source_2.10.0.v20140514-1158.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xmi/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xmi/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xmi/util/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/eclipse_luna64/plugins/org.eclipse.emf.ecore_2.10.0.v20140514-1158.jar" sourcepath="C:/eclipse_luna64/plugins/org.eclipse.emf.ecore.source_2.10.0.v20140514-1158.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/plugin/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/resource/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/resource/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/util/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/namespace/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/namespace/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/namespace/util/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/impl/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/internal/*"/>
+			<accessrule kind="accessible" pattern="org/eclipse/emf/ecore/xml/type/util/*"/>
+			<accessrule ignoreifbetter="true" kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="src" path="/org.eclipse.m2m.atl.emftvm"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="C:/hadoop/hadoop-2.5.1/etc/hadoop"/>
+	<classpathentry kind="src" output="target/classes" path="src">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
