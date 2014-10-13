@@ -31,6 +31,15 @@ import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 @SuppressWarnings("deprecation")
 public class ATLMRMaster extends Configured implements Tool {
 
+	public static String TRANSFORMATION = "atl.transformation";
+	public static String SOURCE_METAMODEL = "atl.metamodel.source";
+	public static String TARGET_METAMODEL = "atl.metamodel.target";
+	public static String INPUT_MODEL = "atl.model.source";
+	
+	public static final int TRANSFORMATION_ID=0;
+	public static final int SOURCE_METAMODEL_ID=1;
+	public static final int TARGET_METAMODEL_ID=2;
+	public static final int INPUT_MODEL_ID=3;
 	
 	@SuppressWarnings("unchecked")
 	public int run(String[] args) throws Exception {
@@ -85,14 +94,17 @@ public class ATLMRMaster extends Configured implements Tool {
 		fs.delete(FileOutputFormat.getOutputPath(job), true);
 		fs.copyFromLocalFile(new Path((String)args[0]), sharedResources[0]);
 		
-
-		DistributedCache.addCacheFile( new java.net.URI(sharedResources[0].toString()), getConf());
-		
+		DistributedCache.addCacheFile( new java.net.URI(sharedResources[0].toString()), getConf());	
 		DistributedCache.addCacheFile( new java.net.URI(sharedResources[1].toString()), getConf());
 		DistributedCache.addCacheFile( new java.net.URI(sharedResources[2].toString()), getConf());
 		DistributedCache.addCacheFile( new java.net.URI(sharedResources[3].toString()), getConf());
 	    DistributedCache.createSymlink(getConf());	
-		DistributedCache.getLocalCacheFiles(getConf());
+	//	DistributedCache.getLocalCacheFiles(getConf());
+		
+		job.getConfiguration().set(TRANSFORMATION, (String)args[TRANSFORMATION_ID]);
+		job.getConfiguration().set(SOURCE_METAMODEL,(String)args[SOURCE_METAMODEL_ID]);
+		job.getConfiguration().set(TARGET_METAMODEL,(String)args[TARGET_METAMODEL_ID]);
+		job.getConfiguration().set(INPUT_MODEL,(String)args[INPUT_MODEL_ID]);
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
 	

@@ -9,7 +9,7 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.atlanmod.atl_mr.ATLMRMaster"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="data/Families2Persons/Families2Persons.emftvm data/Families2Persons/Families.ecore data/Families2Persons/Families.ecore data/Families2Persons/sample-Families.xmi"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="data/Families2Persons/Families2Persons.emftvm data/Families2Persons/Families.ecore data/Families2Persons/Persons.ecore data/Families2Persons/sample-Families.xmi"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="atl-mr"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>
