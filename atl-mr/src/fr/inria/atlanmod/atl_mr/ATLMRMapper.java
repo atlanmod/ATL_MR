@@ -1,11 +1,17 @@
 package fr.inria.atlanmod.atl_mr;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -14,14 +20,19 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.m2m.atl.emftvm.EmftvmFactory;
 import org.eclipse.m2m.atl.emftvm.ExecEnv;
 import org.eclipse.m2m.atl.emftvm.Metamodel;
 import org.eclipse.m2m.atl.emftvm.Model;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
+import org.eclipse.m2m.atl.emftvm.trace.TraceLink;
+import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 import org.eclipse.m2m.atl.emftvm.util.DefaultModuleResolver;
 import org.eclipse.m2m.atl.emftvm.util.ModuleResolver;
 import org.eclipse.m2m.atl.emftvm.util.TimingData;
@@ -37,7 +48,7 @@ import org.eclipse.m2m.atl.emftvm.util.TimingData;
  * example : TransformationText, ModelText
 */
 
-public class ATLMRMapper extends Mapper<LongWritable,Text,Text,Text> {
+public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 	
 	private ExecEnv executionEnv;
 	
@@ -47,23 +58,36 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,Text> {
 
 	private Path [] localFiles;
 	
-	private Model outModel;
+	private Model inModel;
+
+	private String moduleName= "Families2Persons";
 	
 	private static Logger logger = Logger.getGlobal();
 
 	@Override
 	protected void map(LongWritable key, Text value, Context context)
 			throws IOException, InterruptedException {
+
+		Record currentRecord = new Record(value);
+		EObject currentObj = inModel.getResource().getEObject(currentRecord.objectFragmentUri);
+		Map<String, Object> options = new HashMap<String, Object>();
+		options.put(XMLResource.OPTION_ENCODING, "UTF-8"); // set encoding to utf-8
+		options.put(XMLResource.OPTION_BINARY, Boolean.TRUE);
+		if (executionEnv.matchSingleObject(currentObj, currentRecord.getRuleName())) {
 		
-		System.out.println("#########################################\n"
-				+ "Mapper, the job ID is :"
-				+ context.getJobID().getId()
-				+ "\n#####################################  ");
-		TimingData td = new TimingData();
-		executionEnv.loadModule(mr, "Families2Persons");
-		td.finishLoading();
-		executionEnv.run(td);
-		td.finish();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        TraceLink currentLink = executionEnv.getCurrentMatch();
+        TracedRule currentRule = currentLink.getRule();
+        Resource resource = new XMIResourceImpl();
+        resource.getContents().addAll(org.eclipse.emf.ecore.util.EcoreUtil.copyAll(currentRule.getLinkSet().eContents()));
+        resource.save(baos, options);
+        
+        //assert currentRule.getLinkSet().eContents().size() == 1: "more than one tracedRule "; 
+        //oos.writeObject(currentLink);
+		context.write(new Text(moduleName), new BytesWritable(baos.toByteArray()));
+		logger.info(String.format("here is the pair key value <%s,%s>", currentRecord.getObjectFragmentUri(), currentRecord.getRuleName()));
+//		td.finish();
+		}
 	}
 	
 	@Override 
@@ -82,7 +106,7 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,Text> {
 		executionEnv = EmftvmFactory.eINSTANCE.createExecEnv();
 		rs = new ResourceSetImpl();
 		
-		Resource emftvmResource = rs.getResource(URI.createURI(localFiles[ATLMRMaster.TRANSFORMATION_ID].toString()), true);
+		//Resource emftvmResource = rs.getResource(URI.createURI(localFiles[ATLMRMaster.TRANSFORMATION_ID].toString()), true);
 		
 		URI inMMURI =URI.createURI( localFiles[ATLMRMaster.SOURCE_METAMODEL_ID].toString());
 		
@@ -103,15 +127,23 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,Text> {
 		
 		URI inMURI = URI.createURI(localFiles[ATLMRMaster.INPUT_MODEL_ID].toString(), true);
 		
-		Model inModel = EmftvmFactory.eINSTANCE.createModel();
+		inModel = EmftvmFactory.eINSTANCE.createModel();
 		inModel.setResource(rs.getResource(inMURI, true));
 		executionEnv.registerInputModel("IN", inModel);
 
 		URI outMURI = URI.createFileURI("dataMR/Families2Persons/sample-Persons.out_"+context.getJobID().getId()+".xmi");
-		outModel = EmftvmFactory.eINSTANCE.createModel();
+		Model outModel = EmftvmFactory.eINSTANCE.createModel();
 		outModel.setResource(rs.createResource(outMURI));
 		executionEnv.registerOutputModel("OUT", outModel);
 		mr = new DefaultModuleResolver("data/Families2Persons/", rs);
+		
+		TimingData td = new TimingData();
+		executionEnv.loadModule(mr, moduleName);
+		td.finishLoading();
+		executionEnv.preMatchAllSingle();
+		
+		//moduleName = executionEnv.getModules().get(0).getName();
+		
 	}
 
 	private Path[] getSharedResources(Configuration configuration) {
@@ -133,7 +165,28 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,Text> {
 		    EPackage p = (EPackage)eObject;
 		    rs.getPackageRegistry().put(p.getNsURI(), p);
 		}	
+	  	
+	}
+		
+	private static class Record {
+		
+		String objectFragmentUri;
+		String className;
+		
+		public Record(Text recordValue) {
+			int length = recordValue.getLength();
+			int ruleStartIndex = recordValue.toString().indexOf(',');
+			objectFragmentUri = recordValue.toString().substring(1, ruleStartIndex);
+			className = recordValue.toString().substring(ruleStartIndex+1, length-1);
+		}
+
+		public String getObjectFragmentUri() {
+			return objectFragmentUri;
+		}
+
+		public String getRuleName() {
+			return className;
+		}
 		
 	}
-	
 }

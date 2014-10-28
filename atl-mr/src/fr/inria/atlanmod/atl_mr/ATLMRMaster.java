@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.filecache.DistributedCache;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -55,50 +57,54 @@ public class ATLMRMaster extends Configured implements Tool {
 		getConf().set("dfs.name.directory", "file:/hadoop/hadoop-2.5.1/data/dfs");
 		
 		job.setOutputFormatClass(SequenceFileOutputFormat.class);
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(BytesWritable.class);
+		//job.setMapOutputValueClass(Text.class);
+		
 		job.setMapperClass(ATLMRMapper.class);
 		job.setReducerClass(ATLMRReducer.class);
 		FileInputFormat.setInputPaths(job, configurationEnv.records());
-		
 		FileOutputFormat.setOutputPath(job, new Path("/MR_output"));
-		
+		FileSystem fs = FileSystem.get(getConf());
+		fs.delete(FileOutputFormat.getOutputPath(job), true);
 		
 		/*
 		 * TODO Checking if a file exist
 		 */
 		
-//		FSDataInputStream inModel = fileSystem.open(inputMModel);
+////		FSDataInputStream inModel = fileSystem.open(inputMModel);
+////		
+////		FileInputFormat.setInputPaths(job, inputRecords);
+////		
+////		FileOutputFormat.setOutputPath(job, new Path("/output"));
+////		Job jobby= Job.getInstance(getConf());
+////		jobby.setInputFormatClass(NLineInputFormat.class);
+////		getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
+////		//job.setInputFormat(NLineInputFormat.class);
+////		job.setInt(NLineInputFormat.LINES_PER_MAP, 5);
+////		jobby.setOutputFormat(org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat.class);
+////		
+////		jobby.setMapperClass(ATLMRMapper.class);
+////		jobby.setReducerClass(ATLMRReducer.class);
+////		
+////		jobby.setOutputKeyClass(Text.class);
+////		jobby.setOutputValueClass(IntWritable.class);
+////		
+//		//DistributedCache.addCacheFile(new URI((String)args[3]), job);
+//		/*
+//		 * TODO replace implementation with import org.apache.hadoop.mapreduce.Job
+//		 * instead of JobConfiguration
+//		 */
+//		Path[] sharedResources = configurationEnv.formatPaths(args,getConf().get("dfs.name.directory"));
+//		FileSystem fs = FileSystem.get(getConf());
+//		fs.delete(FileOutputFormat.getOutputPath(job), true);
+//		fs.copyFromLocalFile(new Path((String)args[0]), sharedResources[0]);
 //		
-//		FileInputFormat.setInputPaths(job, inputRecords);
-//		
-//		FileOutputFormat.setOutputPath(job, new Path("/output"));
-//		Job jobby= Job.getInstance(getConf());
-//		jobby.setInputFormatClass(NLineInputFormat.class);
-//		getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
-//		//job.setInputFormat(NLineInputFormat.class);
-//		job.setInt(NLineInputFormat.LINES_PER_MAP, 5);
-//		jobby.setOutputFormat(org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat.class);
-//		
-//		jobby.setMapperClass(ATLMRMapper.class);
-//		jobby.setReducerClass(ATLMRReducer.class);
-//		
-//		jobby.setOutputKeyClass(Text.class);
-//		jobby.setOutputValueClass(IntWritable.class);
-//		
-		//DistributedCache.addCacheFile(new URI((String)args[3]), job);
-		/*
-		 * TODO replace implementation with import org.apache.hadoop.mapreduce.Job
-		 * instead of JobConfiguration
-		 */
-		Path[] sharedResources = configurationEnv.formatPaths(args,getConf().get("dfs.name.directory"));
-		FileSystem fs = FileSystem.get(getConf());
-		fs.delete(FileOutputFormat.getOutputPath(job), true);
-		fs.copyFromLocalFile(new Path((String)args[0]), sharedResources[0]);
-		
-		DistributedCache.addCacheFile( new java.net.URI(sharedResources[0].toString()), getConf());	
-		DistributedCache.addCacheFile( new java.net.URI(sharedResources[1].toString()), getConf());
-		DistributedCache.addCacheFile( new java.net.URI(sharedResources[2].toString()), getConf());
-		DistributedCache.addCacheFile( new java.net.URI(sharedResources[3].toString()), getConf());
-	    DistributedCache.createSymlink(getConf());	
+//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[0].toString()), getConf());	
+//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[1].toString()), getConf());
+//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[2].toString()), getConf());
+//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[3].toString()), getConf());
+//	    DistributedCache.createSymlink(getConf());	
 	//	DistributedCache.getLocalCacheFiles(getConf());
 		
 		job.getConfiguration().set(TRANSFORMATION, (String)args[TRANSFORMATION_ID]);

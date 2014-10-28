@@ -49,7 +49,7 @@ public class ATLMRUtils {
 	public static File writeRecordsToFile(Resource transformationResource, Resource inputResource) throws IOException {
 		
 		File file = File.createTempFile("records", ".rcd.tmp");
-		HashMap<String, String> rules = extractRules(transformationResource);
+//		HashMap<String, String> rules = extractRules(transformationResource);
 		
 		if (! inputResource.isLoaded()) {
 			inputResource.load(null);
@@ -65,11 +65,12 @@ public class ATLMRUtils {
 			
 			currentObj =  treeIterator.next();
 			StringBuilder record = new StringBuilder("<");
-			String UUID = EcoreUtil.getIdentification(currentObj);
+			String fragment = currentObj.eResource().getURIFragment(currentObj);
+//			EcoreUtil.getIdentification(currentObj);
 			//EcoreUtil.setID(currentObj, UUID);
-			record.append(UUID);
+			record.append(fragment);
 			record.append(",");
-			record.append(rules.get(currentObj.eClass().getName()));
+			record.append(currentObj.eClass().getName());
 			record.append(">\n");
 		
 			bufWriter.write(record.toString());
@@ -93,7 +94,8 @@ public class ATLMRUtils {
 			objectIterator = iterator.next();
 			if (objectIterator instanceof Rule) {
 				Rule rule = ((Rule)objectIterator);
-				map.put(rule.getInputElements().get(0).getName(), rule.getName() );
+				map.put(rule.getInputElements().get(0).getEType().getName(), rule.getName() );
+				
 			}
 		}	
 		return map;
