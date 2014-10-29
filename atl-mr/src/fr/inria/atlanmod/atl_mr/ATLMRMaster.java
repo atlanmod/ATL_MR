@@ -36,14 +36,15 @@ public class ATLMRMaster extends Configured implements Tool {
 	public static String TRANSFORMATION = "atl.transformation";
 	public static String SOURCE_METAMODEL = "atl.metamodel.source";
 	public static String TARGET_METAMODEL = "atl.metamodel.target";
-	public static String INPUT_MODEL = "atl.model.source";
+	public static String INPUT_MODEL = "atl.model.input";
+	public static String OUTPUT_MODEL = "atl.model.output";
 	
 	public static final int TRANSFORMATION_ID=0;
 	public static final int SOURCE_METAMODEL_ID=1;
 	public static final int TARGET_METAMODEL_ID=2;
 	public static final int INPUT_MODEL_ID=3;
+	public static final int OUTPUT_MODEL_ID = 4;
 	
-	@SuppressWarnings("unchecked")
 	public int run(String[] args) throws Exception {
 		
 		ATLMRConfigEnv configurationEnv = new ATLMRConfigEnv();

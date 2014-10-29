@@ -6,15 +6,27 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.m2m.atl.emftvm.ExecEnv;
+import org.eclipse.m2m.atl.emftvm.Model;
+import org.eclipse.m2m.atl.emftvm.OutputRuleElement;
 import org.eclipse.m2m.atl.emftvm.Rule;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceImpl;
+import org.eclipse.m2m.atl.emftvm.trace.TargetElement;
+import org.eclipse.m2m.atl.emftvm.trace.TraceLink;
+import org.eclipse.m2m.atl.emftvm.trace.TraceLinkSet;
+import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 
 public class ATLMRUtils {
 	
@@ -35,7 +47,6 @@ public class ATLMRUtils {
 		return xmiResource;
 	}
 
-	
 	private static URI addXMIExtension( URI uri) {
 //		String scheme = uri.scheme()!= null ? uri.scheme() : "";
 //		String authority = uri.authority() != null ? uri.authority() : "";
@@ -81,7 +92,7 @@ public class ATLMRUtils {
 			inputResource.save(null);
 		return file;
 	}
-	private static HashMap<String, String> extractRules (Resource resource) throws IOException {
+	public static HashMap<String, String> extractRules (Resource resource) throws IOException {
 		
 		HashMap<String, String> map = new HashMap<String, String>();
 		if(! resource.isLoaded()) {
@@ -113,5 +124,65 @@ public class ATLMRUtils {
 //		return extractRules(resource);
 //		
 //	}
+	
+	public static void registerPackages(ResourceSet rs, Resource resource) {
+		
+		EObject eObject = resource.getContents().get(0);
+		if (eObject instanceof EPackage) {
+		    EPackage p = (EPackage)eObject;
+		    rs.getPackageRegistry().put(p.getNsURI(), p);
+		}	
+	  	
+	}
+
+	public static String resolveOutputPath(String string) {
+		StringBuilder builder = new StringBuilder(string.substring(0, string.lastIndexOf(".")));
+		builder.append("_out");
+		builder.append(string.substring(string.lastIndexOf('.')));
+		return builder.toString();
+	}
+
+	
+	public static void mergeTraces(ExecEnv executionEnv, TracedRule tracedRule, ResourceSet rs) {
+		
+	    //createElement 
+		TraceLinkSet traces = executionEnv.getTraces();
+		TraceLink traceLink = tracedRule.getLinks().get(0);
+		EObject targetElement = traceLink.getSourceElements().get(0).getObject();
+		EcoreUtil.resolve(targetElement, rs);
+		traceLink.getSourceElements().get(0).setRuntimeObject(targetElement);
+		Rule rule = executionEnv.getRulesMap().get(tracedRule.getRule());
+		int indexer = 0;
+		for (OutputRuleElement ore : rule.getOutputElements()) {
+			
+			EClass type=null;
+			try {
+				type = (EClass)executionEnv.findType(ore.getTypeModel(), ore.getType());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				//throw new VMException();
+			}
+			TargetElement te = traceLink.getTargetElements().get(indexer);
+			// supposing that the outputRuleElement preserves its order
+			EList<Model> models = ore.getEModels();
+			assert models.size() == 1;
+			te.setObject(models.get(0).newElement(type));
+			assert te.getObject() != null;
+			assert te.getObject().eResource() != null;
+			assert te.getObject().eResource() == models.get(0).getResource();
+		}
+		
+		boolean notApplied = true;
+		for (Iterator<TracedRule> iter = traces.getRules().iterator(); iter.hasNext() && notApplied;) {
+			TracedRule tRule = iter.next();
+			if (tRule.getRule().equals(tracedRule.getRule())) {
+				tRule.getLinks().add(tracedRule.getLinks().get(0));
+				notApplied = false;
+			}
+		}
+		if (notApplied) {
+			traces.getRules().add(tracedRule);
+		}
+	}
 	
 }
