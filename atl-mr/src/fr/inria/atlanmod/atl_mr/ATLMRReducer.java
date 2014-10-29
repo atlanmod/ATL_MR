@@ -23,7 +23,9 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
@@ -77,11 +79,10 @@ public  class ATLMRReducer extends Reducer<Text,BytesWritable, Text, Text> {
 						bais = new ByteArrayInputStream(b.getBytes());
 						Resource resource = new BinaryResourceImpl();
 						rs.getResources().add(resource);
-
 						resource.load(bais, Collections.emptyMap());
 						mergeTraces (traces, (TracedRule)resource.getContents().get(0));					
 			    }
-			outModel.getResource().save(System.out, Collections.emptyMap());    	
+			outModel.getResource().save(System.out, Collections.emptyMap());
 			executionEnv.applyAll();
 			outModel.getResource().save(System.out, Collections.emptyMap());
 			logger.log(Level.INFO, String.format("enter the reduce for key <%s>", key.toString()));		
@@ -179,6 +180,9 @@ public  class ATLMRReducer extends Reducer<Text,BytesWritable, Text, Text> {
 	private void mergeTraces(TraceLinkSet traces, TracedRule tracedRule) {
 	    //createElement 
 		TraceLink traceLink = tracedRule.getLinks().get(0);
+		EObject targetElement = traceLink.getSourceElements().get(0).getObject();
+		EcoreUtil.resolve(targetElement, rs);
+		traceLink.getSourceElements().get(0).setRuntimeObject(targetElement);
 		Rule rule = executionEnv.getRulesMap().get(tracedRule.getRule());
 		int indexer = 0;
 		for (OutputRuleElement ore : rule.getOutputElements()) {
