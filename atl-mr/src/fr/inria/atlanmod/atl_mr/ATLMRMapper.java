@@ -26,12 +26,10 @@ import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
  * 
  * TODO: specializing every Text class to a proper specification 
  * example : TransformationText, ModelText
-*/
+ */
 
+public class ATLMRMapper extends Mapper<LongWritable, Text, Text, BytesWritable> {
 
-
-public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
-	
 	private ATLMapReduceTask mapTask = new ATLMapReduceTask();
 
 	@Override
@@ -41,7 +39,7 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-		//Logger logger = ATLMapReduceTask.getLogger();
+		// Logger logger = ATLMapReduceTask.getLogger();
 		Model inModel = mapTask.getInModel();
 		ExecEnv executionEnv = mapTask.getExecutionEnv();
 		String moduleName = mapTask.getModuleName();
@@ -61,22 +59,22 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 			resource.save(baos, options);
 
 			context.write(new Text(moduleName), new BytesWritable(baos.toByteArray()));
-			//logger.info(String.format("here is the pair key value <%s,%s>", currentRecord.getObjectFragmentUri(), currentRecord.getRuleName()));
+			// logger.info(String.format("here is the pair key value <%s,%s>",
+			// currentRecord.getObjectFragmentUri(),
+			// currentRecord.getRuleName()));
 		}
 	}
-	
-	
-		
+
 	private static class Record {
-		
+
 		String objectFragmentUri;
 		String className;
-		
+
 		public Record(Text recordValue) {
 			int length = recordValue.getLength();
 			int ruleStartIndex = recordValue.toString().indexOf(',');
 			objectFragmentUri = recordValue.toString().substring(1, ruleStartIndex);
-			className = recordValue.toString().substring(ruleStartIndex+1, length-1);
-		}		
+			className = recordValue.toString().substring(ruleStartIndex + 1, length - 1);
+		}
 	}// end Record
-}//end 
+}// end 

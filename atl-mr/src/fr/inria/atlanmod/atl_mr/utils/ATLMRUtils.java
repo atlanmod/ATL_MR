@@ -23,82 +23,86 @@ import org.eclipse.m2m.atl.emftvm.trace.TraceLinkSet;
 import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 
 public class ATLMRUtils {
-	
-//	public static Resource importToXML (Resource binaryResource) {
-//		if (!(binaryResource instanceof EMFTVMResourceImpl)) {
-//			return null;
-//		}
-//		
-//		ResourceSetImpl rset = new ResourceSetImpl();
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());	
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl());
-//		URI xmiURI = addXMIExtension(binaryResource.getURI());
-//		Resource xmiResource = rset.createResource(xmiURI);
-//		xmiResource.getContents().addAll(EcoreUtil.copyAll(binaryResource.getContents()));
-//		try {
-//			xmiResource.save(null);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		return xmiResource;
-//	}
-//
-//	private static URI addXMIExtension( URI uri) {
-////		String scheme = uri.scheme()!= null ? uri.scheme() : "";
-////		String authority = uri.authority() != null ? uri.authority() : "";
-////		String device = uri.device() ;//!= null ? uri.device() : "";
-////		String query = uri.query() != null ? uri.query() : "";
-////		String fragment =  uri.fragment() != null ? uri.fragment() : "";
-//		return URI.createFileURI(uri.toFileString().concat(".xmi"));//URI(scheme,authority ,device , query, fragment.concat(".xmi"));
-//	}
-	
-	
+
+	// public static Resource importToXML (Resource binaryResource) {
+	// if (!(binaryResource instanceof EMFTVMResourceImpl)) {
+	// return null;
+	// }
+	//
+	// ResourceSetImpl rset = new ResourceSetImpl();
+	// Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi",
+	// new XMIResourceFactoryImpl());
+	// Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm",
+	// new EMFTVMResourceFactoryImpl());
+	// URI xmiURI = addXMIExtension(binaryResource.getURI());
+	// Resource xmiResource = rset.createResource(xmiURI);
+	// xmiResource.getContents().addAll(EcoreUtil.copyAll(binaryResource.getContents()));
+	// try {
+	// xmiResource.save(null);
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// return xmiResource;
+	// }
+	//
+	// private static URI addXMIExtension( URI uri) {
+	// // String scheme = uri.scheme()!= null ? uri.scheme() : "";
+	// // String authority = uri.authority() != null ? uri.authority() : "";
+	// // String device = uri.device() ;//!= null ? uri.device() : "";
+	// // String query = uri.query() != null ? uri.query() : "";
+	// // String fragment = uri.fragment() != null ? uri.fragment() : "";
+	// return
+	// URI.createFileURI(uri.toFileString().concat(".xmi"));//URI(scheme,authority
+	// ,device , query, fragment.concat(".xmi"));
+	// }
 
 	public static File getWorkingDirectoryFile() {
 		return Paths.get("").toAbsolutePath().toFile();
 	}
-	
-	
-	public static HashMap<String, String> extractRules (Resource resource) throws IOException {
-		
+
+	public static HashMap<String, String> extractRules(Resource resource) throws IOException {
+
 		HashMap<String, String> map = new HashMap<String, String>();
-		if(! resource.isLoaded()) {
+		if (!resource.isLoaded()) {
 			resource.load(null);
 		}
 
 		Iterator<EObject> iterator = resource.getAllContents();
-		EObject objectIterator= null;
+		EObject objectIterator = null;
 		while (iterator.hasNext()) {
 			objectIterator = iterator.next();
 			if (objectIterator instanceof Rule) {
-				Rule rule = ((Rule)objectIterator);
-				map.put(rule.getInputElements().get(0).getEType().getName(), rule.getName() );
-				
+				Rule rule = ((Rule) objectIterator);
+				map.put(rule.getInputElements().get(0).getEType().getName(), rule.getName());
+
 			}
-		}	
+		}
 		return map;
-		
-	}	
-	
-//	private static HashMap<String, String> extractRules (URI uri) throws IOException {
-//		
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl());
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-//		
-//		ResourceSetImpl rset = new ResourceSetImpl();
-//		Resource resource = rset.createResource(uri);
-//		Assert.assertNotNull(resource);
-//		return extractRules(resource);
-//		
-//	}
-	
+
+	}
+
+	// private static HashMap<String, String> extractRules (URI uri) throws
+	// IOException {
+	//
+	// Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm",
+	// new EMFTVMResourceFactoryImpl());
+	// Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi",
+	// new XMIResourceFactoryImpl());
+	//
+	// ResourceSetImpl rset = new ResourceSetImpl();
+	// Resource resource = rset.createResource(uri);
+	// Assert.assertNotNull(resource);
+	// return extractRules(resource);
+	//
+	// }
+
 	public static void registerPackages(ResourceSet resourceSet, Resource resource) {
 		EObject eObject = resource.getContents().get(0);
 		if (eObject instanceof EPackage) {
-		    EPackage p = (EPackage) eObject;
-		    resourceSet.getPackageRegistry().put(p.getNsURI(), p);
-		}	
-	  	
+			EPackage p = (EPackage) eObject;
+			resourceSet.getPackageRegistry().put(p.getNsURI(), p);
+		}
+
 	}
 
 	public static String resolveOutputPath(String string) {
@@ -108,10 +112,9 @@ public class ATLMRUtils {
 		return builder.toString();
 	}
 
-	
 	public static void mergeTraces(ExecEnv executionEnv, TracedRule tracedRule, ResourceSet rs) {
-		
-	    //createElement 
+
+		// createElement
 		TraceLinkSet traces = executionEnv.getTraces();
 		TraceLink traceLink = tracedRule.getLinks().get(0);
 		EObject targetElement = traceLink.getSourceElements().get(0).getObject();
@@ -120,13 +123,13 @@ public class ATLMRUtils {
 		Rule rule = executionEnv.getRulesMap().get(tracedRule.getRule());
 		int indexer = 0;
 		for (OutputRuleElement ore : rule.getOutputElements()) {
-			
-			EClass type=null;
+
+			EClass type = null;
 			try {
-				type = (EClass)executionEnv.findType(ore.getTypeModel(), ore.getType());
+				type = (EClass) executionEnv.findType(ore.getTypeModel(), ore.getType());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
-				//throw new VMException();
+				// throw new VMException();
 			}
 			TargetElement te = traceLink.getTargetElements().get(indexer);
 			// supposing that the outputRuleElement preserves its order
@@ -138,7 +141,7 @@ public class ATLMRUtils {
 			assert te.getObject().eResource() == models.get(0).getResource();
 			indexer++;
 		}
-		
+
 		boolean notApplied = true;
 		for (Iterator<TracedRule> iter = traces.getRules().iterator(); iter.hasNext() && notApplied;) {
 			TracedRule tRule = iter.next();
@@ -151,5 +154,5 @@ public class ATLMRUtils {
 			traces.getRules().add(tracedRule);
 		}
 	}
-	
+
 }

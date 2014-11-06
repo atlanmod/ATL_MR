@@ -55,7 +55,6 @@ public class ATLMRMaster extends Configured implements Tool {
 	protected static final int STATUS_OK = 0;
 	protected static final int STATUS_ERROR = 1;
 
-
 	public static String TRANSFORMATION = "transformation";
 	public static String SOURCE_METAMODEL = "sourcemm";
 	public static String TARGET_METAMODEL = "targetmm";
@@ -72,6 +71,7 @@ public class ATLMRMaster extends Configured implements Tool {
 					protected boolean useIDs() {
 						return eObjectToIDMap != null || idToEObjectMap != null;
 					}
+
 					@Override
 					protected URIConverter getURIConverter() {
 						return new HdfsURIConverterImpl();
@@ -96,7 +96,7 @@ public class ATLMRMaster extends Configured implements Tool {
 				};
 			}
 		});
-		
+
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl() {
 			@Override
 			public Resource createResource(URI uri) {
@@ -141,14 +141,15 @@ public class ATLMRMaster extends Configured implements Tool {
 			String sourcemmLocation = commandLine.getOptionValue(SOURCE_METAMODEL);
 			String targetmmLocation = commandLine.getOptionValue(TARGET_METAMODEL);
 			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
-			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).getParent().suffix(Path.SEPARATOR + "output.xmi").toString());
+			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).getParent().suffix(Path.SEPARATOR + "output.xmi")
+					.toString());
 
 			Job job = Job.getInstance(getConf(), JOB_NAME);
 
 			// TODO: check number of lines per MAP
 			getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
 
-			{ 
+			{
 				// Configure classes
 				job.setJarByClass(ATLMRMaster.class);
 				job.setMapperClass(ATLMRMapper.class);
@@ -158,14 +159,14 @@ public class ATLMRMaster extends Configured implements Tool {
 				job.setMapOutputKeyClass(Text.class);
 				job.setMapOutputValueClass(BytesWritable.class);
 			}
-			
+
 			{
-				// Build records file 
+				// Build records file
 				RecordBuilder recordBuilder = new RecordBuilder(URI.createURI(inputLocation), Arrays.asList(URI.createURI(sourcemmLocation)));
 				File recordsFile = File.createTempFile("atlmr-", ".rcd", new File(job.getWorkingDirectory().suffix("/working").toUri()));
 				recordsFile.deleteOnExit();
 				recordBuilder.save(recordsFile);
-				
+
 				// Configure MapReduce input/outputs
 				FileInputFormat.setInputPaths(job, new Path(recordsFile.toURI()));
 				FileOutputFormat.setOutputPath(job, new Path(job.getWorkingDirectory().suffix("/working").suffix("/" + UUID.randomUUID()).toUri()));
@@ -179,7 +180,7 @@ public class ATLMRMaster extends Configured implements Tool {
 				job.getConfiguration().set(INPUT_MODEL, inputLocation);
 				job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
 			}
-			
+
 			return job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
 
 		} catch (ParseException e) {
@@ -190,7 +191,6 @@ public class ATLMRMaster extends Configured implements Tool {
 		}
 	}
 
-	
 	/**
 	 * Configures the program options
 	 * 

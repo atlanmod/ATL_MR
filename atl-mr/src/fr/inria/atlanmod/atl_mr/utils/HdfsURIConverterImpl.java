@@ -12,14 +12,14 @@ import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 
 public class HdfsURIConverterImpl extends ExtensibleURIConverterImpl {
 	@Override
-	public InputStream createInputStream(URI uri, java.util.Map<?,?> options) throws IOException {
+	public InputStream createInputStream(URI uri, java.util.Map<?, ?> options) throws IOException {
 		Path path = new Path(uri.toString());
 		FileSystem fileSystem = FileSystem.get(path.toUri(), new Configuration());
 		return fileSystem.open(path);
 	}
 
 	@Override
-	public OutputStream createOutputStream(URI uri, java.util.Map<?,?> options) throws IOException {
+	public OutputStream createOutputStream(URI uri, java.util.Map<?, ?> options) throws IOException {
 		Path path = new Path(uri.toString());
 		FileSystem fileSystem = FileSystem.get(path.toUri(), new Configuration());
 		return fileSystem.create(path);
