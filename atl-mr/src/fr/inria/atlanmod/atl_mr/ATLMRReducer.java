@@ -51,7 +51,7 @@ public  class ATLMRReducer extends Reducer<Text,BytesWritable, Text, Text> {
 			outModel.getResource().save(System.out, Collections.emptyMap());
 			executionEnv.applyAll();
 			outModel.getResource().save(System.out, Collections.emptyMap());
-			logger.log(Level.INFO, String.format("enter the reduce for key <%s>", key.toString()));		
+			//logger.log(Level.INFO, String.format("enter the reduce for key <%s>", key.toString()));		
 	}
 	
 	@Override 

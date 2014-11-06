@@ -18,8 +18,8 @@ create OUT : Relational from IN : Class;
 -- global variable
 -- context 
 helper def: objectIdType : Relational!Type =
-	Class!DataType.allInstances()->select(e | e.name = 'Integer')->first();
-
+	--Class!DataType.allInstances()->select(e | e.name = 'Integer')->first();
+	Class!DataType.allInstances()->first();
 rule Class2Table {
 	from
 		c : Class!Class
@@ -71,7 +71,7 @@ rule MultiValuedDataTypeAttribute2Column {
 			col <- Sequence {id, value}
 		),
 		id : Relational!Column (
-			name <- a.owner.name.firstToLower() + 'Id',
+			name <- a.owner.name + 'Id',
 			type <- thisModule.objectIdType
 		),
 		value : Relational!Column (
@@ -103,7 +103,7 @@ rule MultiValuedClassAttribute2Column {
 			col <- Sequence {id, foreignKey}
 		),
 		id : Relational!Column (
-			name <- a.owner.name.firstToLower() + 'Id',
+			name <- a.owner.name + 'Id',
 			type <- thisModule.objectIdType
 		),
 		foreignKey : Relational!Column (

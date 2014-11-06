@@ -92,6 +92,7 @@ public class ATLMRUtils {
 			inputResource.save(null);
 		return file;
 	}
+	
 	public static HashMap<String, String> extractRules (Resource resource) throws IOException {
 		
 		HashMap<String, String> map = new HashMap<String, String>();
@@ -170,6 +171,7 @@ public class ATLMRUtils {
 			assert te.getObject() != null;
 			assert te.getObject().eResource() != null;
 			assert te.getObject().eResource() == models.get(0).getResource();
+			indexer++;
 		}
 		
 		boolean notApplied = true;

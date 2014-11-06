@@ -47,7 +47,7 @@ public class ATLMRMaster extends Configured implements Tool {
 	
 	public int run(String[] args) throws Exception {
 		
-		ATLMRConfigEnv configurationEnv = new ATLMRConfigEnv();
+		ATLMRConfigEnv configurationEnv = new ATLMRConfigEnv(args[1], args[3], args[0]);
 		// instantiating the Job
 		
 		Job job = Job.getInstance(getConf(), "ATL in MapReduce");
@@ -160,8 +160,8 @@ public class ATLMRMaster extends Configured implements Tool {
 		public void setInputResource(Resource inputResource) {
 			this.inputResource = inputResource;
 		}
-
-		public ATLMRConfigEnv() {
+		
+		public ATLMRConfigEnv(String args, String args2, String args3) {
 			
 				ResourceSetImpl rset = new ResourceSetImpl();
 				final ExtendedMetaData extendedMetaData = new BasicExtendedMetaData(
@@ -180,13 +180,13 @@ public class ATLMRMaster extends Configured implements Tool {
 				////////
 				
 				transformationResource = rset.getResource(URI
-						.createURI("data/Families2Persons/Families2Persons.emftvm"),true);
+						.createURI(args3),true);
 				mmResource = rset.getResource(URI
-						.createURI("data/Families2Persons/Families.ecore"),true);
+						.createURI(args),true);
 			   
 				registerMM(rset, mmResource );
 				
-				inputResource = rset.createResource(URI.createURI("data/Families2Persons/sample-Families.xmi"));
+				inputResource = rset.createResource(URI.createURI(args2));
 				
 				try {
 					
