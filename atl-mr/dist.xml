@@ -7,7 +7,12 @@
 	<property name="jar.file" location="${dist}/${ant.project.name}.jar" />
 
 	<target name="dist">
-		<jar destfile="${jar.file}" basedir="${bin}" />
+		<jar destfile="${jar.file}">
+			<fileset dir="${bin}" includes="**/*.class"/>
+			<manifest>
+				<attribute name="Main-Class" value="fr.inria.atlanmod.atl_mr.ATLMRMaster"/>
+			</manifest>
+		</jar>
 		<copy todir="${dist.libs}" verbose="yes" flatten="yes" failonerror="no">    
 			<path>
 				<path refid="Plug-in Dependencies.libraryclasspath" />
