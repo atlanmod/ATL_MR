@@ -2,7 +2,6 @@ package fr.inria.atlanmod.atl_mr;
 
 import java.util.Collections;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -28,8 +27,6 @@ public class RunC2R {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		IPath path = null;
-
 		// TODO Auto-generated method stub
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
 			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());	
@@ -51,37 +48,37 @@ public class RunC2R {
 //		metaModel.setResource(rs.getResource(URI.createURI("http://www.eclipse.org/m2m/atl/2011/EMFTVM"), true));
 //		env.registerMetaModel("METAMODEL", metaModel);
 //		registerPackages(rs, metaModel.getResource());
-		URI inMMURI =URI.createURI( "./data/Families2Persons/Families.ecore");
+		URI inMMURI =URI.createURI( "./data/Class2Relational/Class.ecore");
 		
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		inMetaModel.setResource(rs.getResource(inMMURI, true));
-		env.registerMetaModel("Families", inMetaModel);
+		env.registerMetaModel("Class", inMetaModel);
 		registerPackages(rs, inMetaModel.getResource());
 		
-		URI outMMURI = URI.createURI("./data/Families2Persons/Persons.ecore");
+		URI outMMURI = URI.createURI("./data/Class2Relational/Relational.ecore");
 		
 		Metamodel outMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		outMetaModel.setResource(rs.getResource(outMMURI, true));
-		env.registerMetaModel("Persons", outMetaModel);
+		env.registerMetaModel("Relational", outMetaModel);
 		registerPackages(rs, outMetaModel.getResource());
 		// Load models
 		
-		URI inMURI = URI.createURI("data/Families2Persons/sample-Families.xmi", true);
+		URI inMURI = URI.createURI("./data/Class2Relational/sample.xmi", true);
 		
 		Model inModel = EmftvmFactory.eINSTANCE.createModel();
 		inModel.setResource(rs.getResource(inMURI, true));
 		env.registerInputModel("IN", inModel);
 
-		URI outMURI = URI.createFileURI("data/Families2Persons/sample-Persons.out.xmi");
+		URI outMURI = URI.createFileURI("./data/Class2Relational/sample.out.xmi");
 		
 		Model outModel = EmftvmFactory.eINSTANCE.createModel();
 		outModel.setResource(rs.createResource(outMURI));
 		env.registerOutputModel("OUT", outModel);
 
 		// Load and run module
-		ModuleResolver mr = new DefaultModuleResolver("data/Families2Persons/", new ResourceSetImpl());
+		ModuleResolver mr = new DefaultModuleResolver("./data/Class2Relational/", new ResourceSetImpl());
 		TimingData td = new TimingData();
-		env.loadModule(mr, "Families2Persons");
+		env.loadModule(mr, "Class2Relational");
 		td.finishLoading();
 		env.run(td);
 		td.finish();

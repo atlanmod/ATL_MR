@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -42,7 +41,7 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-		Logger logger = ATLMapReduceTask.getLogger();
+		//Logger logger = ATLMapReduceTask.getLogger();
 		Model inModel = mapTask.getInModel();
 		ExecEnv executionEnv = mapTask.getExecutionEnv();
 		String moduleName = mapTask.getModuleName();
@@ -52,7 +51,7 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 		options.put(XMLResource.OPTION_ENCODING, "UTF-8"); // set encoding to
 															// utf-8
 		options.put(XMLResource.OPTION_BINARY, Boolean.TRUE);
-		if (executionEnv.matchSingleObject(currentObj, currentRecord.getRuleName())) {
+		if (executionEnv.matchSingleObject(currentObj, currentRecord.className)) {
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			TraceLink currentLink = executionEnv.getCurrentMatch();
@@ -62,7 +61,7 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 			resource.save(baos, options);
 
 			context.write(new Text(moduleName), new BytesWritable(baos.toByteArray()));
-			logger.info(String.format("here is the pair key value <%s,%s>", currentRecord.getObjectFragmentUri(), currentRecord.getRuleName()));
+			//logger.info(String.format("here is the pair key value <%s,%s>", currentRecord.getObjectFragmentUri(), currentRecord.getRuleName()));
 		}
 	}
 	
@@ -78,15 +77,6 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 			int ruleStartIndex = recordValue.toString().indexOf(',');
 			objectFragmentUri = recordValue.toString().substring(1, ruleStartIndex);
 			className = recordValue.toString().substring(ruleStartIndex+1, length-1);
-		}
-
-		public String getObjectFragmentUri() {
-			return objectFragmentUri;
-		}
-
-		public String getRuleName() {
-			return className;
-		}
-		
-	}
-}
+		}		
+	}// end Record
+}//end 
