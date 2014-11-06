@@ -122,6 +122,7 @@ public class ATLMRUtils {
 		traceLink.getSourceElements().get(0).setRuntimeObject(targetElement);
 		Rule rule = executionEnv.getRulesMap().get(tracedRule.getRule());
 		int indexer = 0;
+		
 		for (OutputRuleElement ore : rule.getOutputElements()) {
 
 			EClass type = null;
@@ -131,6 +132,7 @@ public class ATLMRUtils {
 				e.printStackTrace();
 				// throw new VMException();
 			}
+			
 			TargetElement te = traceLink.getTargetElements().get(indexer);
 			// supposing that the outputRuleElement preserves its order
 			EList<Model> models = ore.getEModels();
@@ -153,6 +155,7 @@ public class ATLMRUtils {
 		if (notApplied) {
 			traces.getRules().add(tracedRule);
 		}
+		rule.createDefaultMappingForTrace(traceLink);
 	}
 
 }
