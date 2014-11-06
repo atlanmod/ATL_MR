@@ -141,10 +141,6 @@ public class ATLMapReduceTask {
 		URI inMURI = URI.createURI(configuration.get(ATLMRMaster.INPUT_MODEL));
 		URI outMURI = URI.createURI(configuration.get(ATLMRMaster.OUTPUT_MODEL));
 
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl());
-
 		moduleName = resolveModuleName(transformationURI.toString());
 		mr = new DefaultModuleResolver(resolveModulePath(transformationURI.toString()), rs);
 		Module module = mr.resolveModule(moduleName);

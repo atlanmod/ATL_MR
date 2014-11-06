@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -36,12 +35,18 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
+import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceImpl;
 
 import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
+import fr.inria.atlanmod.atl_mr.utils.HdfsURIConverterImpl;
 
 public class ATLMRMaster extends Configured implements Tool {
 
@@ -59,9 +64,50 @@ public class ATLMRMaster extends Configured implements Tool {
 
 	{
 		// Initialize ExtensionToFactoryMap
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl() {
+			@Override
+			public Resource createResource(URI uri) {
+				XMLResource result = new XMIResourceImpl(uri) {
+					@Override
+					protected boolean useIDs() {
+						return eObjectToIDMap != null || idToEObjectMap != null;
+					}
+					@Override
+					protected URIConverter getURIConverter() {
+						return new HdfsURIConverterImpl();
+					}
+				};
+				result.setEncoding("UTF-8");
+
+				result.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
+				result.getDefaultSaveOptions().put(XMLResource.OPTION_LINE_WIDTH, 80);
+				result.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl.PlatformSchemeAware());
+				return result;
+			}
+		});
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl() {
+			@Override
+			public Resource createResource(URI uri) {
+				return new XMIResourceImpl(uri) {
+					@Override
+					protected URIConverter getURIConverter() {
+						return new HdfsURIConverterImpl();
+					}
+				};
+			}
+		});
+		
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl() {
+			@Override
+			public Resource createResource(URI uri) {
+				return new EMFTVMResourceImpl(uri) {
+					@Override
+					protected URIConverter getURIConverter() {
+						return new HdfsURIConverterImpl();
+					}
+				};
+			}
+		});
 	}
 
 	/**
@@ -95,7 +141,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			String sourcemmLocation = commandLine.getOptionValue(SOURCE_METAMODEL);
 			String targetmmLocation = commandLine.getOptionValue(TARGET_METAMODEL);
 			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
-			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, Paths.get(inputLocation).getParent().resolve("output.xmi").toString());
+			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).getParent().suffix(Path.SEPARATOR + "output.xmi").toString());
 
 			Job job = Job.getInstance(getConf(), JOB_NAME);
 
@@ -113,7 +159,6 @@ public class ATLMRMaster extends Configured implements Tool {
 				job.setMapOutputValueClass(BytesWritable.class);
 			}
 			
-
 			{
 				// Build records file 
 				RecordBuilder recordBuilder = new RecordBuilder(URI.createURI(inputLocation), Arrays.asList(URI.createURI(sourcemmLocation)));
@@ -143,7 +188,6 @@ public class ATLMRMaster extends Configured implements Tool {
 			formatter.printHelp("java -jar <this-file.jar>", options, true);
 			return STATUS_ERROR;
 		}
-
 	}
 
 	
