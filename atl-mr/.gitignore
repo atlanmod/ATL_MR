@@ -3,3 +3,5 @@
 !/working/
 /working/*
 !/working/.dummy
+
+/dist/

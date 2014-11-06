@@ -1,0 +1,28 @@
+<?eclipse.ant.import ?>
+<project name="atl-mr" default="dist">    
+	<property name="bin" location="bin" />
+	<property name="dist" location="dist" />
+	<property name="dist.libs" location="${dist}/libs" />
+
+	<property name="jar.file" location="${dist}/${ant.project.name}.jar" />
+
+	<target name="dist">
+		<jar destfile="${jar.file}">
+			<fileset dir="${bin}" includes="**/*.class"/>
+			<manifest>
+				<attribute name="Main-Class" value="fr.inria.atlanmod.atl_mr.ATLMRMaster"/>
+			</manifest>
+		</jar>
+		<copy todir="${dist.libs}" verbose="yes" flatten="yes" failonerror="no">    
+			<path>
+				<path refid="Plug-in Dependencies.libraryclasspath" />
+			</path>
+		</copy>
+	</target>
+	<target name="clean-dist">
+		<delete>
+			<fileset dir="${dist}" includes="**/*"/>
+			<dirset dir="${dist}" includes="**/*"/>
+		</delete>
+	</target>
+</project>
