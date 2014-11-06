@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.m2m.atl.emftvm.ExecEnv;
 import org.eclipse.m2m.atl.emftvm.Model;
 import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
+
 import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 
 
@@ -51,7 +52,7 @@ public  class ATLMRReducer extends Reducer<Text,BytesWritable, Text, Text> {
 			outModel.getResource().save(System.out, Collections.emptyMap());
 			executionEnv.applyAll();
 			outModel.getResource().save(System.out, Collections.emptyMap());
-			//logger.log(Level.INFO, String.format("enter the reduce for key <%s>", key.toString()));		
+			logger.log(Level.INFO, String.format("enter the reduce for key <%s>", key.toString()));		
 	}
 	
 	@Override 
@@ -59,4 +60,10 @@ public  class ATLMRReducer extends Reducer<Text,BytesWritable, Text, Text> {
 		reduceTask.setup(context.getConfiguration());
 	}
 
+	@Override
+	protected void cleanup(Reducer<Text, BytesWritable, Text, Text>.Context context) throws IOException, InterruptedException {
+		Resource outResource = reduceTask.getOutModel().getResource();
+		outResource.save(Collections.EMPTY_MAP);
+		super.cleanup(context);
+	}
 }
