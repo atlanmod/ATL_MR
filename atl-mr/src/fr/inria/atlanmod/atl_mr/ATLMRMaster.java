@@ -1,14 +1,31 @@
 package fr.inria.atlanmod.atl_mr;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.hadoop.conf.Configured;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.filecache.DistributedCache;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -17,216 +34,233 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.BasicExtendedMetaData;
-import org.eclipse.emf.ecore.util.ExtendedMetaData;
-import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
 
 import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 
-
-@SuppressWarnings("deprecation")
 public class ATLMRMaster extends Configured implements Tool {
 
-	public static String TRANSFORMATION = "atl.transformation";
-	public static String SOURCE_METAMODEL = "atl.metamodel.source";
-	public static String TARGET_METAMODEL = "atl.metamodel.target";
-	public static String INPUT_MODEL = "atl.model.input";
-	public static String OUTPUT_MODEL = "atl.model.output";
-	
-	public static final int TRANSFORMATION_ID=0;
-	public static final int SOURCE_METAMODEL_ID=1;
-	public static final int TARGET_METAMODEL_ID=2;
-	public static final int INPUT_MODEL_ID=3;
-	public static final int OUTPUT_MODEL_ID = 4;
-	
-	public int run(String[] args) throws Exception {
-		
-		ATLMRConfigEnv configurationEnv = new ATLMRConfigEnv();
-		// instantiating the Job
-		
-		Job job = Job.getInstance(getConf(), "ATL in MapReduce");
-		job.setJarByClass(ATLMRMaster.class);
-		getConf().get("dfs.name.directory");
-		job.setInputFormatClass(NLineInputFormat.class);
-		getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
-		getConf().set("dfs.name.directory", "file:/hadoop/hadoop-2.5.1/data/dfs");
-		
-		job.setOutputFormatClass(SequenceFileOutputFormat.class);
-		job.setMapOutputKeyClass(Text.class);
-		job.setMapOutputValueClass(BytesWritable.class);
-		//job.setMapOutputValueClass(Text.class);
-		
-		job.setMapperClass(ATLMRMapper.class);
-		job.setReducerClass(ATLMRReducer.class);
-		FileInputFormat.setInputPaths(job, configurationEnv.records());
-		FileOutputFormat.setOutputPath(job, new Path("/MR_output"));
-		FileSystem fs = FileSystem.get(getConf());
-		fs.delete(FileOutputFormat.getOutputPath(job), true);
-		
-		/*
-		 * TODO Checking if a file exist
-		 */
-		
-////		FSDataInputStream inModel = fileSystem.open(inputMModel);
-////		
-////		FileInputFormat.setInputPaths(job, inputRecords);
-////		
-////		FileOutputFormat.setOutputPath(job, new Path("/output"));
-////		Job jobby= Job.getInstance(getConf());
-////		jobby.setInputFormatClass(NLineInputFormat.class);
-////		getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
-////		//job.setInputFormat(NLineInputFormat.class);
-////		job.setInt(NLineInputFormat.LINES_PER_MAP, 5);
-////		jobby.setOutputFormat(org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat.class);
-////		
-////		jobby.setMapperClass(ATLMRMapper.class);
-////		jobby.setReducerClass(ATLMRReducer.class);
-////		
-////		jobby.setOutputKeyClass(Text.class);
-////		jobby.setOutputValueClass(IntWritable.class);
-////		
-//		//DistributedCache.addCacheFile(new URI((String)args[3]), job);
-//		/*
-//		 * TODO replace implementation with import org.apache.hadoop.mapreduce.Job
-//		 * instead of JobConfiguration
-//		 */
-//		Path[] sharedResources = configurationEnv.formatPaths(args,getConf().get("dfs.name.directory"));
-//		FileSystem fs = FileSystem.get(getConf());
-//		fs.delete(FileOutputFormat.getOutputPath(job), true);
-//		fs.copyFromLocalFile(new Path((String)args[0]), sharedResources[0]);
-//		
-//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[0].toString()), getConf());	
-//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[1].toString()), getConf());
-//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[2].toString()), getConf());
-//		DistributedCache.addCacheFile( new java.net.URI(sharedResources[3].toString()), getConf());
-//	    DistributedCache.createSymlink(getConf());	
-	//	DistributedCache.getLocalCacheFiles(getConf());
-		
-		job.getConfiguration().set(TRANSFORMATION, (String)args[TRANSFORMATION_ID]);
-		job.getConfiguration().set(SOURCE_METAMODEL,(String)args[SOURCE_METAMODEL_ID]);
-		job.getConfiguration().set(TARGET_METAMODEL,(String)args[TARGET_METAMODEL_ID]);
-		job.getConfiguration().set(INPUT_MODEL,(String)args[INPUT_MODEL_ID]);
-		return job.waitForCompletion(true) ? 0 : 1;
-	}
-	
-	private static void registerMM(ResourceSetImpl rs, Resource mmResource) {
+	protected static final String JOB_NAME = "ATL in MapReduce";
 
-		EObject eObject = mmResource.getContents().get(0);
-		if (eObject instanceof EPackage) {
-			EPackage p = (EPackage) eObject;
-			rs.getPackageRegistry().put(p.getNsURI(), p);
-		}
+	protected static final int STATUS_OK = 0;
+	protected static final int STATUS_ERROR = 1;
 
+
+	public static String TRANSFORMATION = "transformation";
+	public static String SOURCE_METAMODEL = "sourcemm";
+	public static String TARGET_METAMODEL = "targetmm";
+	public static String INPUT_MODEL = "input";
+	public static String OUTPUT_MODEL = "output";
+
+	{
+		// Initialize ExtensionToFactoryMap
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl());
 	}
+
+	/**
+	 * Main program, delegates to ToolRunner
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		ATLMRMaster driver = new ATLMRMaster();
 		int exitCode = ToolRunner.run(driver, args);
 		System.exit(exitCode);
 	}
-	
-	
-	public static class ATLMRConfigEnv {
-		
-		Resource transformationResource;
-		Resource mmResource;
-		Resource inputResource;
-		
-		public Resource getTransformationResource() {
-			return transformationResource;
-		}
 
-		public void setTransformationResource(Resource transformationResource) {
-			this.transformationResource = transformationResource;
-		}
+	/**
+	 * Hadoop {@link Tool} implementation
+	 */
+	@Override
+	public int run(String[] args) throws Exception {
 
-		public Resource getMmResource() {
-			return mmResource;
-		}
+		Options options = new Options();
 
-		public void setMmResource(Resource mmResource) {
-			this.mmResource = mmResource;
-		}
+		configureOptions(options);
 
-		public Resource getInputResource() {
-			return inputResource;
-		}
+		CommandLineParser parser = new PosixParser();
 
-		public void setInputResource(Resource inputResource) {
-			this.inputResource = inputResource;
-		}
+		try {
+			CommandLine commandLine = parser.parse(options, args);
 
-		public ATLMRConfigEnv() {
+			String transformationLocation = commandLine.getOptionValue(TRANSFORMATION);
+			String sourcemmLocation = commandLine.getOptionValue(SOURCE_METAMODEL);
+			String targetmmLocation = commandLine.getOptionValue(TARGET_METAMODEL);
+			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
+			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, Paths.get(inputLocation).getParent().resolve("output.xmi").toString());
+
+			Job job = Job.getInstance(getConf(), JOB_NAME);
+
+			// TODO: check number of lines per MAP
+			getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
+
+			{ 
+				// Configure classes
+				job.setJarByClass(ATLMRMaster.class);
+				job.setMapperClass(ATLMRMapper.class);
+				job.setReducerClass(ATLMRReducer.class);
+				job.setInputFormatClass(NLineInputFormat.class);
+				job.setOutputFormatClass(SequenceFileOutputFormat.class);
+				job.setMapOutputKeyClass(Text.class);
+				job.setMapOutputValueClass(BytesWritable.class);
+			}
 			
-				ResourceSetImpl rset = new ResourceSetImpl();
-				final ExtendedMetaData extendedMetaData = new BasicExtendedMetaData(
-						rset.getPackageRegistry());
-				rset.getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA,
-						extendedMetaData);
-		
-				Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(
-						"ecore", new EcoreResourceFactoryImpl());
-		
-				Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(
-						"xmi", new XMIResourceFactoryImpl());
-				Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(
-						"emftvm", new EMFTVMResourceFactoryImpl());
-		
-				////////
+
+			{
+				// Build records file 
+				RecordBuilder recordBuilder = new RecordBuilder(URI.createURI(inputLocation), Arrays.asList(URI.createURI(sourcemmLocation)));
+				File recordsFile = File.createTempFile("atlmr-", ".rcd", new File(job.getWorkingDirectory().suffix("/working").toUri()));
+				recordsFile.deleteOnExit();
+				recordBuilder.save(recordsFile);
 				
-				transformationResource = rset.getResource(URI
-						.createURI("data/Families2Persons/Families2Persons.emftvm"),true);
-				mmResource = rset.getResource(URI
-						.createURI("data/Families2Persons/Families.ecore"),true);
-			   
-				registerMM(rset, mmResource );
-				
-				inputResource = rset.createResource(URI.createURI("data/Families2Persons/sample-Families.xmi"));
-				
-				try {
-					
-					inputResource.load(null);
-					mmResource.load(null);
-					transformationResource.load(null);
-										
-				} catch (IOException e) {
-					e.printStackTrace();
+				// Configure MapReduce input/outputs
+				FileInputFormat.setInputPaths(job, new Path(recordsFile.toURI()));
+				FileOutputFormat.setOutputPath(job, new Path(job.getWorkingDirectory().suffix("/working").suffix("/" + UUID.randomUUID()).toUri()));
+			}
+
+			{
+				// Configure ATL related inputs/outputs
+				job.getConfiguration().set(TRANSFORMATION, transformationLocation);
+				job.getConfiguration().set(SOURCE_METAMODEL, sourcemmLocation);
+				job.getConfiguration().set(TARGET_METAMODEL, targetmmLocation);
+				job.getConfiguration().set(INPUT_MODEL, inputLocation);
+				job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
+			}
+			
+			return job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
+
+		} catch (ParseException e) {
+			System.err.println(e.getLocalizedMessage());
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("java -jar <this-file.jar>", options, true);
+			return STATUS_ERROR;
+		}
+
+	}
+
+	
+	/**
+	 * Configures the program options
+	 * 
+	 * @param options
+	 */
+	private void configureOptions(Options options) {
+		Option transformationOpt = OptionBuilder.create(TRANSFORMATION);
+		transformationOpt.setArgName("transformation.emftvm");
+		transformationOpt.setDescription("ATL transformation");
+		transformationOpt.setArgs(1);
+		transformationOpt.setRequired(true);
+
+		Option sourcemmOpt = OptionBuilder.create(SOURCE_METAMODEL);
+		sourcemmOpt.setArgName("source.ecore");
+		sourcemmOpt.setDescription("Source metamodel");
+		sourcemmOpt.setArgs(1);
+		sourcemmOpt.setRequired(true);
+
+		Option targetmmOpt = OptionBuilder.create(TARGET_METAMODEL);
+		targetmmOpt.setArgName("target.ecore");
+		targetmmOpt.setDescription("Target metamodel");
+		targetmmOpt.setArgs(1);
+		targetmmOpt.setRequired(true);
+
+		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
+		inputOpt.setArgName("input.xmi");
+		inputOpt.setDescription("Input file URI");
+		inputOpt.setArgs(1);
+		inputOpt.setRequired(true);
+
+		Option outputOpt = OptionBuilder.create(OUTPUT_MODEL);
+		outputOpt.setArgName("output.xmi");
+		outputOpt.setDescription("Output file URI");
+		outputOpt.setArgs(1);
+
+		options.addOption(transformationOpt);
+		options.addOption(sourcemmOpt);
+		options.addOption(targetmmOpt);
+		options.addOption(inputOpt);
+		options.addOption(outputOpt);
+	}
+
+	/**
+	 * Implements the logic to build MapReduce records from a {@link Resource}
+	 * given its {@link URI}
+	 * 
+	 * @author agomez
+	 *
+	 */
+	public static class RecordBuilder {
+
+		private ResourceSet resourceSet;
+
+		private List<URI> metamodelURIs;
+
+		private URI inputURI;
+
+		public RecordBuilder(URI inputURI, List<URI> metamodelURIs) {
+			this.inputURI = inputURI;
+			this.metamodelURIs = metamodelURIs;
+		}
+
+		protected ResourceSet getResourceSet() {
+			if (resourceSet == null) {
+				resourceSet = new ResourceSetImpl();
+				for (URI uri : metamodelURIs) {
+					Resource resource = resourceSet.getResource(uri, true);
+					ATLMRUtils.registerPackages(resourceSet, resource);
 				}
+			}
+			return resourceSet;
 		}
-		
-		public ATLMRConfigEnv(Object[] args) {
-			
-			/**
-			 * TODO implement for [] args 
-			 */
-			/*
-			 * TODO throw the right exception ATLMRInputException
-			 * when an input path is missing
-			 */
-//			if(args.length != 5) {
-//				System.err.println("Missing input. ATL MapReduce: <ATL transformation>, <Input MM>, <Output MM>, < Input M>, <Output directory>\nNB: The output file is deduced from the input name concatenated with ");
-//				System.exit(-1);
-//			}
-			
+
+		/**
+		 * Saves the records of this {@link RecordBuilder} in the given
+		 * {@link File}
+		 * 
+		 * @param file
+		 * @throws FileNotFoundException
+		 * @throws IOException
+		 */
+		public void save(File file) throws FileNotFoundException, IOException {
+			Resource inputResource = getResourceSet().getResource(inputURI, true);
+			buildRecords(inputResource, new FileOutputStream(file));
+			inputResource.unload();
 		}
-		Path records () throws IllegalArgumentException, IOException {
-			return  new Path(ATLMRUtils.writeRecordsToFile(transformationResource, inputResource).getPath());
+
+		/**
+		 * Writes on a given {@link OutputStream} the records for a
+		 * {@link Resource}
+		 * 
+		 * @param inputResource
+		 * @param outputStream
+		 * @throws IOException
+		 */
+		protected static void buildRecords(Resource inputResource, OutputStream outputStream) throws IOException {
+
+			if (!inputResource.isLoaded()) {
+				throw new IllegalArgumentException("Input resource is not loaded");
+			}
+
+			BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+
+			for (Iterator<EObject> it = inputResource.getAllContents(); it.hasNext();) {
+				EObject currentObj = it.next();
+				bufWriter.append("<");
+				bufWriter.append(currentObj.eResource().getURIFragment(currentObj));
+				bufWriter.append(",");
+				bufWriter.append(currentObj.eClass().getName());
+				bufWriter.append(">\n");
+			}
+
+			bufWriter.close();
 		}
-	
-		Path [] formatPaths(Object [] args, String prefix) {
-			//prefix+="/";
-			prefix="file:/";
-			Path[] paths = new Path[4];
-				for (int i=0; i<4; i++) {
-					String str = (String)args[i];
-					paths[i] = new Path(prefix+str);
-				}
-			return paths;
-		}		
+
 	}
 }

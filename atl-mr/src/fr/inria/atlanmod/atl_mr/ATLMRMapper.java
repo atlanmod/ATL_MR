@@ -33,15 +33,15 @@ import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 
 public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 	
-	private ATLMapReduceTask mapTask =  new ATLMapReduceTask();
-	
-	@Override 
-	protected void  setup(Context context) throws IOException ,InterruptedException {
+	private ATLMapReduceTask mapTask = new ATLMapReduceTask();
+
+	@Override
+	protected void setup(Context context) throws IOException, InterruptedException {
 		mapTask.setup(context.getConfiguration());
 	};
+
 	@Override
-	protected void map(LongWritable key, Text value, Context context)
-			throws IOException, InterruptedException {
+	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		Logger logger = ATLMapReduceTask.getLogger();
 		Model inModel = mapTask.getInModel();
 		ExecEnv executionEnv = mapTask.getExecutionEnv();
@@ -49,20 +49,20 @@ public class ATLMRMapper extends Mapper<LongWritable,Text,Text,BytesWritable> {
 		Record currentRecord = new Record(value);
 		EObject currentObj = inModel.getResource().getEObject(currentRecord.objectFragmentUri);
 		Map<String, Object> options = new HashMap<String, Object>();
-		options.put(XMLResource.OPTION_ENCODING, "UTF-8"); // set encoding to utf-8
+		options.put(XMLResource.OPTION_ENCODING, "UTF-8"); // set encoding to
+															// utf-8
 		options.put(XMLResource.OPTION_BINARY, Boolean.TRUE);
 		if (executionEnv.matchSingleObject(currentObj, currentRecord.getRuleName())) {
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        TraceLink currentLink = executionEnv.getCurrentMatch();
-        TracedRule currentRule = currentLink.getRule();
-        Resource resource = new XMIResourceImpl();
-        resource.getContents().addAll(org.eclipse.emf.ecore.util.EcoreUtil.copyAll(currentRule.getLinkSet().eContents()));
-        resource.save(baos, options);
 
-		context.write(new Text(moduleName), new BytesWritable(baos.toByteArray()));
-		logger.info(String.format("here is the pair key value <%s,%s>", currentRecord.getObjectFragmentUri(), currentRecord.getRuleName()));
-//		td.finish();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			TraceLink currentLink = executionEnv.getCurrentMatch();
+			TracedRule currentRule = currentLink.getRule();
+			Resource resource = new XMIResourceImpl();
+			resource.getContents().addAll(org.eclipse.emf.ecore.util.EcoreUtil.copyAll(currentRule.getLinkSet().eContents()));
+			resource.save(baos, options);
+
+			context.write(new Text(moduleName), new BytesWritable(baos.toByteArray()));
+			logger.info(String.format("here is the pair key value <%s,%s>", currentRecord.getObjectFragmentUri(), currentRecord.getRuleName()));
 		}
 	}
 	

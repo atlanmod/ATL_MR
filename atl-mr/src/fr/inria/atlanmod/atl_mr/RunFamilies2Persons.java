@@ -2,7 +2,6 @@ package fr.inria.atlanmod.atl_mr;
 
 import java.util.Collections;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -28,7 +27,6 @@ public class RunFamilies2Persons {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		IPath path = null;
 		// TODO Auto-generated method stub
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
 			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());	
