@@ -11,7 +11,7 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.atlanmod.atl_mr.ATLMRMaster"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="data/Class2Relational/Class2Relational.emftvm data/Class2Relational/Class.ecore data/Class2Relational/Relational.ecore data/Class2Relational/sample.xmi"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-transformation data/Class2Relational/Class2Relational.emftvm -sourcemm data/Class2Relational/Class.ecore -targetmm data/Class2Relational/Relational.ecore -input data/Class2Relational/sample.xmi"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="atl-mr"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>
