@@ -19,14 +19,13 @@ import org.eclipse.m2m.atl.emftvm.util.DefaultModuleResolver;
 import org.eclipse.m2m.atl.emftvm.util.ModuleResolver;
 import org.eclipse.m2m.atl.emftvm.util.TimingData;
 
-import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
-
-public class RunFamilies2Persons {
+public class RunF2P {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
+
 		// TODO Auto-generated method stub
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
 			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());	

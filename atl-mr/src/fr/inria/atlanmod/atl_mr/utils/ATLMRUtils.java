@@ -136,6 +136,7 @@ public class ATLMRUtils {
 			assert te.getObject() != null;
 			assert te.getObject().eResource() != null;
 			assert te.getObject().eResource() == models.get(0).getResource();
+			indexer++;
 		}
 		
 		boolean notApplied = true;
