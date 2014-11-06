@@ -26,4 +26,5 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.apache.ivyde.eclipse.ivynature</nature>
 	</natures>
+
 </projectDescription>
