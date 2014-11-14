@@ -1,12 +1,17 @@
 package fr.inria.atlanmod.atl_mr;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.m2m.atl.emftvm.EmftvmFactory;
 import org.eclipse.m2m.atl.emftvm.ExecEnv;
+import org.eclipse.m2m.atl.emftvm.ExecMode;
 import org.eclipse.m2m.atl.emftvm.Metamodel;
 import org.eclipse.m2m.atl.emftvm.Model;
 import org.eclipse.m2m.atl.emftvm.Module;
@@ -27,7 +32,7 @@ public class ATLMapReduceTask {
 
 	private Model inModel;
 
-	private String moduleName = "Families2Persons";
+	private String moduleName;
 
 	private static Logger logger = Logger.getGlobal();
 
@@ -130,7 +135,8 @@ public class ATLMapReduceTask {
 		return logger;
 	}
 
-	protected void setup(Configuration configuration) {
+	
+	protected void setup(Configuration configuration, boolean mapState ) {
 
 		// Resolving the module
 		// localFiles = getSharedResources(configuration);
@@ -139,8 +145,13 @@ public class ATLMapReduceTask {
 		URI sourceMMURI = URI.createURI(configuration.get(ATLMRMaster.SOURCE_METAMODEL));
 		URI targetMMURI = URI.createURI(configuration.get(ATLMRMaster.TARGET_METAMODEL));
 		URI inMURI = URI.createURI(configuration.get(ATLMRMaster.INPUT_MODEL));
-		URI outMURI = URI.createURI(configuration.get(ATLMRMaster.OUTPUT_MODEL));
-
+		String suffix= UUID.randomUUID().toString()+".output.xmi";
+		URI outMURI = null;
+			outMURI =URI.createURI( mapState ?
+						new Path(configuration.get(ATLMRMaster.INPUT_MODEL)).getParent().suffix(Path.SEPARATOR+suffix).toString()
+						:
+						configuration.get(ATLMRMaster.OUTPUT_MODEL));
+			
 		moduleName = resolveModuleName(transformationURI.toString());
 		mr = new DefaultModuleResolver(resolveModulePath(transformationURI.toString()), rs);
 		Module module = mr.resolveModule(moduleName);
@@ -178,9 +189,13 @@ public class ATLMapReduceTask {
 
 		outModel = EmftvmFactory.eINSTANCE.createModel();
 		outModel.setResource(rs.createResource(outMURI));
+		executionEnv.setExecutionMode(ExecMode.MR);
 		executionEnv.registerOutputModel(OMName, outModel);
 		executionEnv.preMatchAllSingle();
-
+		Resource traceResource = new XMIResourceImpl(URI.createURI(ExecEnv.TRACES_NSURI));
+		traceResource.getContents().add(executionEnv.getTraces());
+		rs.getResources().add(traceResource);
+		
 		// moduleName = executionEnv.getModules().get(0).getName();
 
 	}
@@ -207,5 +222,6 @@ public class ATLMapReduceTask {
 	private String resolveModuleName(String string) {
 		return string.substring(string.lastIndexOf('/') + 1, string.lastIndexOf('.'));
 	}
+	
 
 }

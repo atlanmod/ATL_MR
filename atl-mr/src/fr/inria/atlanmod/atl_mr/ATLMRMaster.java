@@ -158,6 +158,7 @@ public class ATLMRMaster extends Configured implements Tool {
 				job.setOutputFormatClass(SequenceFileOutputFormat.class);
 				job.setMapOutputKeyClass(Text.class);
 				job.setMapOutputValueClass(BytesWritable.class);
+				
 			}
 
 			{
@@ -179,6 +180,7 @@ public class ATLMRMaster extends Configured implements Tool {
 				job.getConfiguration().set(TARGET_METAMODEL, targetmmLocation);
 				job.getConfiguration().set(INPUT_MODEL, inputLocation);
 				job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
+				job.getConfiguration().setInt(NLineInputFormat.LINES_PER_MAP, 5);
 			}
 
 			return job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;

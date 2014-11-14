@@ -83,7 +83,7 @@ public class RunC2R {
 		env.run(td);
 		td.finish();
 		// Save models
-		outModel.getResource().save(Collections.emptyMap());		
+		outModel.getResource().save(System.out,Collections.emptyMap());		
 	}
 
 	private static void registerPackages(ResourceSet rs, Resource resource) {
