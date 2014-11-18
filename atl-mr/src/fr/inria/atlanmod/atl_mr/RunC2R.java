@@ -19,8 +19,6 @@ import org.eclipse.m2m.atl.emftvm.util.DefaultModuleResolver;
 import org.eclipse.m2m.atl.emftvm.util.ModuleResolver;
 import org.eclipse.m2m.atl.emftvm.util.TimingData;
 
-import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
-
 public class RunC2R {
 
 	/**
