@@ -4,7 +4,6 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -81,7 +80,7 @@ public class ATLMapReduceTask {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the outModel
 	 */
 	public Model getOutModel() {
@@ -121,17 +120,13 @@ public class ATLMapReduceTask {
 	protected void setup(Configuration configuration, boolean mapState ) {
 
 		ATLMRUtils.configureRegistry(configuration);
-		
+
 		URI transformationURI = URI.createURI(configuration.get(ATLMRMaster.TRANSFORMATION));
 		URI sourceMMURI = URI.createURI(configuration.get(ATLMRMaster.SOURCE_METAMODEL));
 		URI targetMMURI = URI.createURI(configuration.get(ATLMRMaster.TARGET_METAMODEL));
 		URI inMURI = URI.createURI(configuration.get(ATLMRMaster.INPUT_MODEL));
-		String suffix = UUID.randomUUID().toString()+".output.xmi";
-		URI outMURI = URI.createURI( mapState ?
-						new Path(configuration.get(ATLMRMaster.INPUT_MODEL)).getParent().suffix(Path.SEPARATOR+suffix).toString()
-						:
-						configuration.get(ATLMRMaster.OUTPUT_MODEL));
-		
+		URI outMURI = URI.createURI(configuration.get(ATLMRMaster.OUTPUT_MODEL));
+
 		// TODO: Check this
 		// assuming that module has the same name as the transformation...
 		moduleName = resolveModuleName(transformationURI.toString());
@@ -144,7 +139,7 @@ public class ATLMapReduceTask {
 		String OMName = module.getOutputModels().get(0).getModelName();
 
 		executionEnv = EmftvmFactory.eINSTANCE.createExecEnv();
-		
+
 
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		inMetaModel.setResource(rs.getResource(sourceMMURI, true));
@@ -168,19 +163,26 @@ public class ATLMapReduceTask {
 		executionEnv.registerInputModel(IMName, inModel);
 
 		outModel = EmftvmFactory.eINSTANCE.createModel();
-		outModel.setResource(rs.createResource(outMURI));
+
+		// TODO: FIX THIS
+		if (mapState) {
+			outModel.setResource(rs.createResource(outMURI.trimFileExtension().appendFileExtension(UUID.randomUUID().toString() + ".xmi")));
+		} else {
+			outModel.setResource(rs.createResource(outMURI));
+		}
+
 		executionEnv.setExecutionMode(ExecMode.MR);
 		executionEnv.registerOutputModel(OMName, outModel);
 		executionEnv.preMatchAllSingle();
 		Resource traceResource = new XMIResourceImpl(URI.createURI(ExecEnv.TRACES_NSURI));
 		traceResource.getContents().add(executionEnv.getTraces());
 		rs.getResources().add(traceResource);
-		
+
 	}
 
 	/**
 	 * Resolves the Module path from the transformation URI
-	 * 
+	 *
 	 * @param string
 	 * @return module path
 	 */
@@ -193,7 +195,7 @@ public class ATLMapReduceTask {
 
 	/**
 	 * Resolves the module name from the transformation URI
-	 * 
+	 *
 	 * @param string
 	 * @return module name
 	 */
