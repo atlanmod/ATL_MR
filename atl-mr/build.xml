@@ -6,6 +6,7 @@
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="atl-mr">
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../../"/>
+    <property name="workspace_loc:atl-mr/working" value="working"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
@@ -14,7 +15,7 @@
         <pathelement location="../../../../../../org.eclipse.m2m.atl.emftvm"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore_2.10.1.v20140901-1043.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.common_2.10.1.v20140901-1043.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.m2m.atl.emftvm.trace_3.5.0.v201405260755.jar"/>
+        <pathelement location="../../../../../../org.eclipse.m2m.atl.emftvm.trace"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore.xmi_2.10.1.v20140901-1043.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/javax.annotation_1.2.0.v201401042248.jar"/>
@@ -153,11 +154,11 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="families2persons-win-x86_64">
+    <target name="class2relational-win-x86_64">
         <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
             <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
             <env key="HADOOP_HOME" value="${resource_loc:/atl-mr/hadoop-win-x86_64}"/>
-            <arg line="-libjars dist/libs/org.eclipse.m2m.atl.emftvm_3.5.0.201411071245.jar,dist/libs/javax.annotation_1.2.0.v201401042248.jar,dist/libs/javax.inject_1.0.0.v20091030.jar,dist/libs/org.eclipse.core.contenttype_3.4.200.v20140207-1251.jar,dist/libs/org.eclipse.core.jobs_3.6.0.v20140424-0053.jar,dist/libs/org.eclipse.core.resources_3.9.0.v20140514-1307.jar,dist/libs/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar,dist/libs/org.eclipse.emf.common_2.10.1.v20140901-1043.jar,dist/libs/org.eclipse.emf.ecore_2.10.1.v20140901-1043.jar,dist/libs/org.eclipse.emf.ecore.xmi_2.10.1.v20140901-1043.jar,dist/libs/org.eclipse.emf.validation_1.8.0.201405281429.jar,dist/libs/org.eclipse.equinox.app_1.3.200.v20130910-1609.jar,dist/libs/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar,dist/libs/org.eclipse.equinox.preferences_3.5.200.v20140224-1527.jar,dist/libs/org.eclipse.equinox.registry_3.5.400.v20140428-1507.jar,dist/libs/org.eclipse.m2m.atl.common_3.5.0.v201405260755.jar,dist/libs/org.eclipse.m2m.atl.emftvm.trace_3.5.0.v201405260755.jar,dist/libs/org.eclipse.osgi_3.10.0.v20140606-1445.jar,dist/libs/org.eclipse.osgi.compatibility.state_1.0.0.v20140403-1907.jar,dist/libs/org.objectweb.asm_3.3.1.v201105211655.jar,dist/libs/runtime_registry_compatibility.jar -transformation data/Families2Persons/Families2Persons.emftvm -sourcemm data/Families2Persons/Families.ecore -targetmm data/Families2Persons/Persons.ecore -input data/Families2Persons/sample-Families.xmi"/>
+            <arg line="-transformation data/Class2Relational/Class2Relational.emftvm &#13;&#10;-sourcemm data/Class2Relational/Class.ecore &#13;&#10;-targetmm data/Class2Relational/Relational.ecore &#13;&#10;-input data/Class2Relational/sample.xmi"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
@@ -169,11 +170,17 @@
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
-    <target name="class2relational-win-x86_64">
-        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
+    <target name="families2persons-win-x86_64">
+        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" dir="${workspace_loc:atl-mr/working}" failonerror="true" fork="yes">
             <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
             <env key="HADOOP_HOME" value="${resource_loc:/atl-mr/hadoop-win-x86_64}"/>
-            <arg line="-transformation data/Class2Relational/Class2Relational.emftvm &#13;&#10;-sourcemm data/Class2Relational/Class.ecore &#13;&#10;-targetmm data/Class2Relational/Relational.ecore &#13;&#10;-input data/Class2Relational/sample.xmi"/>
+            <arg line="-transformation ../data/Families2Persons/Families2Persons.emftvm -sourcemm ../data/Families2Persons/Families.ecore -targetmm ../data/Families2Persons/Persons.ecore -input ../data/Families2Persons/sample-Families.xmi -records ../data/Families2Persons/sample-Families.xmi.rec"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="recordbuilder-families2persons">
+        <java classname="fr.inria.atlanmod.atl_mr.builder.RecordBuilder" failonerror="true" fork="yes">
+            <arg line="-sourcemm data/Families2Persons/Families.ecore -input data/Families2Persons/sample-Families.xmi -output data/Families2Persons/sample-Families.xmi.rec"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>

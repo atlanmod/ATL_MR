@@ -23,10 +23,10 @@
 	</target>
 
 	<target name="dist.emftvm" depends="check.emftvm" unless="${emftvm.exists}">
-		<pde.exportPlugins destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm" useJARFormat="true" qualifier="atlmr" />
+		<pde.exportPlugins destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm,org.eclipse.m2m.atl.emftvm.trace" useJARFormat="true" qualifier="atlmr" />
 	</target>
 
-	<target name="dist" depends="dist.emftvm">
+	<target name="dist">
 		<ivy:resolve refresh="true" showprogress="true" />
 		<ivy:retrieve pattern="${dist.libs.ivy}/[conf]/[artifact]-[type]-[revision].[ext]" />
 
