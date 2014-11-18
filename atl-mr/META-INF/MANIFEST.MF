@@ -1,7 +1,15 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: atl-mr
 Require-Bundle: org.eclipse.m2m.atl.emftvm,
- org.eclipse.emf.ecore.xmi
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.core.runtime,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.m2m.atl.emftvm.trace,
+ org.eclipse.m2m.atl.common,
+ org.eclipse.core.resources,
+ org.eclipse.emf.validation,
+ org.objectweb.asm
 Bundle-Version: 0.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2

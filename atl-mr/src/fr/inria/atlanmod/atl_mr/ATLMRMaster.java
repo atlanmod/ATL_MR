@@ -1,15 +1,7 @@
 package fr.inria.atlanmod.atl_mr;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.cli.CommandLine;
@@ -20,6 +12,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
@@ -31,22 +24,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIConverter;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
-import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
-import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceImpl;
-
-import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
-import fr.inria.atlanmod.atl_mr.utils.HdfsURIConverterImpl;
 
 public class ATLMRMaster extends Configured implements Tool {
 
@@ -58,57 +35,9 @@ public class ATLMRMaster extends Configured implements Tool {
 	public static String TRANSFORMATION = "transformation";
 	public static String SOURCE_METAMODEL = "sourcemm";
 	public static String TARGET_METAMODEL = "targetmm";
+	public static String RECORDS_FILE = "records";
 	public static String INPUT_MODEL = "input";
 	public static String OUTPUT_MODEL = "output";
-
-	{
-		// Initialize ExtensionToFactoryMap
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl() {
-			@Override
-			public Resource createResource(URI uri) {
-				XMLResource result = new XMIResourceImpl(uri) {
-					@Override
-					protected boolean useIDs() {
-						return eObjectToIDMap != null || idToEObjectMap != null;
-					}
-
-					@Override
-					protected URIConverter getURIConverter() {
-						return new HdfsURIConverterImpl();
-					}
-				};
-				result.setEncoding("UTF-8");
-
-				result.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
-				result.getDefaultSaveOptions().put(XMLResource.OPTION_LINE_WIDTH, 80);
-				result.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl.PlatformSchemeAware());
-				return result;
-			}
-		});
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl() {
-			@Override
-			public Resource createResource(URI uri) {
-				return new XMIResourceImpl(uri) {
-					@Override
-					protected URIConverter getURIConverter() {
-						return new HdfsURIConverterImpl();
-					}
-				};
-			}
-		});
-
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl() {
-			@Override
-			public Resource createResource(URI uri) {
-				return new EMFTVMResourceImpl(uri) {
-					@Override
-					protected URIConverter getURIConverter() {
-						return new HdfsURIConverterImpl();
-					}
-				};
-			}
-		});
-	}
 
 	/**
 	 * Main program, delegates to ToolRunner
@@ -117,9 +46,9 @@ public class ATLMRMaster extends Configured implements Tool {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		ATLMRMaster driver = new ATLMRMaster();
-		int exitCode = ToolRunner.run(driver, args);
-		System.exit(exitCode);
+		Configuration conf = new Configuration();
+		int res = ToolRunner.run(conf, new ATLMRMaster(), args);
+		System.exit(res);
 	}
 
 	/**
@@ -140,55 +69,48 @@ public class ATLMRMaster extends Configured implements Tool {
 			String transformationLocation = commandLine.getOptionValue(TRANSFORMATION);
 			String sourcemmLocation = commandLine.getOptionValue(SOURCE_METAMODEL);
 			String targetmmLocation = commandLine.getOptionValue(TARGET_METAMODEL);
+			String recordsLocation = commandLine.getOptionValue(RECORDS_FILE);
 			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
-			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).getParent().suffix(Path.SEPARATOR + "output.xmi")
+			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).suffix(".out.xmi")
 					.toString());
 
-			Job job = Job.getInstance(getConf(), JOB_NAME);
+			Configuration conf = this.getConf();
+			Job job = Job.getInstance(conf, JOB_NAME);
 
 			// TODO: check number of lines per MAP
 			getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
 
-			{
-				// Configure classes
-				job.setJarByClass(ATLMRMaster.class);
-				job.setMapperClass(ATLMRMapper.class);
-				job.setReducerClass(ATLMRReducer.class);
-				job.setInputFormatClass(NLineInputFormat.class);
-				job.setOutputFormatClass(SequenceFileOutputFormat.class);
-				job.setMapOutputKeyClass(Text.class);
-				job.setMapOutputValueClass(BytesWritable.class);
-				
-			}
+			// Configure classes
+			job.setJarByClass(ATLMRMaster.class);
+			job.setMapperClass(ATLMRMapper.class);
+			job.setReducerClass(ATLMRReducer.class);
+			job.setInputFormatClass(NLineInputFormat.class);
+			job.setOutputFormatClass(SequenceFileOutputFormat.class);
+			job.setMapOutputKeyClass(Text.class);
+			job.setMapOutputValueClass(BytesWritable.class);
+			
+			// Configure MapReduce input/outputs
+			Path recordsPath = new Path(recordsLocation);
+			FileInputFormat.setInputPaths(job, recordsPath);
+			String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+			String outDirName = "atlmr-out-" + timestamp + "-" + UUID.randomUUID();
+			FileOutputFormat.setOutputPath(job, new Path(job.getWorkingDirectory().suffix(Path.SEPARATOR + outDirName).toUri()));
 
-			{
-				// Build records file
-				RecordBuilder recordBuilder = new RecordBuilder(URI.createURI(inputLocation), Arrays.asList(URI.createURI(sourcemmLocation)));
-				File recordsFile = File.createTempFile("atlmr-", ".rcd", new File(job.getWorkingDirectory().suffix("/working").toUri()));
-				recordsFile.deleteOnExit();
-				recordBuilder.save(recordsFile);
+			// Configure ATL related inputs/outputs
+			job.getConfiguration().set(TRANSFORMATION, transformationLocation);
+			job.getConfiguration().set(SOURCE_METAMODEL, sourcemmLocation);
+			job.getConfiguration().set(TARGET_METAMODEL, targetmmLocation);
+			job.getConfiguration().set(INPUT_MODEL, inputLocation);
+			job.getConfiguration().set(OUTPUT_MODEL, new Path(FileOutputFormat.getOutputPath(job).suffix(Path.SEPARATOR + outputLocation).toString()).toString());
 
-				// Configure MapReduce input/outputs
-				FileInputFormat.setInputPaths(job, new Path(recordsFile.toURI()));
-				FileOutputFormat.setOutputPath(job, new Path(job.getWorkingDirectory().suffix("/working").suffix("/" + UUID.randomUUID()).toUri()));
-			}
-
-			{
-				// Configure ATL related inputs/outputs
-				job.getConfiguration().set(TRANSFORMATION, transformationLocation);
-				job.getConfiguration().set(SOURCE_METAMODEL, sourcemmLocation);
-				job.getConfiguration().set(TARGET_METAMODEL, targetmmLocation);
-				job.getConfiguration().set(INPUT_MODEL, inputLocation);
-				job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
-				job.getConfiguration().setInt(NLineInputFormat.LINES_PER_MAP, 5);
-			}
-
-			return job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
+			int returnValue = job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
+			
+			return returnValue;
 
 		} catch (ParseException e) {
 			System.err.println(e.getLocalizedMessage());
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("java -jar <this-file.jar>", options, true);
+			formatter.printHelp("yarn jar <this-file.jar>", options, true);
 			return STATUS_ERROR;
 		}
 	}
@@ -198,7 +120,7 @@ public class ATLMRMaster extends Configured implements Tool {
 	 * 
 	 * @param options
 	 */
-	private void configureOptions(Options options) {
+	private static void configureOptions(Options options) {
 		Option transformationOpt = OptionBuilder.create(TRANSFORMATION);
 		transformationOpt.setArgName("transformation.emftvm");
 		transformationOpt.setDescription("ATL transformation");
@@ -217,6 +139,12 @@ public class ATLMRMaster extends Configured implements Tool {
 		targetmmOpt.setArgs(1);
 		targetmmOpt.setRequired(true);
 
+		Option recordsOpt = OptionBuilder.create(RECORDS_FILE);
+		recordsOpt.setArgName("records.rec");
+		recordsOpt.setDescription("Records file");
+		recordsOpt.setArgs(1);
+		recordsOpt.setRequired(true);
+
 		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
 		inputOpt.setArgName("input.xmi");
 		inputOpt.setDescription("Input file URI");
@@ -231,82 +159,8 @@ public class ATLMRMaster extends Configured implements Tool {
 		options.addOption(transformationOpt);
 		options.addOption(sourcemmOpt);
 		options.addOption(targetmmOpt);
+		options.addOption(recordsOpt);
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
-	}
-
-	/**
-	 * Implements the logic to build MapReduce records from a {@link Resource}
-	 * given its {@link URI}
-	 * 
-	 * @author agomez
-	 *
-	 */
-	public static class RecordBuilder {
-
-		private ResourceSet resourceSet;
-
-		private List<URI> metamodelURIs;
-
-		private URI inputURI;
-
-		public RecordBuilder(URI inputURI, List<URI> metamodelURIs) {
-			this.inputURI = inputURI;
-			this.metamodelURIs = metamodelURIs;
-		}
-
-		protected ResourceSet getResourceSet() {
-			if (resourceSet == null) {
-				resourceSet = new ResourceSetImpl();
-				for (URI uri : metamodelURIs) {
-					Resource resource = resourceSet.getResource(uri, true);
-					ATLMRUtils.registerPackages(resourceSet, resource);
-				}
-			}
-			return resourceSet;
-		}
-
-		/**
-		 * Saves the records of this {@link RecordBuilder} in the given
-		 * {@link File}
-		 * 
-		 * @param file
-		 * @throws FileNotFoundException
-		 * @throws IOException
-		 */
-		public void save(File file) throws FileNotFoundException, IOException {
-			Resource inputResource = getResourceSet().getResource(inputURI, true);
-			buildRecords(inputResource, new FileOutputStream(file));
-			inputResource.unload();
-		}
-
-		/**
-		 * Writes on a given {@link OutputStream} the records for a
-		 * {@link Resource}
-		 * 
-		 * @param inputResource
-		 * @param outputStream
-		 * @throws IOException
-		 */
-		protected static void buildRecords(Resource inputResource, OutputStream outputStream) throws IOException {
-
-			if (!inputResource.isLoaded()) {
-				throw new IllegalArgumentException("Input resource is not loaded");
-			}
-
-			BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-
-			for (Iterator<EObject> it = inputResource.getAllContents(); it.hasNext();) {
-				EObject currentObj = it.next();
-				bufWriter.append("<");
-				bufWriter.append(currentObj.eResource().getURIFragment(currentObj));
-				bufWriter.append(",");
-				bufWriter.append(currentObj.eClass().getName());
-				bufWriter.append(">\n");
-			}
-
-			bufWriter.close();
-		}
-
 	}
 }

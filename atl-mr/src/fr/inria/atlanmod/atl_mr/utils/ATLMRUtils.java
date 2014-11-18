@@ -1,30 +1,80 @@
 package fr.inria.atlanmod.atl_mr.utils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.hadoop.conf.Configuration;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.m2m.atl.emftvm.Rule;
+import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
+import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceImpl;
 import org.eclipse.m2m.atl.emftvm.trace.TraceFactory;
 import org.eclipse.m2m.atl.emftvm.trace.TraceLink;
 import org.eclipse.m2m.atl.emftvm.trace.TraceLinkSet;
 import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 
+
 public class ATLMRUtils {
 
-	/**
-	 * Returns the Working directory
-	 * @return
-	 */
-	public static File getWorkingDirectoryFile() {
-		return Paths.get("").toAbsolutePath().toFile();
+	public static void configureRegistry(final Configuration conf) {
+		// Initialize ExtensionToFactoryMap
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl() {
+			@Override
+			public Resource createResource(URI uri) {
+				XMLResource result = new XMIResourceImpl(uri) {
+					@Override
+					protected boolean useIDs() {
+						return eObjectToIDMap != null || idToEObjectMap != null;
+					}
+
+					@Override
+					protected URIConverter getURIConverter() {
+						return new HadoopURIConverterImpl(conf);
+					}
+				};
+				result.setEncoding("UTF-8");
+
+				result.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
+				result.getDefaultSaveOptions().put(XMLResource.OPTION_LINE_WIDTH, 80);
+				result.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, new URIHandlerImpl.PlatformSchemeAware());
+				return result;
+			}
+		});
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl() {
+			@Override
+			public Resource createResource(URI uri) {
+				return new XMIResourceImpl(uri) {
+					@Override
+					protected URIConverter getURIConverter() {
+						return new HadoopURIConverterImpl(conf);
+					}
+				};
+			}
+		});
+
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl() {
+			@Override
+			public Resource createResource(URI uri) {
+				return new EMFTVMResourceImpl(uri) {
+					@Override
+					protected URIConverter getURIConverter() {
+						return new HadoopURIConverterImpl(conf);
+					}
+				};
+			}
+		});
 	}
 	/**
 	 * This method is used to extract rules from a 
@@ -65,18 +115,6 @@ public class ATLMRUtils {
 			resourceSet.getPackageRegistry().put(p.getNsURI(), p);
 		}
 
-	}
-	
-	/**
-	 * Resolves the output path when the user does not provide it 
-	 * @param string
-	 * @return
-	 */
-	public static String resolveOutputPath(String string) {
-		StringBuilder builder = new StringBuilder(string.substring(0, string.lastIndexOf(".")));
-		builder.append("_out");
-		builder.append(string.substring(string.lastIndexOf('.')));
-		return builder.toString();
 	}
 	
 	/**

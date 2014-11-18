@@ -6,12 +6,16 @@
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="atl-mr">
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../../"/>
-    <property name="org.eclipse.m2m.atl.emftvm.location" value="../../org.eclipse.atl.atlMR/plugins/org.eclipse.m2m.atl.emftvm"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
     <import file="dist.xml"/>
     <path id="Plug-in Dependencies.libraryclasspath">
+        <pathelement location="../../../../../../org.eclipse.m2m.atl.emftvm"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore_2.10.1.v20140901-1043.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.common_2.10.1.v20140901-1043.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.m2m.atl.emftvm.trace_3.5.0.v201405260755.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore.xmi_2.10.1.v20140901-1043.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/javax.annotation_1.2.0.v201401042248.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/javax.inject_1.0.0.v20091030.jar"/>
@@ -24,18 +28,10 @@
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.equinox.preferences_3.5.200.v20140224-1527.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.contenttype_3.4.200.v20140207-1251.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.equinox.app_1.3.200.v20130910-1609.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore_2.10.1.v20140901-1043.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.common_2.10.1.v20140901-1043.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore.xmi_2.10.1.v20140901-1043.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.m2m.atl.emftvm.trace_3.5.0.v201405260755.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.m2m.atl.common_3.5.0.v201405260755.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.resources_3.9.0.v20140514-1307.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.validation_1.8.0.201405281429.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.objectweb.asm_3.3.1.v201105211655.jar"/>
-    </path>
-    <path id="org.eclipse.m2m.atl.emftvm.classpath">
-        <path refid="Plug-in Dependencies.libraryclasspath"/>
-        <pathelement location="${org.eclipse.m2m.atl.emftvm.location}/bin"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.objectweb.asm_5.0.1.v201404251740.jar"/>
     </path>
     <path id="Ivy.libraryclasspath">
         <pathelement location="../../../../../../Users/agomez/.ivy2/cache/commons-cli/commons-cli/jars/commons-cli-1.2.jar"/>
@@ -118,7 +114,6 @@
         <pathelement location="../../../../../../Users/agomez/.ivy2/cache/commons-daemon/commons-daemon/jars/commons-daemon-1.0.13.jar"/>
     </path>
     <path id="atl-mr.classpath">
-        <path refid="org.eclipse.m2m.atl.emftvm.classpath"/>
         <path refid="Plug-in Dependencies.libraryclasspath"/>
         <pathelement location="bin"/>
         <path refid="Ivy.libraryclasspath"/>
@@ -134,17 +129,9 @@
     <target name="clean">
         <delete dir="bin"/>
     </target>
-    <target depends="clean" name="cleanall">
-        <ant antfile="build.xml" dir="${org.eclipse.m2m.atl.emftvm.location}" inheritAll="false" target="clean"/>
-    </target>
+    <target depends="clean" name="cleanall"/>
     <target depends="build-subprojects,build-project" name="build"/>
-    <target name="build-subprojects">
-        <ant antfile="build.xml" dir="${org.eclipse.m2m.atl.emftvm.location}" inheritAll="false" target="build-project">
-            <propertyset>
-                <propertyref name="build.compiler"/>
-            </propertyset>
-        </ant>
-    </target>
+    <target name="build-subprojects"/>
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
@@ -170,7 +157,7 @@
         <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
             <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
             <env key="HADOOP_HOME" value="${resource_loc:/atl-mr/hadoop-win-x86_64}"/>
-            <arg line="-transformation data/Families2Persons/Families2Persons.emftvm&#13;&#10;-sourcemm data/Families2Persons/Families.ecore&#13;&#10;-targetmm data/Families2Persons/Persons.ecore&#13;&#10;-input data/Families2Persons/sample-Families.xmi"/>
+            <arg line="-libjars dist/libs/org.eclipse.m2m.atl.emftvm_3.5.0.201411071245.jar,dist/libs/javax.annotation_1.2.0.v201401042248.jar,dist/libs/javax.inject_1.0.0.v20091030.jar,dist/libs/org.eclipse.core.contenttype_3.4.200.v20140207-1251.jar,dist/libs/org.eclipse.core.jobs_3.6.0.v20140424-0053.jar,dist/libs/org.eclipse.core.resources_3.9.0.v20140514-1307.jar,dist/libs/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar,dist/libs/org.eclipse.emf.common_2.10.1.v20140901-1043.jar,dist/libs/org.eclipse.emf.ecore_2.10.1.v20140901-1043.jar,dist/libs/org.eclipse.emf.ecore.xmi_2.10.1.v20140901-1043.jar,dist/libs/org.eclipse.emf.validation_1.8.0.201405281429.jar,dist/libs/org.eclipse.equinox.app_1.3.200.v20130910-1609.jar,dist/libs/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar,dist/libs/org.eclipse.equinox.preferences_3.5.200.v20140224-1527.jar,dist/libs/org.eclipse.equinox.registry_3.5.400.v20140428-1507.jar,dist/libs/org.eclipse.m2m.atl.common_3.5.0.v201405260755.jar,dist/libs/org.eclipse.m2m.atl.emftvm.trace_3.5.0.v201405260755.jar,dist/libs/org.eclipse.osgi_3.10.0.v20140606-1445.jar,dist/libs/org.eclipse.osgi.compatibility.state_1.0.0.v20140403-1907.jar,dist/libs/org.objectweb.asm_3.3.1.v201105211655.jar,dist/libs/runtime_registry_compatibility.jar -transformation data/Families2Persons/Families2Persons.emftvm -sourcemm data/Families2Persons/Families.ecore -targetmm data/Families2Persons/Persons.ecore -input data/Families2Persons/sample-Families.xmi"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>

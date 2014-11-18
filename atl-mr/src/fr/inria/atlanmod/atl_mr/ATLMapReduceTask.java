@@ -28,8 +28,6 @@ public class ATLMapReduceTask {
 
 	private ModuleResolver mr;
 
-	private URI[] localFiles;
-
 	private Model inModel;
 
 	private String moduleName;
@@ -73,21 +71,6 @@ public class ATLMapReduceTask {
 	 */
 	public void setMr(ModuleResolver mr) {
 		this.mr = mr;
-	}
-
-	/**
-	 * @return the localFiles
-	 */
-	public URI[] getLocalFiles() {
-		return localFiles;
-	}
-
-	/**
-	 * @param localFiles
-	 *            the localFiles to set
-	 */
-	public void setLocalFiles(URI[] localFiles) {
-		this.localFiles = localFiles;
 	}
 
 	/**
@@ -135,12 +118,10 @@ public class ATLMapReduceTask {
 		return logger;
 	}
 
-	
 	protected void setup(Configuration configuration, boolean mapState ) {
 
-		// Resolving the module
-		// localFiles = getSharedResources(configuration);
-
+		ATLMRUtils.configureRegistry(configuration);
+		
 		URI transformationURI = URI.createURI(configuration.get(ATLMRMaster.TRANSFORMATION));
 		URI sourceMMURI = URI.createURI(configuration.get(ATLMRMaster.SOURCE_METAMODEL));
 		URI targetMMURI = URI.createURI(configuration.get(ATLMRMaster.TARGET_METAMODEL));
@@ -222,6 +203,5 @@ public class ATLMapReduceTask {
 	private String resolveModuleName(String string) {
 		return string.substring(string.lastIndexOf('/') + 1, string.lastIndexOf('.'));
 	}
-	
 
 }

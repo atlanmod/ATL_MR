@@ -1,28 +1,195 @@
 <?eclipse.ant.import ?>
-<project name="atl-mr" default="dist">    
+<project name="atl-mr-dist" default="dist" xmlns:rsel="antlib:org.apache.tools.ant.types.resources.selectors" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${basedir}/ant-contrib.jar" />
+		</classpath>
+	</taskdef>
+
 	<property name="bin" location="bin" />
 	<property name="dist" location="dist" />
 	<property name="dist.libs" location="${dist}/libs" />
+	<property name="dist.libs.ivy" location="${dist.libs}/ivy" />
+	<property name="dist.libs.plugins" location="${dist.libs}/plugins" />
+	<property name="dist.libs.atlmr" location="${dist.libs}/atlmr" />
+	<property name="run.sh" value="${dist}/run.sh" />
+	<property name="run.bat" value="${dist}/run.bat" />
 
 	<property name="jar.file" location="${dist}/${ant.project.name}.jar" />
 
-	<target name="dist">
+	<target name="check.emftvm" unless="emftvm.exists">
+		<available property="emftvm.exists" file="${dist.libs.atlmr}/plugins/org.eclipse.m2m.atl.emftvm_3.5.0.atlmr.jar" />
+	</target>
+
+	<target name="dist.emftvm" depends="check.emftvm" unless="${emftvm.exists}">
+		<pde.exportPlugins destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm" useJARFormat="true" qualifier="atlmr" />
+	</target>
+
+	<target name="dist" depends="dist.emftvm">
+		<ivy:resolve refresh="true" showprogress="true" />
+		<ivy:retrieve pattern="${dist.libs.ivy}/[conf]/[artifact]-[type]-[revision].[ext]" />
+
 		<jar destfile="${jar.file}">
-			<fileset dir="${bin}" includes="**/*.class"/>
+			<fileset dir="${bin}" includes="**/*.class" />
 			<manifest>
-				<attribute name="Main-Class" value="fr.inria.atlanmod.atl_mr.ATLMRMaster"/>
+				<attribute name="Main-Class" value="fr.inria.atlanmod.atl_mr.ATLMRMaster" />
 			</manifest>
 		</jar>
-		<copy todir="${dist.libs}" verbose="yes" flatten="yes" failonerror="no">    
-			<path>
-				<path refid="Plug-in Dependencies.libraryclasspath" />
-			</path>
+
+		<restrict id="filtered.plugins">
+			<path refid="Plug-in Dependencies.libraryclasspath" />
+			<rsel:name name="*.jar" />
+		</restrict>
+
+		<copy todir="${dist.libs.plugins}" verbose="yes" flatten="yes" failonerror="no">
+			<restrict>
+				<restrict refid="filtered.plugins" />
+			</restrict>
 		</copy>
+
+		<antcall target="create.bat" />
+		<antcall target="create.sh" />
 	</target>
+
 	<target name="clean-dist">
 		<delete>
-			<fileset dir="${dist}" includes="**/*"/>
-			<dirset dir="${dist}" includes="**/*"/>
+			<fileset dir="${dist}" includes="**/*" />
+			<dirset dir="${dist}" includes="**/*" />
 		</delete>
 	</target>
+
+	<target name="create.bat">
+		<pathconvert property="jars.plugins" pathsep=";">
+			<map from="${dist.libs.plugins}" to="libs\plugins" />
+			<fileset dir="${dist.libs.plugins}" />
+		</pathconvert>
+
+		<pathconvert property="libjars.plugins" pathsep="," dirsep="/">
+			<map from="${dist.libs.plugins}" to="libs/plugins" />
+			<fileset dir="${dist.libs.plugins}" />
+		</pathconvert>
+
+		<pathconvert property="libsjars.atlmr" pathsep="," dirsep="/">
+			<map from="${dist.libs.atlmr}/plugins" to="libs/atlmr/plugins" />
+			<fileset dir="${dist.libs.atlmr}/plugins" />
+		</pathconvert>
+
+		<echo file="${run.bat}">@ECHO OFF
+SETLOCAL
+
+SET JARS=${jars.plugins}
+SET JARS=libs\ivy\default\commons-cli-jar-1.2.jar;%JARS%
+SET LIBJARS=${libjars.plugins},${libsjars.atlmr}
+
+:PARSE
+IF "%~1"=="" GOTO ENDPARSE
+IF "%~1"=="-sourcemm" GOTO SOURCEMM
+IF "%~1"=="-targetmm" GOTO TARGETMM
+IF "%~1"=="-transformation" GOTO TRANSFORMATION
+IF "%~1"=="-input" GOTO INPUT
+SHIFT
+GOTO PARSE
+
+:SOURCEMM
+SHIFT
+SET SOURCEMM=%~1
+GOTO PARSE
+
+:TARGETMM
+SHIFT
+SET TARGETMM=%~1
+GOTO PARSE
+
+:TRANSFORMATION
+SHIFT
+SET TRANSFORMATION=%~1
+GOTO PARSE
+
+:INPUT
+SHIFT
+SET INPUT=%~1
+GOTO PARSE
+
+:ENDPARSE
+
+SET RECORDS=%INPUT%.rec
+
+java -cp atl-mr.jar;%JARS% fr.inria.atlanmod.atl_mr.builder.RecordBuilder -sourcemm %SOURCEMM% -input %INPUT% -output %RECORDS%
+
+FOR /F %%i IN ("%RECORDS%") DO SET ABSRECORDS=%%~fi
+
+SET URIRECORDS=%ABSRECORDS%
+SET URIRECORDS=%URIRECORDS:\=/%
+SET URIRECORDS=file:///%URIRECORDS%
+
+CALL yarn jar atl-mr.jar -libjars "%LIBJARS%" -files "%SOURCEMM%#%SOURCEMM%,%TARGETMM%#%TARGETMM%,%TRANSFORMATION%#%TRANSFORMATION%,%INPUT%#%INPUT%" %* -records %URIRECORDS%
+		</echo>
+	</target>
+
+	<target name="create.sh">
+		<pathconvert property="jars.plugins" pathsep=":">
+			<map from="${dist.libs.plugins}" to="libs/plugins" />
+			<fileset dir="${dist.libs.plugins}" />
+		</pathconvert>
+
+		<pathconvert property="libjars.plugins" pathsep="," dirsep="/">
+			<map from="${dist.libs.plugins}" to="libs/plugins" />
+			<fileset dir="${dist.libs.plugins}" />
+		</pathconvert>
+
+		<pathconvert property="libsjars.atlmr" pathsep="," dirsep="/">
+			<map from="${dist.libs.atlmr}/plugins" to="libs/atlmr/plugins" />
+			<fileset dir="${dist.libs.atlmr}/plugins" />
+		</pathconvert>
+
+		<echo file="${run.sh}">#!/bin/bash
+
+JARS=${jars.plugins}
+JARS=libs/ivy/default/commons-cli-jar-1.2.jar:%JARS%
+LIBJARS=${libjars.plugins},${libsjars.atlmr}
+
+			
+while [[ $# > 1 ]]
+do
+key="$1"
+shift
+
+case $key in
+    -sourcemm)
+    SOURCEMM="$1"
+    shift
+    ;;
+    -targetmm)
+    TARGETMM="$1"
+    shift
+    ;;
+    -transformation)
+    TRANSFORMATION="$1"
+    shift
+    ;;
+    -input)
+    INPUT="$1"
+    shift
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+done
+			
+RECORDS=$INPUT.rec
+
+java -cp atl-mr.jar:$JARS fr.inria.atlanmod.atl_mr.builder.RecordBuilder -sourcemm $SOURCEMM -input $INPUT -output $RECORDS
+
+ABSRECORDS=`realpath "$RECORDS"`
+
+URIRECORDS=file:///$ABSRECORDS
+
+yarn jar atl-mr.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $@ -records $URIRECORDS
+		</echo>
+	</target>
+
+
 </project>
+
