@@ -1,9 +1,5 @@
 package fr.inria.atlanmod.atl_mr.utils;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import org.apache.hadoop.conf.Configuration;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -17,7 +13,6 @@ import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
-import org.eclipse.m2m.atl.emftvm.Rule;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceImpl;
 import org.eclipse.m2m.atl.emftvm.trace.TraceFactory;
@@ -76,32 +71,33 @@ public class ATLMRUtils {
 			}
 		});
 	}
-	/**
-	 * This method is used to extract rules from a 
-	 * @param resource
-	 * @return
-	 * @throws IOException
-	 */
-	public static HashMap<String, String> extractRules(Resource resource) throws IOException {
-
-		HashMap<String, String> map = new HashMap<String, String>();
-		if (!resource.isLoaded()) {
-			resource.load(null);
-		}
-
-		Iterator<EObject> iterator = resource.getAllContents();
-		EObject objectIterator = null;
-		while (iterator.hasNext()) {
-			objectIterator = iterator.next();
-			if (objectIterator instanceof Rule) {
-				Rule rule = ((Rule) objectIterator);
-				map.put(rule.getInputElements().get(0).getEType().getName(), rule.getName());
-
-			}
-		}
-		return map;
-
-	}
+	
+//	/**
+//	 * This method is used to extract rules from a 
+//	 * @param resource
+//	 * @return
+//	 * @throws IOException
+//	 */
+//	public static HashMap<String, String> extractRules(Resource resource) throws IOException {
+//
+//		HashMap<String, String> map = new HashMap<String, String>();
+//		if (!resource.isLoaded()) {
+//			resource.load(null);
+//		}
+//
+//		Iterator<EObject> iterator = resource.getAllContents();
+//		EObject objectIterator = null;
+//		while (iterator.hasNext()) {
+//			objectIterator = iterator.next();
+//			if (objectIterator instanceof Rule) {
+//				Rule rule = ((Rule) objectIterator);
+//				map.put(rule.getInputElements().get(0).getEType().getName(), rule.getName());
+//
+//			}
+//		}
+//		return map;
+//
+//	}
 	
 	/**
 	 * Registers the packages
