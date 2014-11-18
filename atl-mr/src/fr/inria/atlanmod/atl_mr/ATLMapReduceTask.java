@@ -132,7 +132,9 @@ public class ATLMapReduceTask {
 						new Path(configuration.get(ATLMRMaster.INPUT_MODEL)).getParent().suffix(Path.SEPARATOR+suffix).toString()
 						:
 						configuration.get(ATLMRMaster.OUTPUT_MODEL));
-			
+		
+		// TODO: Check this
+		// assuming that module has the same name as the transformation...
 		moduleName = resolveModuleName(transformationURI.toString());
 		mr = new DefaultModuleResolver(resolveModulePath(transformationURI.toString()), rs);
 		Module module = mr.resolveModule(moduleName);
@@ -143,15 +145,13 @@ public class ATLMapReduceTask {
 		String OMName = module.getOutputModels().get(0).getModelName();
 
 		executionEnv = EmftvmFactory.eINSTANCE.createExecEnv();
-		// assuming that module has the same name as the transformation ....
+		
 
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		inMetaModel.setResource(rs.getResource(sourceMMURI, true));
 
 		ATLMRUtils.registerPackages(rs, inMetaModel.getResource());
 
-		// URI outMMURI =
-		// URI.createURI(localFiles[ATLMRMaster.TARGET_METAMODEL_ID].toString());
 		Metamodel outMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		outMetaModel.setResource(rs.getResource(targetMMURI, true));
 
@@ -177,8 +177,6 @@ public class ATLMapReduceTask {
 		traceResource.getContents().add(executionEnv.getTraces());
 		rs.getResources().add(traceResource);
 		
-		// moduleName = executionEnv.getModules().get(0).getName();
-
 	}
 
 	/**
