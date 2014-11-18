@@ -126,9 +126,8 @@ public class ATLMapReduceTask {
 		URI sourceMMURI = URI.createURI(configuration.get(ATLMRMaster.SOURCE_METAMODEL));
 		URI targetMMURI = URI.createURI(configuration.get(ATLMRMaster.TARGET_METAMODEL));
 		URI inMURI = URI.createURI(configuration.get(ATLMRMaster.INPUT_MODEL));
-		String suffix= UUID.randomUUID().toString()+".output.xmi";
-		URI outMURI = null;
-			outMURI =URI.createURI( mapState ?
+		String suffix = UUID.randomUUID().toString()+".output.xmi";
+		URI outMURI = URI.createURI( mapState ?
 						new Path(configuration.get(ATLMRMaster.INPUT_MODEL)).getParent().suffix(Path.SEPARATOR+suffix).toString()
 						:
 						configuration.get(ATLMRMaster.OUTPUT_MODEL));
