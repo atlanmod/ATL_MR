@@ -38,10 +38,11 @@ public class ATLMRMaster extends Configured implements Tool {
 	public static String RECORDS_FILE = "records";
 	public static String INPUT_MODEL = "input";
 	public static String OUTPUT_MODEL = "output";
+	public static String RECORDS_PER_NODE = "rpn";
 
 	/**
 	 * Main program, delegates to ToolRunner
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
@@ -77,8 +78,9 @@ public class ATLMRMaster extends Configured implements Tool {
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(conf, JOB_NAME);
 
-			// TODO: check number of lines per MAP
-			getConf().setInt(NLineInputFormat.LINES_PER_MAP, 5);
+			if (commandLine.hasOption(RECORDS_PER_NODE)) {
+				getConf().setInt(NLineInputFormat.LINES_PER_MAP, ((Number) commandLine.getParsedOptionValue(RECORDS_PER_NODE)).intValue());
+			}
 
 			// Configure classes
 			job.setJarByClass(ATLMRMaster.class);
@@ -88,7 +90,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			job.setOutputFormatClass(SequenceFileOutputFormat.class);
 			job.setMapOutputKeyClass(Text.class);
 			job.setMapOutputValueClass(BytesWritable.class);
-			
+
 			// Configure MapReduce input/outputs
 			Path recordsPath = new Path(recordsLocation);
 			FileInputFormat.setInputPaths(job, recordsPath);
@@ -104,7 +106,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			job.getConfiguration().set(OUTPUT_MODEL, new Path(FileOutputFormat.getOutputPath(job).suffix(Path.SEPARATOR + outputLocation).toString()).toString());
 
 			int returnValue = job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
-			
+
 			return returnValue;
 
 		} catch (ParseException e) {
@@ -117,7 +119,7 @@ public class ATLMRMaster extends Configured implements Tool {
 
 	/**
 	 * Configures the program options
-	 * 
+	 *
 	 * @param options
 	 */
 	private static void configureOptions(Options options) {
@@ -156,11 +158,18 @@ public class ATLMRMaster extends Configured implements Tool {
 		outputOpt.setDescription("Output file URI");
 		outputOpt.setArgs(1);
 
+		Option recordsPerNodeOption = OptionBuilder.create(RECORDS_PER_NODE);
+		recordsPerNodeOption.setArgName("records_per_node");
+		recordsPerNodeOption.setDescription("Numbers of records to be processed by each node");
+		recordsPerNodeOption.setType(Number.class);
+		recordsPerNodeOption.setArgs(1);
+
 		options.addOption(transformationOpt);
 		options.addOption(sourcemmOpt);
 		options.addOption(targetmmOpt);
 		options.addOption(recordsOpt);
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
+		options.addOption(recordsPerNodeOption);
 	}
 }
