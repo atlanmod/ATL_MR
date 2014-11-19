@@ -60,7 +60,7 @@
 	</target>
 
 	<target name="create.bat">
-		<pathconvert property="jars.plugins" pathsep=";">
+		<pathconvert property="jars.plugins" pathsep=";" dirsep="\">
 			<map from="${dist.libs.plugins}" to="libs\plugins" />
 			<fileset dir="${dist.libs.plugins}" />
 		</pathconvert>
@@ -128,7 +128,7 @@ CALL yarn jar atl-mr.jar -libjars "%LIBJARS%" -files "%SOURCEMM%#%SOURCEMM%,%TAR
 	</target>
 
 	<target name="create.sh">
-		<pathconvert property="jars.plugins" pathsep=":">
+		<pathconvert property="jars.plugins" pathsep=":" dirsep="/">
 			<map from="${dist.libs.plugins}" to="libs/plugins" />
 			<fileset dir="${dist.libs.plugins}" />
 		</pathconvert>
@@ -145,11 +145,13 @@ CALL yarn jar atl-mr.jar -libjars "%LIBJARS%" -files "%SOURCEMM%#%SOURCEMM%,%TAR
 
 		<echo file="${run.sh}">#!/bin/bash
 
+YARNARGS=$@
+
 JARS=${jars.plugins}
-JARS=libs/ivy/default/commons-cli-jar-1.2.jar:%JARS%
+JARS=libs/ivy/default/commons-cli-jar-1.2.jar:$JARS
 LIBJARS=${libjars.plugins},${libsjars.atlmr}
 
-			
+
 while [[ $# > 1 ]]
 do
 key="$1"
@@ -186,7 +188,7 @@ ABSRECORDS=`realpath "$RECORDS"`
 
 URIRECORDS=file:///$ABSRECORDS
 
-yarn jar atl-mr.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $@ -records $URIRECORDS
+yarn jar atl-mr.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $YARNARGS -records $URIRECORDS
 		</echo>
 	</target>
 
