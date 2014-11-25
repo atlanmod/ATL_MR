@@ -79,7 +79,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			Job job = Job.getInstance(conf, JOB_NAME);
 
 			if (commandLine.hasOption(RECORDS_PER_NODE)) {
-				getConf().setInt(NLineInputFormat.LINES_PER_MAP, ((Number) commandLine.getParsedOptionValue(RECORDS_PER_NODE)).intValue());
+				job.getConfiguration().setInt(NLineInputFormat.LINES_PER_MAP, ((Number) commandLine.getParsedOptionValue(RECORDS_PER_NODE)).intValue());
 			}
 
 			// Configure classes
