@@ -24,47 +24,39 @@ import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 
 /* *
  * @author Amine BENELALLAM
- * 
+ *
  * In this version we are only distributing tasks
- * The number of task is not that big, thus Using IntWritable as a key 
- * 
+ * The number of task is not that big, thus Using IntWritable as a key
+ *
  */
 
 public class ATLMRMapper extends Mapper<LongWritable, Text, Text, BytesWritable> {
 
 	private ATLMapReduceTask mapTask = new ATLMapReduceTask();
+	private Resource tracesResource = new XMIResourceImpl();
 
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
 		mapTask.setup(context.getConfiguration(), true);
 		mapTask.getExecutionEnv().setExecutionPhase(ExecPhase.PRE);
 	};
-	
+
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-		
-		try {
-		Model inModel = mapTask.getInModel();
-		ExecEnv executionEnv = mapTask.getExecutionEnv();
-		String moduleName = mapTask.getModuleName();
-		Record currentRecord = new Record(value);
-		EObject currentObj = inModel.getResource().getEObject(currentRecord.objectFragmentUri);
 
-		
-		Map<String, Object> options = new HashMap<String, Object>();
-		options.put(XMLResource.OPTION_ENCODING, "UTF-8"); 
-		options.put(XMLResource.OPTION_BINARY, Boolean.TRUE);
-		if (executionEnv.preApplySingleObject (currentObj, currentRecord.className)) {
-			
-			TraceLink currentLink = executionEnv.getCurrentMatch();
-			TracedRule currentRule = currentLink.getRule();
-			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			Resource resource = new XMIResourceImpl();
-			resource.getContents().add(ATLMRUtils.copyRule(currentRule, currentLink));
-			resource.save(baos, options);
-			
-			context.write(new Text(moduleName), new BytesWritable(baos.toByteArray()));
+		try {
+			Model inModel = mapTask.getInModel();
+			ExecEnv executionEnv = mapTask.getExecutionEnv();
+			Record currentRecord = new Record(value);
+			EObject currentObj = inModel.getResource().getEObject(currentRecord.objectFragmentUri);
+
+			if (executionEnv.preApplySingleObject (currentObj, currentRecord.className)) {
+
+				TraceLink currentLink = executionEnv.getCurrentMatch();
+				TracedRule currentRule = currentLink.getRule();
+
+				tracesResource.getContents().add(ATLMRUtils.copyRule(currentRule, currentLink));
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -73,10 +65,17 @@ public class ATLMRMapper extends Mapper<LongWritable, Text, Text, BytesWritable>
 
 	@Override
 	protected void cleanup(Context context) throws IOException, InterruptedException {
-			Resource resource = mapTask.getOutModel().getResource();
-			resource.save(Collections.emptyMap());
+		Resource resource = mapTask.getOutModel().getResource();
+		resource.save(Collections.emptyMap());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Map<String, Object> options = new HashMap<String, Object>();
+		options.put(XMLResource.OPTION_ENCODING, "UTF-8");
+		options.put(XMLResource.OPTION_BINARY, Boolean.TRUE);
+		tracesResource.save(baos, options);
+		context.write(new Text(mapTask.getModuleName()), new BytesWritable(baos.toByteArray()));
 	}
-	
+
 	private static class Record {
 
 		String objectFragmentUri;
@@ -89,5 +88,5 @@ public class ATLMRMapper extends Mapper<LongWritable, Text, Text, BytesWritable>
 			className = recordValue.toString().substring(ruleStartIndex + 1, length - 1);
 		}
 	}// end Record
-	
-}// end 
+
+}// end
