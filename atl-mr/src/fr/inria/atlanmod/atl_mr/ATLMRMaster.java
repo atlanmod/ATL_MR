@@ -1,8 +1,12 @@
 package fr.inria.atlanmod.atl_mr;
 
+import java.io.File;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -25,6 +29,8 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
+
 public class ATLMRMaster extends Configured implements Tool {
 
 	protected static final String JOB_NAME = "ATL in MapReduce";
@@ -38,7 +44,7 @@ public class ATLMRMaster extends Configured implements Tool {
 	public static String RECORDS_FILE = "records";
 	public static String INPUT_MODEL = "input";
 	public static String OUTPUT_MODEL = "output";
-	public static String RECORDS_PER_NODE = "rpn";
+	public static String RECOMMENDED_MAPPERS = "rm";
 
 	/**
 	 * Main program, delegates to ToolRunner
@@ -75,12 +81,17 @@ public class ATLMRMaster extends Configured implements Tool {
 			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).suffix(".out.xmi")
 					.toString());
 
+			int recommendedMappers = 1;
+			if (commandLine.hasOption(RECOMMENDED_MAPPERS)) {
+				recommendedMappers = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
+			}
+
+			long linesPerMap = ATLMRUtils.countLines(new File(recordsLocation)) / recommendedMappers;
+
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(conf, JOB_NAME);
 
-			if (commandLine.hasOption(RECORDS_PER_NODE)) {
-				job.getConfiguration().setInt(NLineInputFormat.LINES_PER_MAP, ((Number) commandLine.getParsedOptionValue(RECORDS_PER_NODE)).intValue());
-			}
+			job.getConfiguration().setLong(NLineInputFormat.LINES_PER_MAP, linesPerMap);
 
 			// Configure classes
 			job.setJarByClass(ATLMRMaster.class);
@@ -105,7 +116,11 @@ public class ATLMRMaster extends Configured implements Tool {
 			job.getConfiguration().set(INPUT_MODEL, inputLocation);
 			job.getConfiguration().set(OUTPUT_MODEL, new Path(FileOutputFormat.getOutputPath(job).suffix(Path.SEPARATOR + outputLocation).toString()).toString());
 
+			Logger.getGlobal().log(Level.INFO, "Starting Job execution");
+			long begin = System.currentTimeMillis();
 			int returnValue = job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
+			long end = System.currentTimeMillis();
+			Logger.getGlobal().log(Level.INFO, MessageFormat.format("Job execution ended in {0}s with status code {1}", (end - begin) / 1000, returnValue));
 
 			return returnValue;
 
@@ -158,11 +173,11 @@ public class ATLMRMaster extends Configured implements Tool {
 		outputOpt.setDescription("Output file URI");
 		outputOpt.setArgs(1);
 
-		Option recordsPerNodeOption = OptionBuilder.create(RECORDS_PER_NODE);
-		recordsPerNodeOption.setArgName("records_per_node");
-		recordsPerNodeOption.setDescription("Numbers of records to be processed by each node");
-		recordsPerNodeOption.setType(Number.class);
-		recordsPerNodeOption.setArgs(1);
+		Option recommendedMappersOption = OptionBuilder.create(RECOMMENDED_MAPPERS);
+		recommendedMappersOption.setArgName("mappers_hint");
+		recommendedMappersOption.setDescription("The recommended number of mappers (not strict, used only as a hint).");
+		recommendedMappersOption.setType(Number.class);
+		recommendedMappersOption.setArgs(1);
 
 		options.addOption(transformationOpt);
 		options.addOption(sourcemmOpt);
@@ -170,6 +185,6 @@ public class ATLMRMaster extends Configured implements Tool {
 		options.addOption(recordsOpt);
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
-		options.addOption(recordsPerNodeOption);
+		options.addOption(recommendedMappersOption);
 	}
 }
