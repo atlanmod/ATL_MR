@@ -1,6 +1,9 @@
 package fr.inria.atlanmod.atl_mr;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,8 +31,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-
-import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 
 public class ATLMRMaster extends Configured implements Tool {
 
@@ -86,7 +87,7 @@ public class ATLMRMaster extends Configured implements Tool {
 				recommendedMappers = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
 			}
 
-			long linesPerMap = ATLMRUtils.countLines(new File(recordsLocation)) / recommendedMappers;
+			long linesPerMap = countLines(new File(recordsLocation)) / recommendedMappers;
 
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(conf, JOB_NAME);
@@ -186,5 +187,16 @@ public class ATLMRMaster extends Configured implements Tool {
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
 		options.addOption(recommendedMappersOption);
+	}
+
+	private static long countLines(File file) throws IOException {
+		LineNumberReader lineNumberReader = null;
+		try {
+			lineNumberReader = new LineNumberReader(new FileReader(file));
+			lineNumberReader.skip(Long.MAX_VALUE);
+			return lineNumberReader.getLineNumber();
+		} finally {
+			lineNumberReader.close();
+		}
 	}
 }

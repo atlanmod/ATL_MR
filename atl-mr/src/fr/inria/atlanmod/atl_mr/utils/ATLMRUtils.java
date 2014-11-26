@@ -1,10 +1,5 @@
 package fr.inria.atlanmod.atl_mr.utils;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-
 import org.apache.hadoop.conf.Configuration;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -146,17 +141,5 @@ public class ATLMRUtils {
 		tracedRule.setRule(currentRule.getRule());
 		newLink.setRule(tracedRule);
 		return tracedRule;
-	}
-
-
-	public static long countLines(File file) throws IOException {
-		LineNumberReader lineNumberReader = null;
-		try {
-			lineNumberReader = new LineNumberReader(new FileReader(file));
-			lineNumberReader.skip(Long.MAX_VALUE);
-			return lineNumberReader.getLineNumber();
-		} finally {
-			lineNumberReader.close();
-		}
 	}
 }
