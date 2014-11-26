@@ -1,8 +1,8 @@
 package fr.inria.atlanmod.atl_mr;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -21,6 +21,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
@@ -87,12 +88,8 @@ public class ATLMRMaster extends Configured implements Tool {
 				recommendedMappers = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
 			}
 
-			long linesPerMap = countLines(new File(recordsLocation)) / recommendedMappers;
-
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(conf, JOB_NAME);
-
-			job.getConfiguration().setLong(NLineInputFormat.LINES_PER_MAP, linesPerMap);
 
 			// Configure classes
 			job.setJarByClass(ATLMRMaster.class);
@@ -109,6 +106,13 @@ public class ATLMRMaster extends Configured implements Tool {
 			String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
 			String outDirName = "atlmr-out-" + timestamp + "-" + UUID.randomUUID();
 			FileOutputFormat.setOutputPath(job, new Path(job.getWorkingDirectory().suffix(Path.SEPARATOR + outDirName).toUri()));
+
+			// Configure records per map
+			FileSystem fileSystem = FileSystem.get(recordsPath.toUri(), conf);
+			InputStream inputStream = fileSystem.open(recordsPath);
+			long linesPerMap = countLines(inputStream) / recommendedMappers;
+			job.getConfiguration().setLong(NLineInputFormat.LINES_PER_MAP, linesPerMap);
+
 
 			// Configure ATL related inputs/outputs
 			job.getConfiguration().set(TRANSFORMATION, transformationLocation);
@@ -189,14 +193,18 @@ public class ATLMRMaster extends Configured implements Tool {
 		options.addOption(recommendedMappersOption);
 	}
 
-	private static long countLines(File file) throws IOException {
+	private static long countLines(InputStream inputStream) throws IOException {
 		LineNumberReader lineNumberReader = null;
+		int lines = 1;
 		try {
-			lineNumberReader = new LineNumberReader(new FileReader(file));
+			lineNumberReader = new LineNumberReader(new InputStreamReader(inputStream));
 			lineNumberReader.skip(Long.MAX_VALUE);
-			return lineNumberReader.getLineNumber();
+			lines = Math.max(lineNumberReader.getLineNumber(), 1);
 		} finally {
-			lineNumberReader.close();
+			if (lineNumberReader != null) {
+				lineNumberReader.close();
+			}
 		}
+		return lines;
 	}
 }
