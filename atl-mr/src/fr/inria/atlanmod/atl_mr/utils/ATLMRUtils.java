@@ -7,6 +7,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
@@ -59,6 +61,18 @@ public class ATLMRUtils {
 			}
 		});
 
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("bin", new ResourceFactoryImpl() {
+			@Override
+			public Resource createResource(URI uri) {
+				return new BinaryResourceImpl(uri) {
+					@Override
+					protected URIConverter getURIConverter() {
+						return new HadoopURIConverterImpl(conf);
+					}
+				};
+			}
+		});
+
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl() {
 			@Override
 			public Resource createResource(URI uri) {
@@ -71,34 +85,34 @@ public class ATLMRUtils {
 			}
 		});
 	}
-	
-//	/**
-//	 * This method is used to extract rules from a 
-//	 * @param resource
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	public static HashMap<String, String> extractRules(Resource resource) throws IOException {
-//
-//		HashMap<String, String> map = new HashMap<String, String>();
-//		if (!resource.isLoaded()) {
-//			resource.load(null);
-//		}
-//
-//		Iterator<EObject> iterator = resource.getAllContents();
-//		EObject objectIterator = null;
-//		while (iterator.hasNext()) {
-//			objectIterator = iterator.next();
-//			if (objectIterator instanceof Rule) {
-//				Rule rule = ((Rule) objectIterator);
-//				map.put(rule.getInputElements().get(0).getEType().getName(), rule.getName());
-//
-//			}
-//		}
-//		return map;
-//
-//	}
-	
+
+	//	/**
+	//	 * This method is used to extract rules from a
+	//	 * @param resource
+	//	 * @return
+	//	 * @throws IOException
+	//	 */
+	//	public static HashMap<String, String> extractRules(Resource resource) throws IOException {
+	//
+	//		HashMap<String, String> map = new HashMap<String, String>();
+	//		if (!resource.isLoaded()) {
+	//			resource.load(null);
+	//		}
+	//
+	//		Iterator<EObject> iterator = resource.getAllContents();
+	//		EObject objectIterator = null;
+	//		while (iterator.hasNext()) {
+	//			objectIterator = iterator.next();
+	//			if (objectIterator instanceof Rule) {
+	//				Rule rule = ((Rule) objectIterator);
+	//				map.put(rule.getInputElements().get(0).getEType().getName(), rule.getName());
+	//
+	//			}
+	//		}
+	//		return map;
+	//
+	//	}
+
 	/**
 	 * Registers the packages
 	 * @param resourceSet
@@ -112,7 +126,7 @@ public class ATLMRUtils {
 		}
 
 	}
-	
+
 	/**
 	 * Copies a rule in order to be serialized and passed to the reduced
 	 * @param currentRule
