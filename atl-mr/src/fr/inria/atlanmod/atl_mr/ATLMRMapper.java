@@ -52,7 +52,7 @@ public class ATLMRMapper extends Mapper<LongWritable, Text, Text, BytesWritable>
 		Record currentRecord = new Record(value);
 		EObject currentObj = inModel.getResource().getEObject(currentRecord.objectFragmentUri);
 
-		Logger.getGlobal().log(Level.FINEST, "preApplySingleObject - START");
+		Logger.getGlobal().log(Level.FINEST, "\tpreApplySingleObject - START");
 		if (executionEnv.preApplySingleObject (currentObj, currentRecord.className)) {
 
 			TraceLink currentLink = executionEnv.getCurrentMatch();
@@ -60,7 +60,7 @@ public class ATLMRMapper extends Mapper<LongWritable, Text, Text, BytesWritable>
 
 			tracesResource.getContents().add(ATLMRUtils.copyRule(currentRule, currentLink));
 		}
-		Logger.getGlobal().log(Level.FINEST, "preApplySingleObject - END");
+		Logger.getGlobal().log(Level.FINEST, "\tpreApplySingleObject - END");
 
 		Logger.getGlobal().log(Level.FINEST, "Mapping - END");
 	}
