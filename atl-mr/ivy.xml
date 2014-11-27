@@ -6,5 +6,6 @@
 		<dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-common" rev="2.5.1"/>
 		<dependency org="org.apache.hadoop" name="hadoop-hdfs" rev="2.5.1"/>
 		<dependency org="commons-daemon" name="commons-daemon" rev="1.0.13"/>
+		<dependency org="jline" name="jline" rev="0.9.94"/>
     </dependencies>
 </ivy-module>

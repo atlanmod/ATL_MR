@@ -48,6 +48,16 @@
 			</restrict>
 		</copy>
 
+		<pathconvert property="libjars.plugins" pathsep="," dirsep="/">
+			<map from="${dist.libs.plugins}" to="libs/plugins" />
+			<fileset dir="${dist.libs.plugins}" />
+		</pathconvert>
+
+		<pathconvert property="libsjars.atlmr" pathsep="," dirsep="/">
+			<map from="${dist.libs.atlmr}/plugins" to="libs/atlmr/plugins" />
+			<fileset dir="${dist.libs.atlmr}/plugins" />
+		</pathconvert>
+		
 		<antcall target="create.bat" />
 		<antcall target="create.sh" />
 	</target>
@@ -60,34 +70,24 @@
 	</target>
 
 	<target name="create.bat">
-		<pathconvert property="jars.plugins" pathsep=";" dirsep="\">
-			<map from="${dist.libs.plugins}" to="libs\plugins" />
-			<fileset dir="${dist.libs.plugins}" />
-		</pathconvert>
 
-		<pathconvert property="libjars.plugins" pathsep="," dirsep="/">
-			<map from="${dist.libs.plugins}" to="libs/plugins" />
-			<fileset dir="${dist.libs.plugins}" />
-		</pathconvert>
-
-		<pathconvert property="libsjars.atlmr" pathsep="," dirsep="/">
-			<map from="${dist.libs.atlmr}/plugins" to="libs/atlmr/plugins" />
-			<fileset dir="${dist.libs.atlmr}/plugins" />
-		</pathconvert>
 
 		<echo file="${run.bat}">@ECHO OFF
 SETLOCAL
 
-SET JARS=${jars.plugins}
-SET JARS=libs\ivy\default\commons-cli-jar-1.2.jar;%JARS%
+SET JARS=libs/atlmr/plugins/*;libs/plugins/*;libs/ivy/default/*
 SET LIBJARS=${libjars.plugins},${libsjars.atlmr}
 
 :PARSE
 IF "%~1"=="" GOTO ENDPARSE
-IF "%~1"=="-sourcemm" GOTO SOURCEMM
-IF "%~1"=="-targetmm" GOTO TARGETMM
-IF "%~1"=="-transformation" GOTO TRANSFORMATION
-IF "%~1"=="-input" GOTO INPUT
+IF "%~1"=="-f" GOTO TRANSFORMATION
+IF "%~1"=="-s" GOTO SOURCEMM
+IF "%~1"=="-t" GOTO TARGETMM
+IF "%~1"=="-i" GOTO INPUT
+IF "%~1"=="--file" GOTO TRANSFORMATION
+IF "%~1"=="--source-metamodel" GOTO SOURCEMM
+IF "%~1"=="--target-metamodel" GOTO TARGETMM
+IF "%~1"=="--input" GOTO INPUT
 SHIFT
 GOTO PARSE
 
@@ -115,7 +115,7 @@ GOTO PARSE
 
 SET RECORDS=%INPUT%.rec
 
-java -cp atl-mr.jar;%JARS% fr.inria.atlanmod.atl_mr.builder.RecordBuilder -sourcemm %SOURCEMM% -input %INPUT% -output %RECORDS%
+java -cp ${ant.project.name}.jar;%JARS% fr.inria.atlanmod.atl_mr.builder.RecordBuilder -s %SOURCEMM% -i %INPUT% -o %RECORDS%
 
 FOR /F %%i IN ("%RECORDS%") DO SET ABSRECORDS=%%~fi
 
@@ -123,32 +123,16 @@ SET URIRECORDS=%ABSRECORDS%
 SET URIRECORDS=%URIRECORDS:\=/%
 SET URIRECORDS=file:///%URIRECORDS%
 
-CALL yarn jar atl-mr.jar -libjars "%LIBJARS%" -files "%SOURCEMM%#%SOURCEMM%,%TARGETMM%#%TARGETMM%,%TRANSFORMATION%#%TRANSFORMATION%,%INPUT%#%INPUT%" %* -records %URIRECORDS%
+CALL yarn jar atl-mr.jar -libjars "%LIBJARS%" -files "%SOURCEMM%#%SOURCEMM:\=/%,%TARGETMM%#%TARGETMM:\=/%,%TRANSFORMATION%#%TRANSFORMATION:\=/%,%INPUT%#%INPUT:\=/%" %* -r %URIRECORDS%
 		</echo>
 	</target>
 
 	<target name="create.sh">
-		<pathconvert property="jars.plugins" pathsep=":" dirsep="/">
-			<map from="${dist.libs.plugins}" to="libs/plugins" />
-			<fileset dir="${dist.libs.plugins}" />
-		</pathconvert>
-
-		<pathconvert property="libjars.plugins" pathsep="," dirsep="/">
-			<map from="${dist.libs.plugins}" to="libs/plugins" />
-			<fileset dir="${dist.libs.plugins}" />
-		</pathconvert>
-
-		<pathconvert property="libsjars.atlmr" pathsep="," dirsep="/">
-			<map from="${dist.libs.atlmr}/plugins" to="libs/atlmr/plugins" />
-			<fileset dir="${dist.libs.atlmr}/plugins" />
-		</pathconvert>
-
 		<echo file="${run.sh}">#!/bin/bash
 
 YARNARGS=$@
 
-JARS=${jars.plugins}
-JARS=libs/ivy/default/commons-cli-jar-1.2.jar:$JARS
+JARS=libs/atlmr/plugins/*:libs/plugins/*:libs/ivy/default/*
 LIBJARS=${libjars.plugins},${libsjars.atlmr}
 
 
@@ -158,37 +142,39 @@ key="$1"
 shift
 
 case $key in
-    -sourcemm)
-    SOURCEMM="$1"
-    shift
-    ;;
-    -targetmm)
-    TARGETMM="$1"
-    shift
-    ;;
-    -transformation)
+    -f | --file)
     TRANSFORMATION="$1"
     shift
     ;;
-    -input)
+    -s | --source-metamodel)
+    SOURCEMM="$1"
+    shift
+    ;;
+    -t | --target-metamodel)
+    TARGETMM="$1"
+    shift
+    ;;
+    -i | --input)
     INPUT="$1"
     shift
     ;;
     *)
-            # unknown option
     ;;
 esac
 done
 			
 RECORDS=$INPUT.rec
 
-java -cp atl-mr.jar:$JARS fr.inria.atlanmod.atl_mr.builder.RecordBuilder -sourcemm $SOURCEMM -input $INPUT -output $RECORDS
+java -cp ${ant.project.name}.jar:$JARS fr.inria.atlanmod.atl_mr.builder.RecordBuilder -s $SOURCEMM -i $INPUT -o $RECORDS
 
-ABSRECORDS=`realpath "$RECORDS"`
+URIRECORDS=/user/$USER/$RECORDS
 
-URIRECORDS=file:///$ABSRECORDS
+hdfs dfs -mkdir -p /user/$USER/`dirname $RECORDS`
+hdfs dfs -copyFromLocal -f $RECORDS $URIRECORDS
 
-yarn jar atl-mr.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $YARNARGS -records $URIRECORDS
+MAPPERS=`yarn node -list | grep -c -E '^\s+\w+:[0-9]+\s+RUNNING\s+'`
+
+yarn jar atl-mr.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $YARNARGS -r $URIRECORDS -m $MAPPERS
 		</echo>
 	</target>
 

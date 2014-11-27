@@ -113,6 +113,8 @@
         <pathelement location="../../../../../../Users/agomez/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-all/bundles/leveldbjni-all-1.8.jar"/>
         <pathelement location="../../../../../../Users/agomez/.ivy2/cache/org.apache.hadoop/hadoop-hdfs/jars/hadoop-hdfs-2.5.1.jar"/>
         <pathelement location="../../../../../../Users/agomez/.ivy2/cache/commons-daemon/commons-daemon/jars/commons-daemon-1.0.13.jar"/>
+        <pathelement location="../../../../../../Users/agomez/.ivy2/cache/jline/jline/jars/jline-0.9.94.jar"/>
+        <pathelement location="../../../../../../Users/agomez/.ivy2/cache/junit/junit/jars/junit-3.8.1.jar"/>
     </path>
     <path id="atl-mr.classpath">
         <path refid="Plug-in Dependencies.libraryclasspath"/>
@@ -154,11 +156,34 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="class2relational-win-x86_64">
-        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
+    <target name="RunC2R">
+        <java classname="fr.inria.atlanmod.atl_mr.RunC2R" failonerror="true" fork="yes">
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="RunF2P">
+        <java classname="fr.inria.atlanmod.atl_mr.RunF2P" failonerror="true" fork="yes">
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="recordbuilder-families2persons">
+        <java classname="fr.inria.atlanmod.atl_mr.builder.RecordBuilder" failonerror="true" fork="yes">
+            <arg line="-sourcemm data/Families2Persons/Families.ecore -input data/Families2Persons/result100000000_0.xmi -output data/Families2Persons/result100000000_0.xmi.rec"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="recordbuilder-class2relational">
+        <java classname="fr.inria.atlanmod.atl_mr.builder.RecordBuilder" failonerror="true" fork="yes">
+            <arg line="-sourcemm data/Class2Relational/Class.ecore -input data/Class2Relational/result1000000000_0.xmi -output data/Class2Relational/result1000000000_0.xmi.rec"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="families2persons-win-x86_64">
+        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" dir="${workspace_loc:atl-mr/working}" failonerror="true" fork="yes">
             <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
             <env key="HADOOP_HOME" value="${resource_loc:/atl-mr/hadoop-win-x86_64}"/>
-            <arg line="-transformation data/Class2Relational/Class2Relational.emftvm &#13;&#10;-sourcemm data/Class2Relational/Class.ecore &#13;&#10;-targetmm data/Class2Relational/Relational.ecore &#13;&#10;-input data/Class2Relational/sample.xmi"/>
+            <jvmarg line="-Xmx8g"/>
+            <arg line="-transformation ../data/Families2Persons/Families2Persons.emftvm -sourcemm ../data/Families2Persons/Families.ecore -targetmm ../data/Families2Persons/Persons.ecore -input ../data/Families2Persons/result100000000_0.xmi -records ../data/Families2Persons/result100000000_0.xmi.rec -rpn 150000"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
@@ -170,17 +195,30 @@
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
-    <target name="families2persons-win-x86_64">
+    <target name="class2relational-win-x86_64">
         <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" dir="${workspace_loc:atl-mr/working}" failonerror="true" fork="yes">
             <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
             <env key="HADOOP_HOME" value="${resource_loc:/atl-mr/hadoop-win-x86_64}"/>
-            <arg line="-transformation ../data/Families2Persons/Families2Persons.emftvm -sourcemm ../data/Families2Persons/Families.ecore -targetmm ../data/Families2Persons/Persons.ecore -input ../data/Families2Persons/sample-Families.xmi -records ../data/Families2Persons/sample-Families.xmi.rec"/>
+            <arg line="-transformation ../data/Class2Relational/Class2Relational.emftvm -sourcemm ../data/Class2Relational/Class.ecore -targetmm ../data/Class2Relational/Relational.ecore -input ../data/Class2Relational/result1000_0.xmi -records ../data/Class2Relational/result1000_0.xmi.rec"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
-    <target name="recordbuilder-families2persons">
+    <target name="flow2data-win-x86_64">
+        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" dir="${workspace_loc:atl-mr/working}" failonerror="true" fork="yes">
+            <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
+            <env key="HADOOP_HOME" value="${resource_loc:/atl-mr/hadoop-win-x86_64}"/>
+            <arg line="-f ../data/Flow2Data/Flow2Data_noRI.emftvm -s ../data/Flow2Data/FlowGraph.ecore -t ../data/Flow2Data/FlowGraph.ecore -i ../data/Flow2Data/Test1-ControlFlowGraph-with-Vars.xmi -r ../data/Flow2Data/Test1-ControlFlowGraph-with-Vars.xmi.rec"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="recordbuilder-flow2data">
         <java classname="fr.inria.atlanmod.atl_mr.builder.RecordBuilder" failonerror="true" fork="yes">
-            <arg line="-sourcemm data/Families2Persons/Families.ecore -input data/Families2Persons/sample-Families.xmi -output data/Families2Persons/sample-Families.xmi.rec"/>
+            <arg line="-s data/Flow2Data/FlowGraph.ecore -i data/Flow2Data/Test1-ControlFlowGraph-with-Vars.xmi -o data/Flow2Data/Test1-ControlFlowGraph-with-Vars.xmi.rec"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="RunF2D">
+        <java classname="fr.inria.atlanmod.atl_mr.RunF2D" failonerror="true" fork="yes">
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
