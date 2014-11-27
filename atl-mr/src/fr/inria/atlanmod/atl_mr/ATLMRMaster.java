@@ -6,19 +6,23 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jline.Terminal;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
@@ -40,13 +44,37 @@ public class ATLMRMaster extends Configured implements Tool {
 	protected static final int STATUS_OK = 0;
 	protected static final int STATUS_ERROR = 1;
 
-	public static String TRANSFORMATION = "transformation";
-	public static String SOURCE_METAMODEL = "sourcemm";
-	public static String TARGET_METAMODEL = "targetmm";
-	public static String RECORDS_FILE = "records";
-	public static String INPUT_MODEL = "input";
-	public static String OUTPUT_MODEL = "output";
-	public static String RECOMMENDED_MAPPERS = "rm";
+	static final String TRANSFORMATION 						= "f";
+	static final String SOURCE_METAMODEL 					= "s";
+	static final String TARGET_METAMODEL 					= "t";
+	static final String INPUT_MODEL 						= "i";
+	static final String OUTPUT_MODEL 						= "o";
+
+	private static final String RECORDS_FILE				= "r";
+	private static final String RECOMMENDED_MAPPERS 		= "m";
+	private static final String RECORDS_PER_MAPPER	 		= "n";
+	private static final String QUIET 						= "q";
+	private static final String VERBOSE 					= "v";
+
+	private static final String TRANSFORMATION_LONG 		= "file";
+	private static final String SOURCE_METAMODEL_LONG 		= "source-metamodel";
+	private static final String TARGET_METAMODEL_LONG 		= "target-metamodel";
+	private static final String INPUT_MODEL_LONG 			= "input";
+	private static final String OUTPUT_MODEL_LONG 			= "output";
+	private static final String RECORDS_FILE_LONG 			= "records";
+	private static final String RECOMMENDED_MAPPERS_LONG	= "recommended-mappers";
+	private static final String RECORDS_PER_MAPPER_LONG	 	= "records-per-mapper";
+	private static final String QUIET_LONG 					= "quiet";
+	private static final String VERBOSE_LONG 				= "verbose";
+
+	private static class OptionComarator<T extends Option> implements Comparator<T> {
+		private static final String OPTS_ORDER = "fstriomnvq";
+
+		@Override
+		public int compare(T o1, T o2) {
+			return OPTS_ORDER.indexOf(o1.getOpt()) - OPTS_ORDER.indexOf(o2.getOpt());
+		}
+	}
 
 	/**
 	 * Main program, delegates to ToolRunner
@@ -70,10 +98,18 @@ public class ATLMRMaster extends Configured implements Tool {
 
 		configureOptions(options);
 
-		CommandLineParser parser = new PosixParser();
+		CommandLineParser parser = new GnuParser();
 
 		try {
 			CommandLine commandLine = parser.parse(options, args);
+
+			if (commandLine.hasOption(VERBOSE)) {
+				Logger.getGlobal().setLevel(Level.FINEST);
+			}
+
+			if (commandLine.hasOption(QUIET)) {
+				Logger.getGlobal().setLevel(Level.OFF);
+			}
 
 			String transformationLocation = commandLine.getOptionValue(TRANSFORMATION);
 			String sourcemmLocation = commandLine.getOptionValue(SOURCE_METAMODEL);
@@ -132,6 +168,12 @@ public class ATLMRMaster extends Configured implements Tool {
 		} catch (ParseException e) {
 			System.err.println(e.getLocalizedMessage());
 			HelpFormatter formatter = new HelpFormatter();
+			formatter.setOptionComparator(new OptionComarator<>());
+			try {
+				formatter.setWidth(Math.max(Terminal.getTerminal().getTerminalWidth(), 80));
+			} catch (Throwable t) {
+				// Nothing to do...
+			};
 			formatter.printHelp("yarn jar <this-file.jar>", options, true);
 			return STATUS_ERROR;
 		}
@@ -143,46 +185,79 @@ public class ATLMRMaster extends Configured implements Tool {
 	 * @param options
 	 */
 	private static void configureOptions(Options options) {
+
 		Option transformationOpt = OptionBuilder.create(TRANSFORMATION);
+		transformationOpt.setLongOpt(TRANSFORMATION_LONG);
 		transformationOpt.setArgName("transformation.emftvm");
-		transformationOpt.setDescription("ATL transformation");
+		transformationOpt.setDescription("URI of the ATL transformation file.");
 		transformationOpt.setArgs(1);
 		transformationOpt.setRequired(true);
 
 		Option sourcemmOpt = OptionBuilder.create(SOURCE_METAMODEL);
+		sourcemmOpt.setLongOpt(SOURCE_METAMODEL_LONG);
 		sourcemmOpt.setArgName("source.ecore");
-		sourcemmOpt.setDescription("Source metamodel");
+		sourcemmOpt.setDescription("URI of the source metamodel file.");
 		sourcemmOpt.setArgs(1);
 		sourcemmOpt.setRequired(true);
 
 		Option targetmmOpt = OptionBuilder.create(TARGET_METAMODEL);
+		targetmmOpt.setLongOpt(TARGET_METAMODEL_LONG);
 		targetmmOpt.setArgName("target.ecore");
-		targetmmOpt.setDescription("Target metamodel");
+		targetmmOpt.setDescription("URI of the target metamodel file.");
 		targetmmOpt.setArgs(1);
 		targetmmOpt.setRequired(true);
 
-		Option recordsOpt = OptionBuilder.create(RECORDS_FILE);
-		recordsOpt.setArgName("records.rec");
-		recordsOpt.setDescription("Records file");
-		recordsOpt.setArgs(1);
-		recordsOpt.setRequired(true);
-
 		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
+		inputOpt.setLongOpt(INPUT_MODEL_LONG);
 		inputOpt.setArgName("input.xmi");
-		inputOpt.setDescription("Input file URI");
+		inputOpt.setDescription("URI of the input file.");
 		inputOpt.setArgs(1);
 		inputOpt.setRequired(true);
 
 		Option outputOpt = OptionBuilder.create(OUTPUT_MODEL);
+		outputOpt.setLongOpt(OUTPUT_MODEL_LONG);
 		outputOpt.setArgName("output.xmi");
-		outputOpt.setDescription("Output file URI");
+		outputOpt.setDescription("URI of the output file. Optional.");
 		outputOpt.setArgs(1);
 
+		Option recordsOpt = OptionBuilder.create(RECORDS_FILE);
+		recordsOpt.setLongOpt(RECORDS_FILE_LONG);
+		recordsOpt.setArgName("records.rec");
+		recordsOpt.setDescription("URI of the records file.");
+		recordsOpt.setArgs(1);
+		recordsOpt.setRequired(true);
+
 		Option recommendedMappersOption = OptionBuilder.create(RECOMMENDED_MAPPERS);
+		recommendedMappersOption.setLongOpt(RECOMMENDED_MAPPERS_LONG);
 		recommendedMappersOption.setArgName("mappers_hint");
-		recommendedMappersOption.setDescription("The recommended number of mappers (not strict, used only as a hint).");
+		recommendedMappersOption.setDescription("The recommended number of mappers (not strict, used only as a hint). Optional, defaults to 1. Excludes the use of '-n'.");
 		recommendedMappersOption.setType(Number.class);
 		recommendedMappersOption.setArgs(1);
+
+		Option recordsPerMapperOption = OptionBuilder.create(RECORDS_PER_MAPPER);
+		recordsPerMapperOption.setLongOpt(RECORDS_PER_MAPPER_LONG);
+		recordsPerMapperOption.setArgName("recors_per_mapper");
+		recordsPerMapperOption.setDescription("Number of records to be processed by mapper. Optional, defaults to all records. Excludes the use of '-m'.");
+		recordsPerMapperOption.setType(Number.class);
+		recordsPerMapperOption.setArgs(1);
+
+		OptionGroup mappersGroup = new OptionGroup();
+		mappersGroup.addOption(recommendedMappersOption);
+		mappersGroup.addOption(recordsPerMapperOption);
+
+		Option quietOption = OptionBuilder.create(QUIET);
+		quietOption.setLongOpt(QUIET_LONG);
+		quietOption.setDescription("Do not print any information about the transformation execution on the standard output. Optional, disabled by default.");
+		quietOption.setArgs(0);
+
+		Option verboseOption = OptionBuilder.create(VERBOSE);
+		verboseOption.setLongOpt(VERBOSE_LONG);
+		verboseOption.setDescription("Verbose mode. Optional, disabled by default.");
+		verboseOption.setArgs(0);
+
+		OptionGroup loggingGroup = new OptionGroup();
+		loggingGroup.addOption(quietOption);
+		loggingGroup.addOption(verboseOption);
 
 		options.addOption(transformationOpt);
 		options.addOption(sourcemmOpt);
@@ -190,7 +265,8 @@ public class ATLMRMaster extends Configured implements Tool {
 		options.addOption(recordsOpt);
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
-		options.addOption(recommendedMappersOption);
+		options.addOptionGroup(loggingGroup);
+		options.addOptionGroup(mappersGroup);
 	}
 
 	private static long countLines(InputStream inputStream) throws IOException {

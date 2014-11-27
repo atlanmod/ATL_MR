@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.m2m.atl.common.ATLLogger;
 import org.eclipse.m2m.atl.emftvm.EmftvmFactory;
 import org.eclipse.m2m.atl.emftvm.ExecEnv;
 import org.eclipse.m2m.atl.emftvm.Metamodel;
@@ -61,13 +62,13 @@ public class RunC2R {
 		registerPackages(rs, outMetaModel.getResource());
 		// Load models
 
-		URI inMURI = URI.createURI("./data/Class2Relational/result1000_0.xmi", true);
+		URI inMURI = URI.createURI("./data/Class2Relational/result1000000000_0.xmi", true);
 
 		Model inModel = EmftvmFactory.eINSTANCE.createModel();
 		inModel.setResource(rs.getResource(inMURI, true));
 		env.registerInputModel("IN", inModel);
 
-		URI outMURI = URI.createFileURI("./data/Class2Relational/result1000_0.xmi.out.xmi");
+		URI outMURI = URI.createFileURI("./data/Class2Relational/result1000000000_0.xmi.out.xmi");
 
 		Model outModel = EmftvmFactory.eINSTANCE.createModel();
 		outModel.setResource(rs.createResource(outMURI));
@@ -80,6 +81,7 @@ public class RunC2R {
 		td.finishLoading();
 		env.run(td);
 		td.finish();
+		ATLLogger.info(td.toString());
 		// Save models
 		outModel.getResource().save(Collections.emptyMap());
 	}
