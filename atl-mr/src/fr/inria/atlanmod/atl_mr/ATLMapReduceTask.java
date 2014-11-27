@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.m2m.atl.emftvm.EmftvmFactory;
 import org.eclipse.m2m.atl.emftvm.ExecEnv;
 import org.eclipse.m2m.atl.emftvm.ExecMode;
@@ -166,7 +166,7 @@ public class ATLMapReduceTask {
 
 		// TODO: FIX THIS
 		if (mapState) {
-			outModel.setResource(rs.createResource(outMURI.trimFileExtension().appendFileExtension(UUID.randomUUID().toString() + ".xmi")));
+			outModel.setResource(rs.createResource(outMURI.trimFileExtension().appendFileExtension(UUID.randomUUID().toString() + ".bin")));
 		} else {
 			outModel.setResource(rs.createResource(outMURI));
 		}
@@ -174,7 +174,7 @@ public class ATLMapReduceTask {
 		executionEnv.setExecutionMode(ExecMode.MR);
 		executionEnv.registerOutputModel(OMName, outModel);
 		executionEnv.preMatchAllSingle();
-		Resource traceResource = new XMIResourceImpl(URI.createURI(ExecEnv.TRACES_NSURI));
+		Resource traceResource = new BinaryResourceImpl(URI.createURI(ExecEnv.TRACES_NSURI));
 		traceResource.getContents().add(executionEnv.getTraces());
 		rs.getResources().add(traceResource);
 

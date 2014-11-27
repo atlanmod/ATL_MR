@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+
+import jline.Terminal;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,14 +34,28 @@ import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 
 public class RecordBuilder  {
 
-	public static String SOURCE_METAMODEL = "sourcemm";
-	public static String INPUT_MODEL = "input";
-	public static String OUTPUT_FILE = "output";
+	static final String SOURCE_METAMODEL 					= "s";
+	static final String INPUT_MODEL 						= "i";
+	static final String OUTPUT_FILE 						= "o";
+
+	private static final String SOURCE_METAMODEL_LONG 		= "source-metamodel";
+	private static final String INPUT_MODEL_LONG 			= "input";
+	private static final String OUTPUT_FILE_LONG 			= "output";
+
+	private static class OptionComarator<T extends Option> implements Comparator<T> {
+		private static final String OPTS_ORDER = "sio";
+
+		@Override
+		public int compare(T o1, T o2) {
+			return OPTS_ORDER.indexOf(o1.getOpt()) - OPTS_ORDER.indexOf(o2.getOpt());
+		}
+	}
+
 
 
 	/**
 	 * Main program
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
@@ -54,59 +71,68 @@ public class RecordBuilder  {
 
 			String sourcemmLocation = commandLine.getOptionValue(SOURCE_METAMODEL);
 			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
-			String outputLocation = commandLine.getOptionValue(OUTPUT_FILE);
+			String outputLocation = commandLine.getOptionValue(OUTPUT_FILE) != null ?
+					commandLine.getOptionValue(OUTPUT_FILE) : inputLocation.concat(".rec");
 
-			// Initialize ExtensionToFactoryMap
-			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-			
-			
-			// Build records file
-			Builder recordBuilder = new Builder(URI.createURI(inputLocation), Arrays.asList(URI.createURI(sourcemmLocation)));
-			recordBuilder.save(new File(outputLocation));
-			
+					// Initialize ExtensionToFactoryMap
+					Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
+					Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+
+
+					// Build records file
+					Builder recordBuilder = new Builder(URI.createURI(inputLocation), Arrays.asList(URI.createURI(sourcemmLocation)));
+					recordBuilder.save(new File(outputLocation));
+
 		} catch (ParseException e) {
 			System.err.println(e.getLocalizedMessage());
 			HelpFormatter formatter = new HelpFormatter();
+			formatter.setOptionComparator(new OptionComarator<>());
+			try {
+				formatter.setWidth(Math.max(Terminal.getTerminal().getTerminalWidth(), 80));
+			} catch (Throwable t) {
+				// Nothing to do...
+			};
 			formatter.printHelp("java -jar <this-file.jar>", options, true);
 		}
 	}
 
 	/**
 	 * Configures the program options
-	 * 
+	 *
 	 * @param options
 	 */
 	private static void configureOptions(Options options) {
 
 		Option sourcemmOpt = OptionBuilder.create(SOURCE_METAMODEL);
+		sourcemmOpt.setLongOpt(SOURCE_METAMODEL_LONG);
 		sourcemmOpt.setArgName("source.ecore");
-		sourcemmOpt.setDescription("Source metamodel");
+		sourcemmOpt.setDescription("URI of the source metamodel file.");
 		sourcemmOpt.setArgs(1);
 		sourcemmOpt.setRequired(true);
 
 		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
+		inputOpt.setLongOpt(INPUT_MODEL_LONG);
 		inputOpt.setArgName("input.xmi");
-		inputOpt.setDescription("Input file");
+		inputOpt.setDescription("URI of the input file.");
 		inputOpt.setArgs(1);
 		inputOpt.setRequired(true);
 
 		Option outputOpt = OptionBuilder.create(OUTPUT_FILE);
-		outputOpt.setArgName("output.rec");
-		outputOpt.setDescription("Output records file");
+		outputOpt.setLongOpt(OUTPUT_FILE_LONG);
+		outputOpt.setArgName("records.rec");
+		outputOpt.setDescription("Path of the output records file.");
 		outputOpt.setArgs(1);
-		inputOpt.setRequired(true);
 
 		options.addOption(sourcemmOpt);
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
 	}
 
-	
+
 	/**
 	 * Implements the logic to build MapReduce records from a {@link Resource}
 	 * given its {@link URI}
-	 * 
+	 *
 	 * @author agomez
 	 *
 	 */
@@ -137,7 +163,7 @@ public class RecordBuilder  {
 		/**
 		 * Saves the records of this {@link Builder} in the given
 		 * {@link File}
-		 * 
+		 *
 		 * @param file
 		 * @throws FileNotFoundException
 		 * @throws IOException
@@ -149,7 +175,7 @@ public class RecordBuilder  {
 		/**
 		 * Saves the records of this {@link Builder} in the given
 		 * {@link OutputStream}
-		 * 
+		 *
 		 * @param outputStream
 		 * @throws IOException
 		 */
@@ -158,11 +184,11 @@ public class RecordBuilder  {
 			buildRecords(inputResource, outputStream);
 			inputResource.unload();
 		}
-		
+
 		/**
 		 * Writes on a given {@link OutputStream} the records for a
 		 * {@link Resource}
-		 * 
+		 *
 		 * @param inputResource
 		 * @param outputStream
 		 * @throws IOException
