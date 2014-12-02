@@ -135,6 +135,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			job.setOutputFormatClass(SequenceFileOutputFormat.class);
 			job.setMapOutputKeyClass(Text.class);
 			job.setMapOutputValueClass(BytesWritable.class);
+			job.setNumReduceTasks(1);
 
 			// Configure MapReduce input/outputs
 			Path recordsPath = new Path(recordsLocation);
@@ -146,7 +147,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			// Configure records per map
 			FileSystem fileSystem = FileSystem.get(recordsPath.toUri(), conf);
 			InputStream inputStream = fileSystem.open(recordsPath);
-			long linesPerMap = countLines(inputStream) / recommendedMappers;
+			long linesPerMap = (long) Math.ceil((double) countLines(inputStream) / (double) recommendedMappers);
 			job.getConfiguration().setLong(NLineInputFormat.LINES_PER_MAP, linesPerMap);
 
 
