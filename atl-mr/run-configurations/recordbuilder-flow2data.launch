@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.atlanmod.atl_mr.builder.RecordBuilder"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-sourcemm data/Flow2Data/FlowGraph.ecore -input data/Flow2Data/Test1-ControlFlowGraph-with-Vars.xmi -output data/Flow2Data/Test1-ControlFlowGraph-with-Vars.xmi.rec"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-s data/Flow2Data/FlowGraph.ecore &#13;&#10;-i data/Flow2Data/Test0-ControlFlowGraph-with-Vars.xmi &#13;&#10;-o data/Flow2Data/Test0-ControlFlowGraph-with-Vars.xmi.rec"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="atl-mr"/>
 </launchConfiguration>
