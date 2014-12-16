@@ -10,8 +10,9 @@ This file has the job of  defining the subset of model elements to be processed 
 
 ###Record file 
 
-The record file contains input model elements URIs as plain string, one per line. This file will be split by hadoop in input splits. Each map worker is assigned a chunk. 
-usage: java -jar <this-file.jar> -s <source.ecore> -i <input.xmi> [-o<records.rec>]
+The record file contains input model elements URIs as plain string, one per line. This file will be split by hadoop in input splits. Each map worker is assigned a chunk. Usage below:
+
+**java -jar <this-file.jar> -s <source.ecore> -i <input.xmi> [-o<records.rec>]**
 
   Argument                            |  Meaning
  -------------------------------------|:-----------------------------------
@@ -23,7 +24,7 @@ usage: java -jar <this-file.jar> -s <source.ecore> -i <input.xmi> [-o<records.re
 
 The transformation parameters are provided by the means of arguments. Below the usage:
 
-yarn jar <this-file.jar> -f <transformation.emftvm> -s <source.ecore> -t <target.ecore> -r <records.rec> -i <input.xmi> [-o <output.xmi>] [-m <mappers_hint> | -n <recors_per_mapper>]  [-v | -q]
+**yarn jar <this-file.jar> -f <transformation.emftvm> -s <source.ecore> -t <target.ecore> -r <records.rec> -i <input.xmi> [-o <output.xmi>] [-m <mappers_hint> | -n <recors_per_mapper>]  [-v | -q]**
  
   Argument                                    |  Meaning
  ---------------------------------------------|:-----------------------------------
@@ -48,7 +49,7 @@ ATL/MapReduce can be executed within eclipse. Hadoop configuration files are alr
 In order to run ATL/MapReduce, please download the appropriate hadoop distribution [here](http://hadoop.apache.org/releases.html).
 
 ###Hadoop cluster 
-It is also possible to run ATL/MapReduce on a hadoop cluster such as [CDH-Cloudera](http://www.cloudera.com/content/cloudera/en/products-and-services/cdh.html) or [Amazon Elastic MapReduce EMR](http://aws.amazon.com/fr/elasticmapreduce/).
+It is also possible to run ATL/MapReduce on a hadoop cluster such as [CDH-Cloudera](http://www.cloudera.com/content/cloudera/en/products-and-services/cdh.html) or [Amazon Elastic MapReduce (EMR)](http://aws.amazon.com/fr/elasticmapreduce/).
 The jar files and dependencies can be found in the **dist** folder.
 
 
