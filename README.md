@@ -24,7 +24,7 @@ The record file contains input model elements URIs as plain string, one per line
 
 The transformation parameters are provided by the means of arguments. Below the usage:
 
-**yarn jar <this-file.jar> -f <transformation.emftvm> -s <source.ecore> -t <target.ecore> -r <records.rec> -i <input.xmi> [-o <output.xmi>] [-m <mappers_hint> | -n <recors_per_mapper>]  [-v | -q]**
+**yarn jar atl-mr.jar -f <transformation.emftvm> -s <source.ecore> -t <target.ecore> -r <records.rec> -i <input.xmi> [-o <output.xmi>] [-m <mappers_hint> | -n <recors_per_mapper>]  [-v | -q]**
  
   Argument                                    |  Meaning
  ---------------------------------------------|:-----------------------------------
@@ -39,7 +39,7 @@ The transformation parameters are provided by the means of arguments. Below the 
  -v,--verbose                                 | Verbose mode. Optional, disabled by default.
  -q,--quiet                                   |  Do not print any information about the transformation execution on the standard output. Optional, disabled by default.
 
-**Please note that resource URIs with the 'hdfs:\\' protocol are supported**. 
+**Please note that resource URIs with the 'hdfs://' protocol are supported**. 
 ##Execution modes
 
 You can run ATL/MapReduce in two different modes, within eclipse or in a hadoop cluster.
