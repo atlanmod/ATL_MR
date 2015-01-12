@@ -2,25 +2,18 @@
 
 ATL/MapReduce is a prototype tool for running complex **ATL** transformation in the cloud using **Hadoop** MapReduce.
 ATL/MapReduce is implemented on top  of an extended ATL VM that can be found [here](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master).
-Coupling **ATL_MR** with the [the extended VM](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master) has proved a good performance, especially in terms of execution time. It runs up to **~X6** faster compared to the regular VM while distributing it over 8 machines.  
+Coupling **ATL_MR** with the [the extended VM](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master) has proved a good performance, especially in terms of execution time. It runs up to **~6x** faster compared to the regular VM while distributing it over 8 machines.  
 
 ##How to use
 
 The transformation configuration in ATL/MapReduce has one additional input w.r.t. the standalone one, a record file. 
 This file has the job of  defining the subset of model elements to be processed by a map worker.
 
-In order to build the project, you should **re-create** the build.xml file by re-exporting it.
-This is **necessary** to match your computer's configuration:
-
-1. Go to *File -> Export* and select *General / Ant Buildfiles*.
-2. Select  the project and press Finish.
-
-
 ###Record file 
 
 The record file contains input model elements URIs as plain string, one per line. This file will be split by hadoop in input splits. Each map worker is assigned a chunk. Usage below:
 
-**java -jar <this-file.jar> -s <source.ecore> -i <input.xmi> [-o<records.rec>]**
+``java -jar <this-file.jar> -s <source.ecore> -i <input.xmi> [-o <records.rec>]``
 
   Argument                            |  Meaning
  -------------------------------------|:-----------------------------------
@@ -32,7 +25,7 @@ The record file contains input model elements URIs as plain string, one per line
 
 The transformation parameters are provided by the means of arguments. Below the usage:
 
-**yarn jar atl-mr.jar -f <transformation.emftvm> -s <source.ecore> -t <target.ecore> -r <records.rec> -i <input.xmi> [-o <output.xmi>] [-m <mappers_hint> | -n <recors_per_mapper>]  [-v | -q]**
+``yarn jar atl-mr.jar -f <transformation.emftvm> -s <source.ecore> -t <target.ecore> -r <records.rec> -i <input.xmi> [-o <output.xmi>] [-m <mappers_hint> | -n <recors_per_mapper>]  [-v | -q]``
  
   Argument                                    |  Meaning
  ---------------------------------------------|:-----------------------------------
@@ -58,7 +51,14 @@ In order to run ATL/MapReduce, please download the appropriate hadoop distributi
 
 ###Hadoop cluster 
 It is also possible to run ATL/MapReduce on a hadoop cluster such as [CDH-Cloudera](http://www.cloudera.com/content/cloudera/en/products-and-services/cdh.html) or [Amazon Elastic MapReduce (EMR)](http://aws.amazon.com/fr/elasticmapreduce/).
-The jar files and dependencies are created in the **dist** folder by executing the dist-*.xml ant scripts.
+
+In order to build the distribution files of the project, you must **re-create** the build.xml file by re-exporting it.
+This is **necessary** to match your computer's configuration:
+
+1. Go to *File -> Export* and select *General / Ant Buildfiles*.
+2. Select  the project and press Finish.
+
+The distribution JAR files and dependencies are automatically created and copied in the **dist** folder by executing the ``dist.emftvm`` and ``dist`` targets of the ``dist.xml`` ant script.
 
 **Please note that hints on the execution syntax are provided. For more information please check the run.bat/run.sh files in the dist folder**.
 
