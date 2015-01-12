@@ -2,11 +2,19 @@
 
 ATL/MapReduce is a prototype tool for running complex **ATL** transformation in the cloud using **Hadoop** MapReduce.
 ATL/MapReduce is implemented on top  of an extended ATL VM that can be found [here](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master).
+Coupling **ATL_MR** with the [the extended VM](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master) has proved a good performance, especially in terms of execution time. It runs up to **~X6** faster compared to the regular VM while distributing it over 8 machines.  
 
 ##How to use
 
 The transformation configuration in ATL/MapReduce has one additional input w.r.t. the standalone one, a record file. 
 This file has the job of  defining the subset of model elements to be processed by a map worker.
+
+In order to build the project, you should **re-create** the build.xml file by re-exporting it.
+This is **necessary** to match your computer's configuration:
+
+1. Go to *File -> Export* and select *General / Ant Buildfiles*.
+2. Select  the project and press Finish.
+
 
 ###Record file 
 
@@ -50,7 +58,8 @@ In order to run ATL/MapReduce, please download the appropriate hadoop distributi
 
 ###Hadoop cluster 
 It is also possible to run ATL/MapReduce on a hadoop cluster such as [CDH-Cloudera](http://www.cloudera.com/content/cloudera/en/products-and-services/cdh.html) or [Amazon Elastic MapReduce (EMR)](http://aws.amazon.com/fr/elasticmapreduce/).
-The jar files and dependencies can be found in the **dist** folder.
+The jar files and dependencies are created in the **dist** folder by executing the dist-*.xml ant scripts.
 
+**Please note that hints on the execution syntax are provided. For more information please check the run.bat/run.sh files in the dist folder**.
 
 
