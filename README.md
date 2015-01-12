@@ -13,7 +13,7 @@ This file has the job of  defining the subset of model elements to be processed 
 
 The record file contains input model elements URIs as plain string, one per line. This file will be split by hadoop in input splits. Each map worker is assigned a chunk. Usage below:
 
-``java -jar <this-file.jar> -s <source.ecore> -i <input.xmi> [-o <records.rec>]``
+``java -jar atl-mr.jar -s <source.ecore> -i <input.xmi> [-o <records.rec>]``
 
   Argument                            |  Meaning
  -------------------------------------|:-----------------------------------
