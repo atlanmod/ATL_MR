@@ -1,5 +1,8 @@
 package fr.inria.atlanmod.atl_mr.utils;
 
+import java.text.MessageFormat;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.hadoop.conf.Configuration;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -15,6 +18,7 @@ import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
+import org.eclipse.m2m.atl.emftvm.ftrace.FTracePackage;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceFactoryImpl;
 import org.eclipse.m2m.atl.emftvm.impl.resource.EMFTVMResourceImpl;
 import org.eclipse.m2m.atl.emftvm.trace.TraceFactory;
@@ -22,8 +26,29 @@ import org.eclipse.m2m.atl.emftvm.trace.TraceLink;
 import org.eclipse.m2m.atl.emftvm.trace.TraceLinkSet;
 import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 
+import fr.inria.atlanmod.kyanos.core.impl.KyanosResourceFactoryImpl;
+import fr.inria.atlanmod.kyanos.util.KyanosURI;
+
 
 public class ATLMRUtils {
+
+	public static void showError(String message) {
+		System.err.println(message);
+	}
+
+	public static String formatMillis(long millis) {
+		return String.format("%02d:%02d:%02d",
+				TimeUnit.MILLISECONDS.toHours(millis),
+				TimeUnit.MILLISECONDS.toMinutes(millis) -
+				TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+				TimeUnit.MILLISECONDS.toSeconds(millis) -
+				TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+	}
+
+	public static String byteCountToDisplaySize(long size) {
+		int MB = 1024 * 1024;
+		return MessageFormat.format("{0} MB", size / MB);
+	}
 
 	public static void configureRegistry(final Configuration conf) {
 		// Initialize ExtensionToFactoryMap
@@ -84,7 +109,12 @@ public class ATLMRUtils {
 				};
 			}
 		});
+
+		Resource.Factory.Registry.INSTANCE.getProtocolToFactoryMap().put(KyanosURI.KYANOS_HBASE_SCHEME, new KyanosResourceFactoryImpl());
+
+		EPackage ftrace = FTracePackage.eINSTANCE;
 	}
+
 
 	//	/**
 	//	 * This method is used to extract rules from a

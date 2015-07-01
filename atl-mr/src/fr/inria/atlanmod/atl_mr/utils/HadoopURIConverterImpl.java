@@ -12,7 +12,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 
 public class HadoopURIConverterImpl extends ExtensibleURIConverterImpl {
-	
+
 	private Configuration conf;
 
 	public HadoopURIConverterImpl(Configuration conf) {
@@ -40,4 +40,5 @@ public class HadoopURIConverterImpl extends ExtensibleURIConverterImpl {
 			return fileSystem.create(path);
 		}
 	}
+
 }
