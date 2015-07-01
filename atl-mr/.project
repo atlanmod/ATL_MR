@@ -26,4 +26,11 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.apache.ivyde.eclipse.ivynature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>hadoop-win-x86_64/ATLMRMaster_hbase.launch</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/run-configurations/ATLMRMaster_hbase.launch</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

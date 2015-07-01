@@ -9,7 +9,10 @@ Require-Bundle: org.eclipse.m2m.atl.emftvm,
  org.eclipse.m2m.atl.common,
  org.eclipse.core.resources,
  org.eclipse.emf.validation,
- org.objectweb.asm
+ org.objectweb.asm,
+ fr.inria.atlanmod.kyanos,
+ classMetamodel;bundle-version="1.0.0",
+ relationalMetamodel;bundle-version="1.0.0"
 Bundle-Version: 0.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2

@@ -23,7 +23,7 @@
 	</target>
 
 	<target name="dist.emftvm" depends="check.emftvm" unless="${emftvm.exists}">
-		<pde.exportPlugins destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm,org.eclipse.m2m.atl.emftvm.trace" useJARFormat="true" qualifier="atlmr" />
+		<pde.exportPlugins destination="${dist.libs.instantiator}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm,org.eclipse.m2m.atl.emftvm.trace,fr.inria.atlanmod.kyanos" useJARFormat="true" qualifier="atlmr" />
 	</target>
 
 	<target name="dist">

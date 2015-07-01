@@ -103,7 +103,7 @@ rule MultiValuedClassAttribute2Column {
 			col <- Sequence {id, foreignKey}
 		),
 		id : Relational!Column (
-			name <- a.owner.name + 'Id',
+			name <- a.owner.name + 'Id',			
 			type <- thisModule.objectIdType
 		),
 		foreignKey : Relational!Column (
