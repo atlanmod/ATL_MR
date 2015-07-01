@@ -1,4 +1,4 @@
-package fr.inria.atlanmod.atl_mr;
+package fr.inria.atlanmod.atl_mr.standalone.test;
 
 import java.util.Collections;
 
