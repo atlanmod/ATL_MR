@@ -7,5 +7,7 @@
 		<dependency org="org.apache.hadoop" name="hadoop-hdfs" rev="2.5.1"/>
 		<dependency org="commons-daemon" name="commons-daemon" rev="1.0.13"/>
 		<dependency org="jline" name="jline" rev="0.9.94"/>
+		<dependency org="org.apache.hbase" name="hbase-client" rev="1.0.0"/>
+		<dependency org="org.apache.hbase" name="hbase-common" rev="1.0.0"/>
     </dependencies>
 </ivy-module>
