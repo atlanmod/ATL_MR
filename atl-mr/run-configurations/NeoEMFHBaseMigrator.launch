@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/atl-mr/src/fr/inria/atlanmod/atl_mr/utils/NeoEMFHBaseMigrator.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.atlanmod.atl_mr.utils.NeoEMFHBaseMigrator"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-mip ../data/Class2Relational/models/result0_1000000.xmi &#10;-mpck fr.metamodel.impl.ClassPackageImpl&#10;-mop kyanoshbase://localhost/class2relational/1000000"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="atl-mr"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-verbose:clas"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:atl-mr/working}"/>
+</launchConfiguration>
