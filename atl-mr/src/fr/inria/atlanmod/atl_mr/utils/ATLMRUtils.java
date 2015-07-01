@@ -112,6 +112,7 @@ public class ATLMRUtils {
 
 		Resource.Factory.Registry.INSTANCE.getProtocolToFactoryMap().put(KyanosURI.KYANOS_HBASE_SCHEME, new KyanosResourceFactoryImpl());
 
+		@SuppressWarnings("unused")
 		EPackage ftrace = FTracePackage.eINSTANCE;
 	}
 
