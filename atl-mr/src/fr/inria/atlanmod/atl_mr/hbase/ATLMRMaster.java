@@ -148,7 +148,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			FileSystem fileSystem = FileSystem.get(recordsPath.toUri(), conf);
 			InputStream inputStream = fileSystem.open(recordsPath);
 			long linesPerMap = (long) Math.ceil((double) countLines(inputStream) / (double) recommendedMappers);
-			job.getConfiguration().setLong(NLineInputFormat.LINES_PER_MAP, 5);
+			job.getConfiguration().setLong(NLineInputFormat.LINES_PER_MAP, linesPerMap);
 
 
 			// Configure ATL related inputs/outputs
