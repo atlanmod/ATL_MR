@@ -58,7 +58,7 @@ This is **necessary** to match your computer's configuration:
 1. Go to *File -> Export* and select *General / Ant Buildfiles*.
 2. Select  the project and press Finish.
 
-The distribution JAR files and dependencies are automatically created and copied in the **dist** folder by executing the ``dist.emftvm`` and ``dist`` targets of the ``dist.xml`` ant script.
+The distribution JAR files and dependencies are automatically created and copied in the **dist** folder by executing the ``dist.emftvm`` and ``dist`` targets in the ``build.xml`` file (imported from the ``dist.xml`` ant script). The ``dist.emftvm`` targemt MUST be execute in the same JRE than the workspace (check the JRE settings in the dialog ``External Tools Configurations``).
 
 **Please note that hints on the execution syntax are provided. For more information please check the run.bat/run.sh files in the dist folder**.
 
