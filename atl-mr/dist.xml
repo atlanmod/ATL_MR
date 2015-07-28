@@ -172,7 +172,7 @@ URIRECORDS=/user/$USER/$RECORDS
 hdfs dfs -mkdir -p /user/$USER/`dirname $RECORDS`
 hdfs dfs -copyFromLocal -f $RECORDS $URIRECORDS
 
-MAPPERS=`yarn node -list | grep -c -E '^\s+\w+:[0-9]+\s+RUNNING\s+'`
+MAPPERS=`yarn node -list | grep -c -E '^\s*\w+:[0-9]+\s*RUNNING\s*'`
 
 yarn jar atl-mr.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $YARNARGS -r $URIRECORDS -m $MAPPERS
 		</echo>
