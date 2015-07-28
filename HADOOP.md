@@ -46,8 +46,8 @@ Running a 1-node within VirtualBox or any other virtualization tool takes a bit 
     7. Follow steps of "YARN on a Single Node".
 4. Check the IP of the machine with `ip addr show eth0`. The YARN web frontend will be available on `http://IP:8088/` and the name node web frontend will be available on `http://IP:50070`.
 
-Running the sample "Families2Persons" ATL_MR transformation on Docker
----------------------------------------------------------------------
+Running "Families2Persons" within Docker
+----------------------------------------
 
 After creating the ATL_MR distribution as mentioned in the README.md, running the sample transformation with the above Docker instance would require these steps:
 
@@ -67,3 +67,52 @@ After creating the ATL_MR distribution as mentioned in the README.md, running th
     hdfs dfs -get /user/root/data/Families2Persons/sample-Families.xmi.out.xmi output.xmi
 
 4. The generated model will be in the `output.xmi` file of the current directory.
+
+5. Exit and stop the container with `exit` or CTRL+d.
+
+Running "Families2Persons" from outside Docker
+----------------------------------------------
+
+To run this transformation from outside the Docker container, you can follow these steps:
+
+1. Create a new container based on the previous Hadoop image and log onto it:
+
+    sudo docker create --name=hadoop-jh sequenceiq/hadoop-docker:2.7.0
+    sudo docker start hadoop-jh
+    sudo docker exec -it container_name bash
+
+3. Modify the lines around the `service sshd start` line, to read as follows:
+
+    service sshd start
+    $HADOOP_PREFIX/sbin/start-dfs.sh
+    $HADOOP_PREFIX/sbin/start-yarn.sh
+    $HADOOP_PREFIX/sbin/mr-jobhistory-daemon.sh start historyserver
+
+4. Commit the change into your own image:
+
+    sudo docker commit container_name youruser/hadoopjh:latest
+
+5. You can now start Hadoop with the usual command, but using the changed image:
+
+    sudo docker run -it youruser/hadoopjh /etc/bootstrap.sh -bash
+
+6. Note down the IP address for the container with `ip addr show eth0`.
+
+7. Copy the Hadoop distribution from the container into the host:
+
+    cd /path/to/atl-mr/dist
+    sudo docker cp container_name:/usr/local/hadoop .
+    sudo chown -R $(whoami): hadoop
+
+8. Set some properties in the `hadoop/etc/hadoop` config files:
+
+   * `core-site.xml`, `fs.defaultFS`: `hdfs://CONTAINER_IP:9000`
+   * `mapred-site.xml`, `mapreduce.jobhistory.address`: `CONTAINER_IP:10020`
+   * `yarn-site.xml`, `yarn.resourcemanager.hostname`: `CONTAINER_IP`
+
+9. Run the ATL/MapReduce transformation from the host:
+
+    bash run.sh -f ../data/Families2Persons/Families2Persons.emftvm \
+      -s ../data/Families2Persons/Families.ecore \
+      -t ../data/Families2Persons/Persons.ecore \
+      -i ../data/Families2Persons/sample-Families.xmi
