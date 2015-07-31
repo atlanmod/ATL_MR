@@ -5,3 +5,7 @@
 !/working/.dummy
 
 /dist/
+
+!/lib/
+/lib/*
+!/lib/.dummy

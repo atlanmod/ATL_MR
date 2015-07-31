@@ -39,16 +39,16 @@ import org.apache.hadoop.util.ToolRunner;
 
 public class ATLMRMaster extends Configured implements Tool {
 
-	protected static final String JOB_NAME = "ATL in MapReduce";
+	public static final String DEFAULT_JOB_NAME = "ATL in MapReduce";
 
 	protected static final int STATUS_OK = 0;
 	protected static final int STATUS_ERROR = 1;
 
-	static final String TRANSFORMATION 						= "f";
-	static final String SOURCE_METAMODEL 					= "s";
-	static final String TARGET_METAMODEL 					= "t";
-	static final String INPUT_MODEL 						= "i";
-	static final String OUTPUT_MODEL 						= "o";
+	public static final String TRANSFORMATION 						= "f";
+	public static final String SOURCE_METAMODEL 					= "s";
+	public static final String TARGET_METAMODEL 					= "t";
+	public static final String INPUT_MODEL 						= "i";
+	public static final String OUTPUT_MODEL 						= "o";
 
 	private static final String RECORDS_FILE				= "r";
 	private static final String RECOMMENDED_MAPPERS 		= "m";
@@ -125,7 +125,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			}
 
 			Configuration conf = this.getConf();
-			Job job = Job.getInstance(conf, JOB_NAME);
+			Job job = Job.getInstance(conf, DEFAULT_JOB_NAME);
 
 			// Configure classes
 			job.setJarByClass(ATLMRMaster.class);
@@ -270,7 +270,7 @@ public class ATLMRMaster extends Configured implements Tool {
 		options.addOptionGroup(mappersGroup);
 	}
 
-	private static long countLines(InputStream inputStream) throws IOException {
+	public static long countLines(InputStream inputStream) throws IOException {
 		LineNumberReader lineNumberReader = null;
 		int lines = 1;
 		try {
