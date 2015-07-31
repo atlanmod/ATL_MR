@@ -30,7 +30,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-annotations-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-auth-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-common-2.5.1.jar" sourcepath="lib/sources/hadoop-common-2.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-hdfs-2.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-hdfs-2.5.1.jar" sourcepath="lib/sources/hadoop-hdfs-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-mapreduce-client-common-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-mapreduce-client-core-2.5.1.jar" sourcepath="lib/sources/hadoop-mapreduce-client-core-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jars/hadoop-mapreduce-client-jobclient-2.5.1.jar" sourcepath="lib/sources/hadoop-mapreduce-client-jobclient-2.5.1.jar"/>
