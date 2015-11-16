@@ -36,6 +36,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.eclipse.emf.common.util.URI;
+
+import fr.inria.atlanmod.kyanos.util.KyanosUtil;
 
 public class ATLMRMaster extends Configured implements Tool {
 
@@ -158,11 +161,25 @@ public class ATLMRMaster extends Configured implements Tool {
 			job.getConfiguration().set(INPUT_MODEL, inputLocation);
 			job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
 
+			// CLeaning the resources if they already exist
+			// target URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(outputLocation));
+			// Trace URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI));
+			// Trace Map URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI_MAP));
+			//Starting the job
 			Logger.getGlobal().log(Level.INFO, "Starting Job execution");
 			long begin = System.currentTimeMillis();
 			int returnValue = job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
 			long end = System.currentTimeMillis();
 			Logger.getGlobal().log(Level.INFO, MessageFormat.format("Job execution ended in {0}s with status code {1}", (end - begin) / 1000, returnValue));
+
+			// Cleaning the resources
+			// Trace URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI));
+			// Trace Map URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI_MAP));
 
 			return returnValue;
 

@@ -23,7 +23,7 @@ public class HbaseTraceCreator extends HbaseTracer implements Creator {
 	public boolean addMapping(String source, String[] targets) {
 
 		Put put = new Put(Bytes.toBytes(source.toString()));
-		put.addColumn(EINVERSE_FAMILY, TARGET_COLUMN, toPrettyBytes(targets));
+		put.add(EINVERSE_FAMILY, TARGET_COLUMN, toPrettyBytes(targets));
 		try {
 			table.put(put);
 			return true;
@@ -34,11 +34,13 @@ public class HbaseTraceCreator extends HbaseTracer implements Creator {
 		return false;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean addMapping(String source, String target) {
-		// TODO Auto-generated method stub
-		return false;
+
+		return addMapping(source, new String[] {target});
 	}
 
 }

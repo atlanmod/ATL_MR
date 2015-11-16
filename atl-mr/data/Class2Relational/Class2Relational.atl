@@ -16,10 +16,13 @@ create OUT : Relational from IN : Class;
 -- We choose Integer here, assuming this type is defined in the source model.
 
 -- global variable
--- context 
-helper def: objectIdType : Relational!Type =
+-- context
+-- @TOFIX what if there is no Interger Type in the source model ?? 
+		
+helper def: objectIdType : Class!DataType =
 	--Class!DataType.allInstances()->select(e | e.name = 'Integer')->first();
 	Class!DataType.allInstances()->first();
+	
 rule Class2Table {
 	from
 		c : Class!Class

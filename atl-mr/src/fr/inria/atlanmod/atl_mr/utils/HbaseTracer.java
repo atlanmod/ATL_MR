@@ -11,10 +11,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
+import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.eclipse.emf.common.util.URI;
 
@@ -24,8 +24,8 @@ public class HbaseTracer implements Tracer{
 	protected static final byte[] EINVERSE_FAMILY = Bytes.toBytes("inv");
 	protected static final byte[] TARGET_COLUMN = Bytes.toBytes("trg");
 
-	protected Connection traceConnection;
-	protected Table table;
+	protected HConnection traceConnection;
+	protected HTable table;
 	protected URI traceURI;
 
 	public HbaseTracer (URI traceURI) {
@@ -33,23 +33,27 @@ public class HbaseTracer implements Tracer{
 		this.traceURI = traceURI;
 
 		Configuration conf = HBaseConfiguration.create();
+		//TODO: add a configuration parser to the handle user specific conf
+		//TODO: hbase.zookeeper.quorum takes a list of
 		conf.set("hbase.zookeeper.quorum", traceURI.host());
 		conf.set("hbase.zookeeper.property.clientPort", traceURI.port() != null ? traceURI.port() : "2181");
-		TableName tableName = TableName.valueOf(traceURI.devicePath().replaceAll("/", "_").concat("_map"));
-
+		byte[] tableName = Bytes.toBytes(traceURI.devicePath().replaceAll("/", "_").concat("_map"));
+		HBaseAdmin admin;
 		try {
+			admin = new HBaseAdmin(conf);
+			traceConnection =  HConnectionManager.createConnection(conf);
 
-			traceConnection =  ConnectionFactory.createConnection(conf);
-			if (!traceConnection.getAdmin().tableExists(tableName)) {
+			if (!admin.tableExists(tableName)) {
 				HTableDescriptor desc = new HTableDescriptor(tableName);
 				HColumnDescriptor inverseFamily = new HColumnDescriptor(EINVERSE_FAMILY);
 				desc.addFamily(inverseFamily);
-				traceConnection.getAdmin().createTable(desc);
+				admin.createTable(desc);
 			}
-			table = traceConnection.getTable(tableName);
-
+			table = new HTable(conf, tableName);
+			admin.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+
 		}
 	}
 

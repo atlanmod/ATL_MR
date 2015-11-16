@@ -2,12 +2,19 @@
     <info organisation="AtlanMod" module="atl-mr"/>
     <dependencies>
     	<dependency org="commons-cli" name="commons-cli" rev="1.2"/>
+    	<dependency org="commons-daemon" name="commons-daemon" rev="1.0.13"/>
+    	<dependency org="commons-lang" name="commons-lang" rev="2.6"/>
+		<dependency org="commons-io" name="commons-io" rev="2.4"/>
+		<dependency org="org.apache.commons" name="commons-collections4" rev="4.0"/>
+		<dependency org="com.google.guava" name="guava" rev="16.0.1"/>
 		<dependency org="org.apache.hadoop" name="hadoop-common" rev="2.5.1"/>
 		<dependency org="org.apache.hadoop" name="hadoop-mapreduce-client-common" rev="2.5.1"/>
 		<dependency org="org.apache.hadoop" name="hadoop-hdfs" rev="2.5.1"/>
-		<dependency org="commons-daemon" name="commons-daemon" rev="1.0.13"/>
+		<!--dependency org="org.apache.hbase" name="hbase" rev="0.98.14-hadoop2"/-->
+		<dependency org="org.apache.hbase" name="hbase-client" rev="0.98.13-hadoop2"/>
+		<dependency org="org.apache.hbase" name="hbase-common" rev="0.98.13-hadoop2"/>
+		<dependency org="jboss" name="jboss-common" rev="4.2.2.GA"/>
 		<dependency org="jline" name="jline" rev="0.9.94"/>
-		<dependency org="org.apache.hbase" name="hbase-client" rev="1.0.0"/>
-		<dependency org="org.apache.hbase" name="hbase-common" rev="1.0.0"/>
+		<dependency org="cglib" name="cglib-nodep" rev="3.1"/>
     </dependencies>
 </ivy-module>

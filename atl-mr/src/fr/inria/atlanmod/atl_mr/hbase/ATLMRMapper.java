@@ -26,8 +26,7 @@ import fr.inria.atlanmod.kyanos.core.KyanosEObject;
 /* *
  * @author Amine BENELALLAM
  *
- * In this version we are only distributing tasks
- * The number of task is not that big, thus Using IntWritable as a key
+ *
  *
  */
 
@@ -39,6 +38,7 @@ public class ATLMRMapper extends Mapper<LongWritable, Text, LongWritable, Text> 
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
 		Logger.getGlobal().log(Level.INFO, "Setting up mapper - START");
+
 		try {
 			mapTask.setup(context.getConfiguration(), true);
 			mapTask.setTracer(new HbaseTraceCreator(mapTask.getTraceResource().getURI()));

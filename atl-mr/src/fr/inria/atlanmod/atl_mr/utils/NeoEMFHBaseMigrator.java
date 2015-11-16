@@ -1,5 +1,5 @@
 /*******************************************************************************
-KyanosHbaseCreator * Copyright (c) 2014 Abel G�mez.
+ * Copyright (c) 2014 Abel G�mez.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@ KyanosHbaseCreator * Copyright (c) 2014 Abel G�mez.
  *
  * Contributors:
  *     Abel G�mez - initial API and implementation
+ *     Amine Benelallam
  ******************************************************************************/
 package fr.inria.atlanmod.atl_mr.utils;
 
@@ -41,16 +42,20 @@ public class NeoEMFHBaseMigrator {
 
 	private static final Logger LOG = Logger.getLogger(NeoEMFHBaseMigrator.class.getName());
 
-	private static final String IN = "mip";
+	private static final String IN = "i";
+	private static final String OUT = "o";
+	private static final String E_PACKAGE = "p";
 
-	private static final String OUT = "mop";
+	private static final String IN_LONG = "input";
+	private static final String OUT_LONG = "output";
+	private static final String E_PACKAGE_LONG = "package";
 
-	private static final String E_PACKAGE = "mpck";
 
 	public static void main(String[] args) {
 		Options options = new Options();
 
 		Option inputOpt = OptionBuilder.create(IN);
+		inputOpt.setLongOpt(IN_LONG);
 		inputOpt.setArgName("INPUT");
 		inputOpt.setDescription("Input file, both of xmi and zxmi extensions are supported");
 		inputOpt.setArgs(1);
@@ -58,14 +63,16 @@ public class NeoEMFHBaseMigrator {
 
 
 		Option outputOpt = OptionBuilder.create(OUT);
+		outputOpt.setLongOpt(OUT_LONG);
 		outputOpt.setArgName("OUTPUT");
-		outputOpt.setDescription("Output HBase resource URI");
+		outputOpt.setDescription("Output HBase resource URI. <e.g kyanoshbase://host:port/output_location>");
 		outputOpt.setArgs(1);
 		outputOpt.setRequired(true);
 
 		Option inClassOpt = OptionBuilder.create(E_PACKAGE);
-		inClassOpt.setArgName("METAMODEL");
-		inClassOpt.setDescription("URI of the ecore Metamodel");
+		inClassOpt.setLongOpt(E_PACKAGE_LONG);
+		inClassOpt.setArgName("EPACKAGE_IMPL");
+		inClassOpt.setDescription("the FQN of the package implementation class. <e.g. fr.example.impl.ExamplePackageImpl>");
 		inClassOpt.setArgs(1);
 		inClassOpt.setRequired(true);
 
@@ -80,10 +87,10 @@ public class NeoEMFHBaseMigrator {
 
 			URI sourceUri = URI.createFileURI(commandLine.getOptionValue(IN));
 			URI targetUri = URI.createURI(commandLine.getOptionValue(OUT));
-			URI metamodelUri = URI.createFileURI(commandLine.getOptionValue(E_PACKAGE));
+			//URI metamodelUri = URI.createFileURI(commandLine.getOptionValue(E_PACKAGE));
 
+			// registering the metamodel package
 			NeoEMFHBaseMigrator.class.getClassLoader().loadClass(commandLine.getOptionValue(E_PACKAGE)).getMethod("init").invoke(null);
-			//org.eclipse.gmt.modisco.java.kyanos.impl.JavaPackageImpl.init();
 
 
 			ResourceSet resourceSet = new ResourceSetImpl();
@@ -92,11 +99,6 @@ public class NeoEMFHBaseMigrator {
 			resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("zxmi", new XMIResourceFactoryImpl());
 			resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put(KyanosURI.KYANOS_HBASE_SCHEME, KyanosResourceFactory.eINSTANCE);
 
-			//Registering the metamodel
-			//			Resource MMResource = resourceSet.createResource(metamodelUri);
-			//			MMResource.load(Collections.EMPTY_MAP);
-			//			ATLMRUtils.registerPackages(resourceSet, MMResource);
-			//Loading the XMI resource
 			Resource sourceResource = resourceSet.createResource(sourceUri);
 			Map<String, Object> loadOpts = new HashMap<String, Object>();
 

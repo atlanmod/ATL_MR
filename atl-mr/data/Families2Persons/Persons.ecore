@@ -7,7 +7,7 @@
           unique="false" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Male" eSuperTypes="#/0/Person"/>
-    <eClassifiers xsi:type="ecore:EClass" name="Female" eSuperTypes="#/0/Person"/>
+    
   </ecore:EPackage>
   <ecore:EPackage name="PrimitiveTypes"/>
 </xmi:XMI>

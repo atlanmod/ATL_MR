@@ -105,14 +105,14 @@ public class HbaseRecordBuilder  {
 
 		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
 		inputOpt.setLongOpt(INPUT_MODEL_LONG);
-		inputOpt.setArgName("input.xmi");
-		inputOpt.setDescription("URI of the input file.");
+		inputOpt.setArgName("kyanoshbase://host:port/input_model");
+		inputOpt.setDescription("URI of the input model.");
 		inputOpt.setArgs(1);
 		inputOpt.setRequired(true);
 
 		Option packageOpt = OptionBuilder.create(INPUT_PACKAGE);
 		packageOpt.setLongOpt(INPUT_PACKAGE_LONG);
-		packageOpt.setArgName("packageImpl");
+		packageOpt.setArgName("fr.example.impl.ExamplePackageImpl");
 		packageOpt.setDescription("FQN of the package");
 		packageOpt.setArgs(1);
 		packageOpt.setRequired(true);

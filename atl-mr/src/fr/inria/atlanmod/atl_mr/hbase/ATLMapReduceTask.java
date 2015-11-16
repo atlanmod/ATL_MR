@@ -24,6 +24,9 @@ import fr.inria.atlanmod.atl_mr.utils.Tracer;
 
 public class ATLMapReduceTask {
 
+	public static final String TRACES_NSURI = "traces";
+	public static final String TRACES_NSURI_MAP = "traces/map";
+
 	private ExecEnv executionEnv;
 
 	private final ResourceSetImpl rs = new ResourceSetImpl();
@@ -186,7 +189,7 @@ public class ATLMapReduceTask {
 		executionEnv.registerOutputModel(OMName, outModel);
 		executionEnv.preMatchAllSingle();
 
-		setTraceResource(rs.createResource(URI.createURI(inMURI.toString()+"/"+ExecEnv.TRACES_NSURI)));
+		setTraceResource(rs.createResource(URI.createURI(inMURI.toString()+"/"+TRACES_NSURI)));
 		try {
 			getTraceResource().load(Collections.EMPTY_MAP);
 		} catch (IOException e) {

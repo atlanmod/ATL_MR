@@ -174,7 +174,7 @@ public class ATLMapReduceTask {
 		executionEnv.setExecutionMode(ExecMode.MR);
 		executionEnv.registerOutputModel(OMName, outModel);
 		executionEnv.preMatchAllSingle();
-		Resource traceResource = new BinaryResourceImpl(URI.createURI(ExecEnv.TRACES_NSURI));
+		Resource traceResource = new BinaryResourceImpl(URI.createURI("traces"));
 		traceResource.getContents().add(executionEnv.getTraces());
 		rs.getResources().add(traceResource);
 
