@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>ATL-MR by atlanmod</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>ATL-MR</h1>
+        <h2>ATL on MapReduce </h2>
+
+        <section id="downloads">
+          <a href="https://github.com/atlanmod/ATL_MR/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/atlanmod/ATL_MR/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/atlanmod/ATL_MR" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="atlmapreduce" class="anchor" href="#atlmapreduce" aria-hidden="true"><span class="octicon octicon-link"></span></a>ATL/MapReduce</h1>
+
+<p>ATL/MapReduce (ATL/MR) is a prototype tool for running complex <strong>ATL</strong> transformation in the cloud using <strong>Hadoop</strong> MapReduce.
+ATL/MapReduce is implemented on top  of an extended ATL VM that can be found <a href="https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master">here</a>.
+Coupling <strong>ATL/MR</strong> with the <a href="https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master">the extended VM</a> has proved a good performance, especially in terms of execution time. <a href="http://www.emn.fr/z-info/atlanmod/index.php/Image:Atlmr-experiments-raw-data.zip">In our experiments</a>, <strong>ATL/MR</strong> runs up to <strong>~6x</strong> faster compared to the regular VM while distributing it over 8 machines.  </p>
+
+<h2>
+<a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use</h2>
+
+<p>The transformation configuration in ATL/MapReduce has one additional input w.r.t. the standalone one, a record file. 
+This file has the job of  defining the subset of model elements to be processed by a map worker.</p>
+
+<h3>
+<a id="record-file" class="anchor" href="#record-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Record file</h3>
+
+<p>The record file contains input model elements URIs as plain string, one per line. This file will be split by hadoop in input splits. Each map worker is assigned a chunk. Usage below:</p>
+
+<p><code>java -jar atl-mr.jar -s &lt;source.ecore&gt; -i &lt;input.xmi&gt; [-o &lt;records.rec&gt;]</code></p>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th align="left">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-s,--source-metamodel </td>
+<td align="left">URI of the source metamodel file.</td>
+</tr>
+<tr>
+<td>-i,--input </td>
+<td align="left">URI of the input file.</td>
+</tr>
+<tr>
+<td>-o,--output </td>
+<td align="left">Path of the output records file.</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="model-transformation" class="anchor" href="#model-transformation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Model transformation</h3>
+
+<p>The transformation parameters are provided by the means of arguments. Below the usage:</p>
+
+<p><code>yarn jar atl-mr.jar -f &lt;transformation.emftvm&gt; -s &lt;source.ecore&gt; -t &lt;target.ecore&gt; -r &lt;records.rec&gt; -i &lt;input.xmi&gt; [-o &lt;output.xmi&gt;] [-m &lt;mappers_hint&gt; | -n &lt;recors_per_mapper&gt;]  [-v | -q]</code></p>
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th align="left">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-f,--file </td>
+<td align="left">URI of the ATL transformation file.</td>
+</tr>
+<tr>
+<td>-s,--source-metamodel </td>
+<td align="left">URI of the source metamodel file.</td>
+</tr>
+<tr>
+<td>-t,--target-metamodel </td>
+<td align="left">URI of the target metamodel file.</td>
+</tr>
+<tr>
+<td>-r,--records </td>
+<td align="left">URI of the records file.</td>
+</tr>
+<tr>
+<td>-i,--input </td>
+<td align="left">URI of the input file.</td>
+</tr>
+<tr>
+<td>-o,--output </td>
+<td align="left">URI of the output file. Optional.</td>
+</tr>
+<tr>
+<td>-m,--recommended-mappers </td>
+<td align="left">The recommended number of mappers (not strict, used only as a hint). Optional, defaults to 1. Excludes the use of '-n'.</td>
+</tr>
+<tr>
+<td>-n,--records-per-mapper </td>
+<td align="left">Number of records to be processed by mapper. Optional, defaults to all records. Excludes the use of '-m'.</td>
+</tr>
+<tr>
+<td>-v,--verbose</td>
+<td align="left">Verbose mode. Optional, disabled by default.</td>
+</tr>
+<tr>
+<td>-q,--quiet</td>
+<td align="left">Do not print any information about the transformation execution on the standard output. Optional, disabled by default.</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Please note that resource URIs with the 'hdfs://' protocol are supported</strong>. </p>
+
+<h2>
+<a id="execution-modes" class="anchor" href="#execution-modes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Execution modes</h2>
+
+<p>You can run ATL/MapReduce in two different modes, within eclipse or in a hadoop cluster.</p>
+
+<h3>
+<a id="within-eclipse" class="anchor" href="#within-eclipse" aria-hidden="true"><span class="octicon octicon-link"></span></a>Within eclipse</h3>
+
+<p>ATL/MapReduce can be executed within eclipse. Hadoop configuration files are already provided for Win-x86-64. 
+In order to run ATL/MapReduce, please download the appropriate hadoop distribution <a href="http://hadoop.apache.org/releases.html">here</a>.</p>
+
+<h3>
+<a id="hadoop-cluster" class="anchor" href="#hadoop-cluster" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hadoop cluster</h3>
+
+<p>It is also possible to run ATL/MapReduce on a hadoop cluster such as <a href="http://www.cloudera.com/content/cloudera/en/products-and-services/cdh.html">CDH-Cloudera</a> or <a href="http://aws.amazon.com/fr/elasticmapreduce/">Amazon Elastic MapReduce (EMR)</a>.</p>
+
+<p>In order to build the distribution files of the project, you must <strong>re-create</strong> the build.xml file by re-exporting it.
+This is <strong>necessary</strong> to match your computer's configuration:</p>
+
+<ol>
+<li>Go to <em>File -&gt; Export</em> and select <em>General / Ant Buildfiles</em>.</li>
+<li>Select  the project and press Finish.</li>
+</ol>
+
+<p>The distribution JAR files and dependencies are automatically created and copied in the <strong>dist</strong> folder by executing the <code>dist.emftvm</code> and <code>dist</code> targets of the <code>dist.xml</code> ant script.</p>
+
+<p><strong>Please note that hints on the execution syntax are provided. For more information please check the run.bat/run.sh files in the dist folder</strong>.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
