@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="atl.mr.feature"
+      label="AT-MR-Feature"
+      version="0.2.0.qualifier"
+      provider-name="ATLANMOD">
+
+   <description url="http://www.example.com/description">
+      ATL/MapReduce (ATL/MR) is a prototype tool for running complex ATL transformation in the cloud using Hadoop MapReduce. ATL/MapReduce is implemented on top of an extended ATL VM.
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      /******************************************************************************
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements.  See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership.  The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* &quot;License&quot;); you may not use this file except in compliance
+* with the License.  You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+********************************************************************************
+* Contributors:
+*	   Amine Benelallam (AtlanMod) - Initial API	 
+*     Abel G{/&apos;o}mez (AtlanMod) - Additional modifications  
+********************************************************************************
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <plugin
+         id="atl-mr"
+         download-size="0"
+         install-size="0"
+         version="0.2.0.qualifier"
+         unpack="false"/>
+
+</feature>
