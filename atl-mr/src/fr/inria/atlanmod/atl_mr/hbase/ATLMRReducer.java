@@ -21,6 +21,7 @@ import org.eclipse.m2m.atl.emftvm.ftrace.FTraceProperty;
 import fr.inria.atlanmod.atl_mr.utils.HbaseTraceResolver;
 import fr.inria.atlanmod.atl_mr.utils.Tracer.Resolver;
 import fr.inria.atlanmod.kyanos.core.KyanosEObject;
+import fr.inria.atlanmod.kyanos.util.KyanosUtil;
 
 public class ATLMRReducer extends Reducer<LongWritable,Text, Text, Text> {
 
@@ -49,8 +50,7 @@ public class ATLMRReducer extends Reducer<LongWritable,Text, Text, Text> {
 			resolveLink((FLink)traceResource.getEObject(value.toString()));
 		}
 		Logger.getGlobal().log(Level.INFO, "\tpostApplyAll - END");
-		https://docs.google.com/presentation/d/1RfryJJHs2BdZ420G3w_cL9Hao1aGwfQWnkyU6nxzv5M/edit#slide=id.gb51ffff8c_0_0
-			Logger.getGlobal().log(Level.INFO, "Reduce - END");
+		Logger.getGlobal().log(Level.INFO, "Reduce - END");
 	}
 
 	private void resolveLink(FLink eObject) {
@@ -88,7 +88,7 @@ public class ATLMRReducer extends Reducer<LongWritable,Text, Text, Text> {
 		Logger.getGlobal().log(Level.INFO, "Cleaning up reducer - START");
 		Resource outResource = reduceTask.getOutModel().getResource();
 		outResource.save(Collections.EMPTY_MAP);
-
+		KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(reduceTask.getTraceResource().getURI());
 		super.cleanup(context);
 		Logger.getGlobal().log(Level.INFO, "Cleaning up reducer - END");
 		// TODO add resource clean up delete the intermediate models

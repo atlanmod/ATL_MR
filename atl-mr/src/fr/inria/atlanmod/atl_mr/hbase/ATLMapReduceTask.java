@@ -259,7 +259,7 @@ public class ATLMapReduceTask {
 	public Tracer getTracer() {
 		return tracer;
 	}
-
+	// to disable the
 	/**
 	 * sets the tracer
 	 * @param tracer
