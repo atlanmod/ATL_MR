@@ -127,7 +127,7 @@ public class ATLMapReduceTask {
 		return logger;
 	}
 
-	protected void setup(Configuration configuration, boolean mapState ) {
+	public void setup(Configuration configuration, boolean mapState ) {
 
 		// setting up the registry for use
 		ATLMRUtils.configureRegistry(configuration);

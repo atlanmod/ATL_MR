@@ -1,9 +1,5 @@
 package fr.inria.atlanmod.atl_mr;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -25,20 +21,28 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.eclipse.emf.common.util.URI;
+
+import fr.inria.atlanmod.atl_mr.hbase.TableATLMRMapper;
 
 public class ATLMRMaster extends Configured implements Tool {
 
+	/**
+	 * TODO add an identifier to the JOB name to distinguish between different instances of {@link Job}
+	 */
 	protected static final String JOB_NAME = "ATL in MapReduce";
 
 	protected static final int STATUS_OK = 0;
@@ -50,7 +54,7 @@ public class ATLMRMaster extends Configured implements Tool {
 	static final String INPUT_MODEL 						= "i";
 	static final String OUTPUT_MODEL 						= "o";
 
-	private static final String RECORDS_FILE				= "r";
+	//	private static final String RECORDS_FILE				= "r";
 	private static final String RECOMMENDED_MAPPERS 		= "m";
 	private static final String RECORDS_PER_MAPPER	 		= "n";
 	private static final String QUIET 						= "q";
@@ -61,7 +65,7 @@ public class ATLMRMaster extends Configured implements Tool {
 	private static final String TARGET_METAMODEL_LONG 		= "target-metamodel";
 	private static final String INPUT_MODEL_LONG 			= "input";
 	private static final String OUTPUT_MODEL_LONG 			= "output";
-	private static final String RECORDS_FILE_LONG 			= "records";
+	//	private static final String RECORDS_FILE_LONG 			= "records";
 	private static final String RECOMMENDED_MAPPERS_LONG	= "recommended-mappers";
 	private static final String RECORDS_PER_MAPPER_LONG	 	= "records-per-mapper";
 	private static final String QUIET_LONG 					= "quiet";
@@ -114,41 +118,67 @@ public class ATLMRMaster extends Configured implements Tool {
 			String transformationLocation = commandLine.getOptionValue(TRANSFORMATION);
 			String sourcemmLocation = commandLine.getOptionValue(SOURCE_METAMODEL);
 			String targetmmLocation = commandLine.getOptionValue(TARGET_METAMODEL);
-			String recordsLocation = commandLine.getOptionValue(RECORDS_FILE);
+			//String recordsLocation = commandLine.getOptionValue(RECORDS_FILE);
 			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
 			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).suffix(".out.xmi")
 					.toString());
 
-			int recommendedMappers = 1;
+			int recommendedSlaves = 1;
 			if (commandLine.hasOption(RECOMMENDED_MAPPERS)) {
-				recommendedMappers = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
+				recommendedSlaves = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
 			}
 
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(conf, JOB_NAME);
 
+			//hbase connection configuration
+			Configuration hbaseConf = HBaseConfiguration.create();
+			URI modelURI =  URI.createURI(transformationLocation);
+			hbaseConf.set("hbase.zookeeper.quorum", modelURI.host());
+			hbaseConf.set("hbase.zookeeper.property.clientPort", modelURI.port() != null ? modelURI.port() : "2181");
+
+			Scan scan = new Scan();
+			// 500 is the recommended for MR,
+			// TODO check if it is a good fit for us
+			scan.setCaching(500);
+			scan.setCacheBlocks(false);
+			scan.setFilter(new KeyOnlyFilter());
+
 			// Configure classes
 			job.setJarByClass(ATLMRMaster.class);
-			job.setMapperClass(ATLMRMapper.class);
+			job.setNumReduceTasks(recommendedSlaves);
+
+			String cloneURI = formatURI(modelURI);
+			TableName tableName = TableName.valueOf(cloneURI);
+
+			// mapper job initialization
+
+			TableMapReduceUtil.initTableMapperJob(
+					tableName.getNameAsString(),
+					scan,
+					TableATLMRMapper.class,
+					LongWritable.class,
+					Text.class,
+					job);
+
+
+
+			//			job.setMapperClass(ATLMRMapper.class);
 			job.setReducerClass(ATLMRReducer.class);
-			job.setInputFormatClass(NLineInputFormat.class);
-			job.setOutputFormatClass(SequenceFileOutputFormat.class);
-			job.setMapOutputKeyClass(Text.class);
-			job.setMapOutputValueClass(BytesWritable.class);
-			job.setNumReduceTasks(1);
+			job.setOutputFormatClass(NullOutputFormat.class);
+			//			job.setInputFormatClass(NLineInputFormat.class);
+			//			job.setOutputFormatClass(NullOutputFormat.class);
+			//			job.setMapOutputKeyClass(Text.class);
+			//			job.setMapOutputValueClass(BytesWritable.class);
+
 
 			// Configure MapReduce input/outputs
-			Path recordsPath = new Path(recordsLocation);
-			FileInputFormat.setInputPaths(job, recordsPath);
+			// Path recordsPath = new Path(recordsLocation);
+			// FileInputFormat.setInputPaths(job, recordsPath);
 			String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
 			String outDirName = "atlmr-out-" + timestamp + "-" + UUID.randomUUID();
 			FileOutputFormat.setOutputPath(job, new Path(job.getWorkingDirectory().suffix(Path.SEPARATOR + outDirName).toUri()));
 
-			// Configure records per map
-			FileSystem fileSystem = FileSystem.get(recordsPath.toUri(), conf);
-			InputStream inputStream = fileSystem.open(recordsPath);
-			long linesPerMap = (long) Math.ceil((double) countLines(inputStream) / (double) recommendedMappers);
-			job.getConfiguration().setLong(NLineInputFormat.LINES_PER_MAP, linesPerMap);
 
 
 			// Configure ATL related inputs/outputs
@@ -221,13 +251,6 @@ public class ATLMRMaster extends Configured implements Tool {
 		outputOpt.setDescription("URI of the output file. Optional.");
 		outputOpt.setArgs(1);
 
-		Option recordsOpt = OptionBuilder.create(RECORDS_FILE);
-		recordsOpt.setLongOpt(RECORDS_FILE_LONG);
-		recordsOpt.setArgName("records.rec");
-		recordsOpt.setDescription("URI of the records file.");
-		recordsOpt.setArgs(1);
-		recordsOpt.setRequired(true);
-
 		Option recommendedMappersOption = OptionBuilder.create(RECOMMENDED_MAPPERS);
 		recommendedMappersOption.setLongOpt(RECOMMENDED_MAPPERS_LONG);
 		recommendedMappersOption.setArgName("mappers_hint");
@@ -263,25 +286,21 @@ public class ATLMRMaster extends Configured implements Tool {
 		options.addOption(transformationOpt);
 		options.addOption(sourcemmOpt);
 		options.addOption(targetmmOpt);
-		options.addOption(recordsOpt);
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
 		options.addOptionGroup(loggingGroup);
 		options.addOptionGroup(mappersGroup);
 	}
 
-	private static long countLines(InputStream inputStream) throws IOException {
-		LineNumberReader lineNumberReader = null;
-		int lines = 1;
-		try {
-			lineNumberReader = new LineNumberReader(new InputStreamReader(inputStream));
-			lineNumberReader.skip(Long.MAX_VALUE);
-			lines = Math.max(lineNumberReader.getLineNumber(), 1);
-		} finally {
-			if (lineNumberReader != null) {
-				lineNumberReader.close();
+	private String formatURI(URI modelURI) {
+		StringBuilder strBld = new StringBuilder();
+		for (int i=0; i < modelURI.segmentCount(); i++) {
+			strBld.append(modelURI.segment(i).replaceAll("-","_"));
+			if (i != modelURI.segmentCount() -1 ) {
+				strBld.append("_");
 			}
 		}
-		return lines;
+
+		return strBld.toString();
 	}
 }
