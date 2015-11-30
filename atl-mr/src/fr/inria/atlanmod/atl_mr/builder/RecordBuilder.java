@@ -42,7 +42,7 @@ public class RecordBuilder  {
 	private static final String INPUT_MODEL_LONG 			= "input";
 	private static final String OUTPUT_FILE_LONG 			= "output";
 
-	private static class OptionComarator<T extends Option> implements Comparator<T> {
+	private static class OptionComparator<T extends Option> implements Comparator<T> {
 		private static final String OPTS_ORDER = "sio";
 
 		@Override
@@ -86,7 +86,7 @@ public class RecordBuilder  {
 		} catch (ParseException e) {
 			System.err.println(e.getLocalizedMessage());
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.setOptionComparator(new OptionComarator<>());
+			formatter.setOptionComparator(new OptionComparator<>());
 			try {
 				formatter.setWidth(Math.max(Terminal.getTerminal().getTerminalWidth(), 80));
 			} catch (Throwable t) {
