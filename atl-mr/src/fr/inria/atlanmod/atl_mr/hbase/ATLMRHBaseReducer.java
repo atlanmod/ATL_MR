@@ -23,7 +23,7 @@ import fr.inria.atlanmod.atl_mr.utils.Tracer.Resolver;
 import fr.inria.atlanmod.kyanos.core.KyanosEObject;
 import fr.inria.atlanmod.kyanos.util.KyanosUtil;
 
-public class ATLMRReducer extends Reducer<LongWritable,Text, Text, Text> {
+public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {
 
 	private ATLMapReduceTask reduceTask = new ATLMapReduceTask();
 
@@ -65,7 +65,6 @@ public class ATLMRReducer extends Reducer<LongWritable,Text, Text, Text> {
 
 	}
 
-
 	@SuppressWarnings("unchecked")
 	private void resolveBinding(KyanosEObject keObject, FTraceProperty prop, Resolver tracer) {
 		EStructuralFeature ft = keObject.eClass().getEStructuralFeature(prop.getPropertyName());
@@ -89,6 +88,8 @@ public class ATLMRReducer extends Reducer<LongWritable,Text, Text, Text> {
 		Resource outResource = reduceTask.getOutModel().getResource();
 		outResource.save(Collections.EMPTY_MAP);
 		KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(reduceTask.getTraceResource().getURI());
+		KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(reduceTask.getInModel().getResource().getURI().appendSegment(ATLMapReduceTask.TRACES_NSURI_MAP));
+
 		super.cleanup(context);
 		Logger.getGlobal().log(Level.INFO, "Cleaning up reducer - END");
 		// TODO add resource clean up delete the intermediate models

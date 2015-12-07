@@ -36,7 +36,9 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.eclipse.emf.common.util.URI;
 
+import fr.inria.atlanmod.atl_mr.hbase.ATLMapReduceTask;
 import fr.inria.atlanmod.atl_mr.hbase.TableATLMRMapper;
+import fr.inria.atlanmod.kyanos.util.KyanosUtil;
 
 public class ATLMRMaster extends Configured implements Tool {
 
@@ -120,8 +122,7 @@ public class ATLMRMaster extends Configured implements Tool {
 			String targetmmLocation = commandLine.getOptionValue(TARGET_METAMODEL);
 			//String recordsLocation = commandLine.getOptionValue(RECORDS_FILE);
 			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
-			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL, new Path(inputLocation).suffix(".out.xmi")
-					.toString());
+			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL);
 
 			int recommendedSlaves = 1;
 			if (commandLine.hasOption(RECOMMENDED_MAPPERS)) {
@@ -133,7 +134,7 @@ public class ATLMRMaster extends Configured implements Tool {
 
 			//hbase connection configuration
 			Configuration hbaseConf = HBaseConfiguration.create();
-			URI modelURI =  URI.createURI(transformationLocation);
+			URI modelURI =  URI.createURI(inputLocation);
 			hbaseConf.set("hbase.zookeeper.quorum", modelURI.host());
 			hbaseConf.set("hbase.zookeeper.property.clientPort", modelURI.port() != null ? modelURI.port() : "2181");
 
@@ -164,30 +165,29 @@ public class ATLMRMaster extends Configured implements Tool {
 
 
 			//			job.setMapperClass(ATLMRMapper.class);
-			job.setReducerClass(ATLMRReducer.class);
+			job.setReducerClass(fr.inria.atlanmod.atl_mr.ATLMRReducer.class);
 			job.setOutputFormatClass(NullOutputFormat.class);
-			//			job.setInputFormatClass(NLineInputFormat.class);
-			//			job.setOutputFormatClass(NullOutputFormat.class);
-			//			job.setMapOutputKeyClass(Text.class);
-			//			job.setMapOutputValueClass(BytesWritable.class);
 
-
-			// Configure MapReduce input/outputs
-			// Path recordsPath = new Path(recordsLocation);
-			// FileInputFormat.setInputPaths(job, recordsPath);
 			String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
 			String outDirName = "atlmr-out-" + timestamp + "-" + UUID.randomUUID();
 			FileOutputFormat.setOutputPath(job, new Path(job.getWorkingDirectory().suffix(Path.SEPARATOR + outDirName).toUri()));
-
-
 
 			// Configure ATL related inputs/outputs
 			job.getConfiguration().set(TRANSFORMATION, transformationLocation);
 			job.getConfiguration().set(SOURCE_METAMODEL, sourcemmLocation);
 			job.getConfiguration().set(TARGET_METAMODEL, targetmmLocation);
 			job.getConfiguration().set(INPUT_MODEL, inputLocation);
-			job.getConfiguration().set(OUTPUT_MODEL, new Path(FileOutputFormat.getOutputPath(job).suffix(Path.SEPARATOR + outputLocation).toString()).toString());
+			job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
 
+			// CLeaning the resources if they already exist
+			// target URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(outputLocation));
+			// Trace URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI));
+			// Trace Map URI
+			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI_MAP));
+
+			//Starting the job
 			Logger.getGlobal().log(Level.INFO, "Starting Job execution");
 			long begin = System.currentTimeMillis();
 			int returnValue = job.waitForCompletion(true) ? STATUS_OK : STATUS_ERROR;
@@ -226,30 +226,31 @@ public class ATLMRMaster extends Configured implements Tool {
 
 		Option sourcemmOpt = OptionBuilder.create(SOURCE_METAMODEL);
 		sourcemmOpt.setLongOpt(SOURCE_METAMODEL_LONG);
-		sourcemmOpt.setArgName("source.ecore");
-		sourcemmOpt.setDescription("URI of the source metamodel file.");
+		sourcemmOpt.setArgName("packageName.impl.SourcePackageImpl");
+		sourcemmOpt.setDescription("the name of the source packageImple");
 		sourcemmOpt.setArgs(1);
 		sourcemmOpt.setRequired(true);
 
 		Option targetmmOpt = OptionBuilder.create(TARGET_METAMODEL);
 		targetmmOpt.setLongOpt(TARGET_METAMODEL_LONG);
-		targetmmOpt.setArgName("target.ecore");
-		targetmmOpt.setDescription("URI of the target metamodel file.");
+		targetmmOpt.setArgName("packageName.impl.TargetPackageImpl");
+		targetmmOpt.setDescription("the name of target packageImpl.");
 		targetmmOpt.setArgs(1);
 		targetmmOpt.setRequired(true);
 
 		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
 		inputOpt.setLongOpt(INPUT_MODEL_LONG);
-		inputOpt.setArgName("input.xmi");
-		inputOpt.setDescription("URI of the input file.");
+		inputOpt.setArgName("kyanoshbase://host:port/inputModelName");
+		inputOpt.setDescription("URI of the input model");
 		inputOpt.setArgs(1);
 		inputOpt.setRequired(true);
 
 		Option outputOpt = OptionBuilder.create(OUTPUT_MODEL);
 		outputOpt.setLongOpt(OUTPUT_MODEL_LONG);
-		outputOpt.setArgName("output.xmi");
-		outputOpt.setDescription("URI of the output file. Optional.");
+		outputOpt.setArgName("kyanoshbase://host:port/outputModelName");
+		outputOpt.setDescription("URI of the output file");
 		outputOpt.setArgs(1);
+		outputOpt.setRequired(true);
 
 		Option recommendedMappersOption = OptionBuilder.create(RECOMMENDED_MAPPERS);
 		recommendedMappersOption.setLongOpt(RECOMMENDED_MAPPERS_LONG);
@@ -303,4 +304,6 @@ public class ATLMRMaster extends Configured implements Tool {
 
 		return strBld.toString();
 	}
+
+
 }

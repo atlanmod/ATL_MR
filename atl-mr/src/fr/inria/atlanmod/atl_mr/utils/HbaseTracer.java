@@ -18,6 +18,8 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.eclipse.emf.common.util.URI;
 
+import fr.inria.atlanmod.kyanos.util.KyanosUtil;
+
 
 public class HbaseTracer implements Tracer{
 
@@ -37,7 +39,9 @@ public class HbaseTracer implements Tracer{
 		//TODO: hbase.zookeeper.quorum takes a list of
 		conf.set("hbase.zookeeper.quorum", traceURI.host());
 		conf.set("hbase.zookeeper.property.clientPort", traceURI.port() != null ? traceURI.port() : "2181");
-		byte[] tableName = Bytes.toBytes(traceURI.devicePath().replaceAll("/", "_").concat("_map"));
+
+		// setting up tehe table name
+		byte[] tableName = Bytes.toBytes(KyanosUtil.formatURI(traceURI.appendSegment("map")));
 		HBaseAdmin admin;
 		try {
 			admin = new HBaseAdmin(conf);

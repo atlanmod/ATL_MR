@@ -132,13 +132,13 @@ public class ATLMapReduceTask {
 		// setting up the registry for use
 		ATLMRUtils.configureRegistry(configuration);
 
-		URI transformationURI = URI.createURI(configuration.get(ATLMRMaster.TRANSFORMATION));
+		URI transformationURI = URI.createURI(configuration.get(ATLMRHBaseMaster.TRANSFORMATION));
 
-		String sourceMMpackage = configuration.get(ATLMRMaster.SOURCE_PACKAGE);
-		String targetMMpackage = configuration.get(ATLMRMaster.TARGET_PACKAGE);
+		String sourceMMpackage = configuration.get(ATLMRHBaseMaster.SOURCE_PACKAGE);
+		String targetMMpackage = configuration.get(ATLMRHBaseMaster.TARGET_PACKAGE);
 
-		URI inMURI = URI.createURI(configuration.get(ATLMRMaster.INPUT_MODEL));
-		URI outMURI = URI.createURI(configuration.get(ATLMRMaster.OUTPUT_MODEL));
+		URI inMURI = URI.createURI(configuration.get(ATLMRHBaseMaster.INPUT_MODEL));
+		URI outMURI = URI.createURI(configuration.get(ATLMRHBaseMaster.OUTPUT_MODEL));
 
 		// TODO: Check this
 		// assuming that module has the same name as the transformation...
@@ -189,7 +189,7 @@ public class ATLMapReduceTask {
 		executionEnv.registerOutputModel(OMName, outModel);
 		executionEnv.preMatchAllSingle();
 
-		setTraceResource(rs.createResource(URI.createURI(inMURI.toString()+"/"+TRACES_NSURI)));
+		setTraceResource(rs.createResource(inMURI.appendSegment(TRACES_NSURI)));
 		try {
 			getTraceResource().load(Collections.EMPTY_MAP);
 		} catch (IOException e) {
