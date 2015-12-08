@@ -15,7 +15,7 @@
 	<property name="dist.libs.atlmr" location="${dist.libs}/atlmr" />
 	<property name="run.sh" value="${dist}/run.sh" />
 	<property name="run.debug" value="${dist}/debug.sh" />
-
+	<property name="main-class" value="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster" />
 	<property name="jar.file" location="${dist}/${ant.project.name}.jar" />
 
 	<target name="check.emftvm" unless="emftvm.exists">
@@ -33,7 +33,7 @@
 		<jar destfile="${jar.file}">
 			<fileset dir="${bin}" includes="**/*.class" />
 			<manifest>
-				<attribute name="Main-Class" value="fr.inria.atlanmod.atl_mr.hbase.ATLMRMaster" />
+				<attribute name="Main-Class" value="${main-class}" />
 			</manifest>
 		</jar>
 
@@ -58,6 +58,26 @@
 			<fileset dir="${dist.libs.atlmr}/plugins" />
 		</pathconvert>
 		
+		<pathconvert property="libsjars.hbase" pathsep="," dirsep="/">
+			<map from="${dist.libs.ivy}/default" to="libs/ivy/default" />
+			<fileset dir="${dist.libs.ivy}/default" includes="hbase*.jar,zookeeper*.jar" />
+		</pathconvert>
+		
+		<pathconvert property="classpath.plugins" pathsep=":" dirsep="/">
+					<map from="${dist.libs.plugins}" to="libs/plugins" />
+					<fileset dir="${dist.libs.plugins}" />
+		</pathconvert>
+
+		<pathconvert property="classpath.atlmr" pathsep=":" dirsep="/">
+			<map from="${dist.libs.atlmr}/plugins" to="libs/atlmr/plugins" />
+			<fileset dir="${dist.libs.atlmr}/plugins" />
+		</pathconvert>
+				
+		<pathconvert property="classpath.hbase" pathsep=":" dirsep="/">
+			<map from="${dist.libs.ivy}/default" to="libs/ivy/default" />
+			<fileset dir="${dist.libs.ivy}/default" includes="hbase*.jar,zookeeper*.jar" />
+		</pathconvert>
+		
 		<antcall target="create.debug" />
 		<antcall target="create.sh" />
 	</target>
@@ -74,8 +94,8 @@
 
 YARNARGS=$@
 
-JARS=libs/atlmr/plugins/*:libs/plugins/*:libs/ivy/default/*
-LIBJARS=${libjars.plugins},${libsjars.atlmr}
+JARS=${classpath.plugins}}:${classpath.atlmr}:${classpath.hbase}
+LIBJARS=${libjars.plugins},${libsjars.atlmr},${libsjars.hbase}
 
 
 while [[ $# > 1 ]]
