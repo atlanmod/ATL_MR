@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.m2m.atl.common.ATLLogger;
 import org.eclipse.m2m.atl.emftvm.EmftvmFactory;
 import org.eclipse.m2m.atl.emftvm.ExecEnv;
 import org.eclipse.m2m.atl.emftvm.Metamodel;
@@ -81,7 +80,7 @@ public class RunC2R {
 		td.finishLoading();
 		env.run(td);
 		td.finish();
-		ATLLogger.info(td.toString());
+		//ATLLogger.info(td.toString());
 		// Save models
 		outModel.getResource().save(Collections.emptyMap());
 	}
