@@ -34,9 +34,9 @@ import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
-import fr.inria.atlanmod.kyanos.core.KyanosResourceFactory;
-import fr.inria.atlanmod.kyanos.core.impl.KyanosHbaseResourceImpl;
-import fr.inria.atlanmod.kyanos.util.KyanosURI;
+import fr.inria.atlanmod.neoemf.core.NeoEMFResourceFactory;
+import fr.inria.atlanmod.neoemf.core.impl.NeoEMFHbaseResourceImpl;
+import fr.inria.atlanmod.neoemf.util.NeoEMFURI;
 
 public class NeoEMFHBaseMigrator {
 
@@ -65,7 +65,7 @@ public class NeoEMFHBaseMigrator {
 		Option outputOpt = OptionBuilder.create(OUT);
 		outputOpt.setLongOpt(OUT_LONG);
 		outputOpt.setArgName("OUTPUT");
-		outputOpt.setDescription("Output HBase resource URI. <e.g kyanoshbase://host:port/output_location>");
+		outputOpt.setDescription("Output HBase resource URI. <e.g neoemfhbase://host:port/output_location>");
 		outputOpt.setArgs(1);
 		outputOpt.setRequired(true);
 
@@ -97,7 +97,7 @@ public class NeoEMFHBaseMigrator {
 			resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
 			resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 			resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("zxmi", new XMIResourceFactoryImpl());
-			resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put(KyanosURI.KYANOS_HBASE_SCHEME, KyanosResourceFactory.eINSTANCE);
+			resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put(NeoEMFURI.NEOEMF_HBASE_SCHEME, NeoEMFResourceFactory.eINSTANCE);
 
 			Resource sourceResource = resourceSet.createResource(sourceUri);
 			Map<String, Object> loadOpts = new HashMap<String, Object>();
@@ -134,8 +134,8 @@ public class NeoEMFHBaseMigrator {
 			targetResource.save(saveOpts);
 			LOG.log(Level.INFO, "Saved");
 
-			if (targetResource instanceof KyanosHbaseResourceImpl) {
-				KyanosHbaseResourceImpl.shutdownWithoutUnload((KyanosHbaseResourceImpl) targetResource);
+			if (targetResource instanceof NeoEMFHbaseResourceImpl) {
+				NeoEMFHbaseResourceImpl.shutdownWithoutUnload((NeoEMFHbaseResourceImpl) targetResource);
 			} else {
 				targetResource.unload();
 			}

@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.m2m.atl.emftvm,
  org.eclipse.core.resources,
  org.eclipse.emf.validation,
  org.objectweb.asm,
- fr.inria.atlanmod.kyanos
+ fr.inria.atlanmod.neoemf.hbase
 Bundle-Version: 0.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2

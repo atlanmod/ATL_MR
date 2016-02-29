@@ -23,7 +23,7 @@ import org.eclipse.m2m.atl.emftvm.util.ModuleResolver;
 
 import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 import fr.inria.atlanmod.atl_mr.utils.Tracer;
-import fr.inria.atlanmod.kyanos.core.KyanosResource;
+import fr.inria.atlanmod.neoemf.core.NeoEMFResource;
 
 public class ATLMapReduceTask {
 
@@ -176,7 +176,7 @@ public class ATLMapReduceTask {
 		// Load models
 
 		Map<Object,Object> readOnlyOptions = new HashedMap<Object, Object>();
-		readOnlyOptions.put(KyanosResource.OPTIONS_HBASE_READ_ONLY, true);
+		readOnlyOptions.put(NeoEMFResource.OPTIONS_HBASE_READ_ONLY, true);
 		inModel = EmftvmFactory.eINSTANCE.createModel();
 		Resource inResource = rs.createResource(inMURI);
 		inModel.setResource(inResource);

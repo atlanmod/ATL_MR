@@ -26,8 +26,8 @@ import org.eclipse.m2m.atl.emftvm.trace.TraceLink;
 import org.eclipse.m2m.atl.emftvm.trace.TraceLinkSet;
 import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 
-import fr.inria.atlanmod.kyanos.core.impl.KyanosResourceFactoryImpl;
-import fr.inria.atlanmod.kyanos.util.KyanosURI;
+import fr.inria.atlanmod.neoemf.core.impl.NeoEMFResourceFactoryImpl;
+import fr.inria.atlanmod.neoemf.util.NeoEMFURI;
 
 
 public class ATLMRUtils {
@@ -110,7 +110,7 @@ public class ATLMRUtils {
 			}
 		});
 
-		Resource.Factory.Registry.INSTANCE.getProtocolToFactoryMap().put(KyanosURI.KYANOS_HBASE_SCHEME, new KyanosResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getProtocolToFactoryMap().put(NeoEMFURI.NEOEMF_HBASE_SCHEME, new NeoEMFResourceFactoryImpl());
 
 		@SuppressWarnings("unused")
 		EPackage ftrace = FTracePackage.eINSTANCE;

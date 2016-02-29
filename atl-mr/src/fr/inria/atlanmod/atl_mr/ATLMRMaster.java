@@ -38,7 +38,7 @@ import org.eclipse.emf.common.util.URI;
 
 import fr.inria.atlanmod.atl_mr.hbase.ATLMapReduceTask;
 import fr.inria.atlanmod.atl_mr.hbase.TableATLMRMapper;
-import fr.inria.atlanmod.kyanos.util.KyanosUtil;
+import fr.inria.atlanmod.neoemf.util.NeoEMFUtil;
 
 public class ATLMRMaster extends Configured implements Tool {
 
@@ -181,11 +181,11 @@ public class ATLMRMaster extends Configured implements Tool {
 
 			// CLeaning the resources if they already exist
 			// target URI
-			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(outputLocation));
+			NeoEMFUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(outputLocation));
 			// Trace URI
-			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI));
+			NeoEMFUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI));
 			// Trace Map URI
-			KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI_MAP));
+			NeoEMFUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inputLocation+"/"+ATLMapReduceTask.TRACES_NSURI_MAP));
 
 			//Starting the job
 			Logger.getGlobal().log(Level.INFO, "Starting Job execution");
@@ -240,14 +240,14 @@ public class ATLMRMaster extends Configured implements Tool {
 
 		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
 		inputOpt.setLongOpt(INPUT_MODEL_LONG);
-		inputOpt.setArgName("kyanoshbase://host:port/inputModelName");
+		inputOpt.setArgName("neoemfhbase://host:port/inputModelName");
 		inputOpt.setDescription("URI of the input model");
 		inputOpt.setArgs(1);
 		inputOpt.setRequired(true);
 
 		Option outputOpt = OptionBuilder.create(OUTPUT_MODEL);
 		outputOpt.setLongOpt(OUTPUT_MODEL_LONG);
-		outputOpt.setArgName("kyanoshbase://host:port/outputModelName");
+		outputOpt.setArgName("neoemfhbase://host:port/outputModelName");
 		outputOpt.setDescription("URI of the output file");
 		outputOpt.setArgs(1);
 		outputOpt.setRequired(true);

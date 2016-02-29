@@ -26,8 +26,8 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
 import fr.inria.atlanmod.atl_mr.hbase.ATLMapReduceTask;
 import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
-import fr.inria.atlanmod.kyanos.core.impl.KyanosResourceFactoryImpl;
-import fr.inria.atlanmod.kyanos.util.KyanosURI;
+import fr.inria.atlanmod.neoemf.core.impl.NeoEMFResourceFactoryImpl;
+import fr.inria.atlanmod.neoemf.util.NeoEMFURI;
 
 public class HbaseRecordBuilder  {
 
@@ -72,7 +72,7 @@ public class HbaseRecordBuilder  {
 			//			JavaPackageImpl.init();
 
 			// Initialize ExtensionToFactoryMap
-			Resource.Factory.Registry.INSTANCE.getProtocolToFactoryMap().put(KyanosURI.KYANOS_HBASE_SCHEME, new KyanosResourceFactoryImpl());
+			Resource.Factory.Registry.INSTANCE.getProtocolToFactoryMap().put(NeoEMFURI.NEOEMF_HBASE_SCHEME, new NeoEMFResourceFactoryImpl());
 			invokePackageInit(packageName);
 			// Build records file
 			Builder recordBuilder = new Builder(URI.createURI(inputLocation));
@@ -105,7 +105,7 @@ public class HbaseRecordBuilder  {
 
 		Option inputOpt = OptionBuilder.create(INPUT_MODEL);
 		inputOpt.setLongOpt(INPUT_MODEL_LONG);
-		inputOpt.setArgName("kyanoshbase://host:port/input_model");
+		inputOpt.setArgName("neoemfhbase://host:port/input_model");
 		inputOpt.setDescription("URI of the input model.");
 		inputOpt.setArgs(1);
 		inputOpt.setRequired(true);

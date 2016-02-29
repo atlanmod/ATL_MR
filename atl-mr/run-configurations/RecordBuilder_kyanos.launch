@@ -13,6 +13,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.atlanmod.counter_mr.builder.RecordBuilder"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-input kyanoshbase://localhost/org.eclipse.gmt.modisco.java.kyanos  -output ./data/kyanos.rec"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-input neoemfhbase://localhost/org.eclipse.gmt.modisco.java.neoemf  -output ./data/neoemf.rec"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="counter-mr"/>
 </launchConfiguration>

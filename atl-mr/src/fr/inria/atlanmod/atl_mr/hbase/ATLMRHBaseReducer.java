@@ -19,7 +19,7 @@ import org.eclipse.m2m.atl.emftvm.ftrace.FTraceProperty;
 
 import fr.inria.atlanmod.atl_mr.utils.HbaseTraceResolver;
 import fr.inria.atlanmod.atl_mr.utils.Tracer.Resolver;
-import fr.inria.atlanmod.kyanos.core.KyanosEObject;
+import fr.inria.atlanmod.neoemf.core.NeoEMFEObject;
 
 public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {
 
@@ -68,10 +68,10 @@ public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {
 	 */
 	private void resolveLink(FLink eObject) {
 		assert eObject instanceof FLink;
-		Resource kyanosResource = reduceTask.getOutModel().getResource();
-		KyanosEObject keObject = null;
+		Resource neoemfResource = reduceTask.getOutModel().getResource();
+		NeoEMFEObject keObject = null;
 		for (FTraceProperty prop : eObject.getProperties()) {
-			keObject = (KyanosEObject)kyanosResource
+			keObject = (NeoEMFEObject)neoemfResource
 					.getEObject(prop.getResolvedFor());
 
 			resolveBinding (keObject, prop, (Resolver)this.reduceTask.getTracer());
@@ -85,18 +85,18 @@ public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {
 	 * @param tracer
 	 */
 	@SuppressWarnings("unchecked")
-	private void resolveBinding(KyanosEObject keObject, FTraceProperty prop, Resolver tracer) {
+	private void resolveBinding(NeoEMFEObject keObject, FTraceProperty prop, Resolver tracer) {
 
 		EStructuralFeature ft = keObject.eClass().getEStructuralFeature(prop.getPropertyName());
 
 		assert ft instanceof EReference;
 
 		if (ft.isMany()) {
-			EList<KyanosEObject> resolvings =  new BasicEList<KyanosEObject>();
-			for (String kyanosId : prop.getResolvings()) {
-				resolvings.add((KyanosEObject) tracer.resolve(kyanosId));
+			EList<NeoEMFEObject> resolvings =  new BasicEList<NeoEMFEObject>();
+			for (String neoemfId : prop.getResolvings()) {
+				resolvings.add((NeoEMFEObject) tracer.resolve(neoemfId));
 			}
-			((List<KyanosEObject>) keObject.eGet(ft)).addAll(resolvings);
+			((List<NeoEMFEObject>) keObject.eGet(ft)).addAll(resolvings);
 		} else {
 			keObject.eSet(ft, tracer.resolve(prop.getResolvings().get(0)));
 		}

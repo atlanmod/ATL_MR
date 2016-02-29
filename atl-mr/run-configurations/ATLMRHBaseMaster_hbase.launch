@@ -14,6 +14,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f ./data/Class2Relational/Class2Relational.emftvm -s fr.metamodel.impl.ClassPackageImpl -t Relational.impl.RelationalPackageImpl -i kyanoshbase://localhost/Class_model0_gen0_1000 -o kyanoshbase://localhost/Class_model0_gen0_1000.out"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f ./data/Class2Relational/Class2Relational.emftvm -s fr.metamodel.impl.ClassPackageImpl -t Relational.impl.RelationalPackageImpl -i neoemfhbase://localhost/Class_model0_gen0_1000 -o neoemfhbase://localhost/Class_model0_gen0_1000.out"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="atl-mr"/>
 </launchConfiguration>

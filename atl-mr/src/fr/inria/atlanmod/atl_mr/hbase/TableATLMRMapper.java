@@ -25,7 +25,7 @@ import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 import fr.inria.atlanmod.atl_mr.utils.HbaseTraceCreator;
 import fr.inria.atlanmod.atl_mr.utils.Tracer;
 import fr.inria.atlanmod.atl_mr.utils.Tracer.Creator;
-import fr.inria.atlanmod.kyanos.core.KyanosEObject;
+import fr.inria.atlanmod.neoemf.core.NeoEMFEObject;
 
 public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 
@@ -88,7 +88,7 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 				for (TraceLink link : rule.getLinks()) {
 					addMapping (traceCreator, link);
 					if (! execEnv.preApplySingleTrace(link)) {
-						context.write(new LongWritable(randomGen.nextInt(mappers)), new Text(execEnv.getCurrentFLink().kyanosId()));
+						context.write(new LongWritable(randomGen.nextInt(mappers)), new Text(execEnv.getCurrentFLink().neoemfId()));
 						mapTask.getTraceResource().getContents().add(mapTask.getExecutionEnv().getCurrentFLink());
 						//mapTask.getExecutionEnv().getSerializableLinks().add(mapTask.getExecutionEnv().getCurrentFLink());
 						elements++;
@@ -118,7 +118,7 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 
 	private void addMapping(Creator traceCreator, TraceLink link) {
 
-		String source = ((KyanosEObject) link.getSourceElements().get(0).getRuntimeObject()).kyanosId();
+		String source = ((NeoEMFEObject) link.getSourceElements().get(0).getRuntimeObject()).neoemfId();
 		String [] targets = resolveTargets (link.getTargetElements());
 		traceCreator.addMapping(source, targets);
 
@@ -129,7 +129,7 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 		String[] targets = new String[targetElements.size()];
 		int index = 0;
 		for (TargetElement element : targetElements) {
-			targets[index++] = ((KyanosEObject) element.getRuntimeObject()).kyanosId();
+			targets[index++] = ((NeoEMFEObject) element.getRuntimeObject()).neoemfId();
 		}
 		return targets;
 	}
