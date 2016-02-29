@@ -13,11 +13,11 @@
     <import file="dist.xml"/>
     <path id="Plug-in Dependencies.libraryclasspath">
         <pathelement location="../../../../../org.eclipse.m2m.atl.emftvm"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore_2.11.0.v20150512-0501.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.common_2.11.0.v20150512-0501.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore_2.11.1.v20150805-0538.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.common_2.11.0.v20150805-0538.jar"/>
         <pathelement location="../../../../../org.eclipse.m2m.atl.emftvm.trace"/>
         <pathelement location="../../../../../fr.inria.atlanmod.kyanos"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore.xmi_2.11.0.v20150512-0501.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore.xmi_2.11.1.v20150805-0538.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/javax.annotation_1.2.0.v201401042248.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/javax.inject_1.0.0.v20091030.jar"/>
@@ -50,7 +50,6 @@
         <pathelement location="../../../.ivy2/cache/xmlenc/xmlenc/jars/xmlenc-0.52.jar"/>
         <pathelement location="../../../.ivy2/cache/commons-httpclient/commons-httpclient/jars/commons-httpclient-3.1.jar"/>
         <pathelement location="../../../.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.3.jar"/>
-        <pathelement location="../../../.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.4.jar"/>
         <pathelement location="../../../.ivy2/cache/commons-net/commons-net/jars/commons-net-3.1.jar"/>
         <pathelement location="../../../.ivy2/cache/commons-collections/commons-collections/jars/commons-collections-3.2.1.jar"/>
         <pathelement location="../../../.ivy2/cache/javax.servlet/servlet-api/jars/servlet-api-2.5.jar"/>
@@ -110,27 +109,32 @@
         <pathelement location="../../../.ivy2/cache/org.apache.hadoop/hadoop-yarn-client/jars/hadoop-yarn-client-2.5.1.jar"/>
         <pathelement location="../../../.ivy2/cache/com.sun.jersey/jersey-client/bundles/jersey-client-1.9.jar"/>
         <pathelement location="../../../.ivy2/cache/org.apache.hadoop/hadoop-mapreduce-client-core/jars/hadoop-mapreduce-client-core-2.5.1.jar"/>
-        <pathelement location="../../../.ivy2/cache/io.netty/netty/bundles/netty-3.6.2.Final.jar"/>
         <pathelement location="../../../.ivy2/cache/org.apache.hadoop/hadoop-yarn-server-common/jars/hadoop-yarn-server-common-2.5.1.jar"/>
         <pathelement location="../../../.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-all/bundles/leveldbjni-all-1.8.jar"/>
         <pathelement location="../../../.ivy2/cache/org.apache.hadoop/hadoop-hdfs/jars/hadoop-hdfs-2.5.1.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.apache.hbase/hbase/jars/hbase-0.94.18.jar"/>
-        <pathelement location="../../../.ivy2/cache/com.yammer.metrics/metrics-core/jars/metrics-core-2.1.2.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.hbase/hbase-client/jars/hbase-client-0.98.13-hadoop2.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.hbase/hbase-protocol/jars/hbase-protocol-0.98.13-hadoop2.jar"/>
+        <pathelement location="../../../.ivy2/cache/com.github.stephenc.findbugs/findbugs-annotations/jars/findbugs-annotations-1.3.9-1.jar"/>
+        <pathelement location="../../../.ivy2/cache/junit/junit/jars/junit-4.11.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.3.jar"/>
+        <pathelement location="../../../.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.7.jar"/>
+        <pathelement location="../../../.ivy2/cache/io.netty/netty/bundles/netty-3.6.6.Final.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.zookeeper/zookeeper/jars/zookeeper-3.4.6.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.cloudera.htrace/htrace-core/jars/htrace-core-2.04.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.jruby.jcodings/jcodings/jars/jcodings-1.0.8.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.jruby.joni/joni/jars/joni-2.1.2.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.hbase/hbase-server/jars/hbase-server-0.98.13-hadoop2.jar"/>
+        <pathelement location="../../../.ivy2/cache/com.yammer.metrics/metrics-core/jars/metrics-core-2.2.0.jar"/>
         <pathelement location="../../../.ivy2/cache/com.github.stephenc.high-scale-lib/high-scale-lib/jars/high-scale-lib-1.1.1.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.apache.avro/avro-ipc/jars/avro-ipc-1.5.3.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.jboss.netty/netty/bundles/netty-3.2.4.Final.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.apache.velocity/velocity/jars/velocity-1.7.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.apache.zookeeper/zookeeper/jars/zookeeper-3.4.5.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.apache.thrift/libthrift/jars/libthrift-0.8.0.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.jruby/jruby-complete/jars/jruby-complete-1.6.5.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.commons/commons-math/jars/commons-math-2.1.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.mortbay.jetty/jetty-sslengine/jars/jetty-sslengine-6.1.26.jar"/>
         <pathelement location="../../../.ivy2/cache/org.mortbay.jetty/jsp-2.1/jars/jsp-2.1-6.1.14.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.eclipse.jdt/core/jars/core-3.1.1.jar"/>
         <pathelement location="../../../.ivy2/cache/org.mortbay.jetty/jsp-api-2.1/jars/jsp-api-2.1-6.1.14.jar"/>
         <pathelement location="../../../.ivy2/cache/org.mortbay.jetty/servlet-api-2.5/jars/servlet-api-2.5-6.1.14.jar"/>
         <pathelement location="../../../.ivy2/cache/org.jamon/jamon-runtime/jars/jamon-runtime-2.3.1.jar"/>
-        <pathelement location="../../../.ivy2/cache/stax/stax-api/jars/stax-api-1.0.1.jar"/>
-        <pathelement location="../../../.ivy2/cache/junit/junit/jars/junit-4.11.jar"/>
-        <pathelement location="../../../.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.3.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.hbase/hbase-prefix-tree/jars/hbase-prefix-tree-0.98.13-hadoop2.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.hbase/hbase-common/jars/hbase-common-0.98.13-hadoop2.jar"/>
+        <pathelement location="../../../.ivy2/cache/org.apache.hbase/hbase-hadoop-compat/jars/hbase-hadoop-compat-0.98.13-hadoop2.jar"/>
         <pathelement location="../../../.ivy2/cache/jboss/jboss-common/jars/jboss-common-4.2.2.GA.jar"/>
         <pathelement location="../../../.ivy2/cache/jline/jline/jars/jline-0.9.94.jar"/>
         <pathelement location="../../../.ivy2/cache/cglib/cglib-nodep/jars/cglib-nodep-3.1.jar"/>
@@ -140,6 +144,24 @@
         <path refid="Plug-in Dependencies.libraryclasspath"/>
         <pathelement location="bin"/>
         <path refid="Ivy.libraryclasspath"/>
+    </path>
+    <path id="classMetamodel.classpath">
+        <pathelement location="${classMetamodel.location}/bin"/>
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+    </path>
+    <path id="relationalMetamodel.classpath">
+        <pathelement location="${relationalMetamodel.location}/bin"/>
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.class2relational-hbase.classpath">
+        <path refid="atl-mr.classpath"/>
+        <path refid="classMetamodel.classpath"/>
+        <path refid="relationalMetamodel.classpath"/>
+    </path>
+    <path id="run.ATLMRHBaseMaster_hbase.classpath">
+        <path refid="atl-mr.classpath"/>
+        <path refid="classMetamodel.classpath"/>
+        <path refid="relationalMetamodel.classpath"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -176,8 +198,20 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
+    <target name="checkStyleRecordBuilder">
+        <java classname="fr.inria.atlanmod.atl_mr.builder.RecordBuilder" failonerror="true" fork="yes">
+            <arg line="-s data/checkstyle/inputs/java.ecore -i data/checkstyle/inputs/boolInst.xmi"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
     <target name="RunC2R">
         <java classname="fr.inria.atlanmod.atl_mr.standalone.test.RunC2R" failonerror="true" fork="yes">
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="CheckStyleATLMRMaster">
+        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
+            <arg line="-f data/checkstyle/transformations/checkstyle.emftvm -s data/checkstyle/inputs/java.ecore -t data/checkstyle/inputs/anomalies.ecore  -i data/checkstyle/inputs/boolInst.xmi -r data/checkstyle/inputs/boolInst.xmi.rec"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
@@ -207,14 +241,6 @@
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
-    <target name="families2persons-win-x86_64">
-        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" dir="${workspace_loc:atl-mr/working}" failonerror="true" fork="yes">
-            <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
-            <env key="HADOOP_HOME" value="${resource_loc:/atl-mr/hadoop-win-x86_64}"/>
-            <arg line="-f ../data/Families2Persons/Families2Persons.emftvm -s ../data/Families2Persons/Families.ecore -t ../data/Families2Persons/Persons.ecore -i ../data/Families2Persons/result500_0.xmi -r ../data/Families2Persons/result500_0.xmi.rec"/>
-            <classpath refid="atl-mr.classpath"/>
-        </java>
-    </target>
     <target name="families2persons-win-x86_64.hdfs">
         <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
             <env key="PATH" value="${resource_loc:/atl-mr/hadoop-win-x86_64/bin}"/>
@@ -231,6 +257,13 @@
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
+    <target name="class2relational-hbase">
+        <java classname="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster" failonerror="true" fork="yes">
+            <jvmarg line="-Drebel.log=true"/>
+            <arg line="-f data/Class2Relational/Class2Relational.emftvm &#10;-s fr.metamodel.impl.ClassPackageImpl&#10;-t Relational.impl.RelationalPackageImpl&#10;-i kyanoshbase://localhost:2181/Class/model0_gen0_1000&#10;-o kyanoshbase://localhost:2181/Relational/model0_gen0_1000"/>
+            <classpath refid="run.class2relational-hbase.classpath"/>
+        </java>
+    </target>
     <target name="NeoEMFHBaseMigrator">
         <java classname="fr.inria.atlanmod.atl_mr.utils.NeoEMFHBaseMigrator" dir="${workspace_loc:atl-mr/working}" failonerror="true" fork="yes">
             <jvmarg line="-verbose:clas"/>
@@ -244,10 +277,10 @@
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
-    <target name="ATLMRMaster_hbase">
-        <java classname="fr.inria.atlanmod.atl_mr.hbase.ATLMRMaster" failonerror="true" fork="yes">
-            <arg line="-f ./data/Class2Relational/Class2Relational.emftvm -s fr.metamodel.impl.ClassPackageImpl -t Relational.impl.RelationalPackageImpl -i kyanoshbase://localhost/class2relational.sample -r ./data/Class2Relational/sample.hbase.rec -output kyanoshbase://localhost/class2relational.sample.out"/>
-            <classpath refid="atl-mr.classpath"/>
+    <target name="ATLMRHBaseMaster_hbase">
+        <java classname="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster" failonerror="true" fork="yes">
+            <arg line="-f ./data/Class2Relational/Class2Relational.emftvm -s fr.metamodel.impl.ClassPackageImpl -t Relational.impl.RelationalPackageImpl -i kyanoshbase://localhost/Class_model0_gen0_1000 -o kyanoshbase://localhost/Class_model0_gen0_1000.out"/>
+            <classpath refid="run.ATLMRHBaseMaster_hbase.classpath"/>
         </java>
     </target>
 </project>
