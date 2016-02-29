@@ -1,11 +1,9 @@
 package fr.inria.atlanmod.atl_mr.hbase;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,20 +30,17 @@ import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.mapreduce.TableInputFormatBase;
 import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
-import org.apache.hadoop.hbase.util.Pair;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.eclipse.emf.common.util.URI;
 
+import fr.inria.atlanmod.atl_mr.utils.ATLMRTableInputFormat2;
 import fr.inria.atlanmod.kyanos.util.KyanosUtil;
 
 public class ATLMRHBaseMaster extends Configured implements Tool {
@@ -61,7 +56,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	static final String INPUT_MODEL 						= "i";
 	static final String OUTPUT_MODEL 						= "o";
 
-	private static final String RECOMMENDED_MAPPERS 		= "m";
+	public static final String RECOMMENDED_MAPPERS 			= "m";
 	private static final String RECORDS_PER_MAPPER	 		= "n";
 	private static final String QUIET 						= "q";
 	private static final String VERBOSE 					= "v";
@@ -75,6 +70,9 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	private static final String RECORDS_PER_MAPPER_LONG	 	= "records-per-mapper";
 	private static final String QUIET_LONG 					= "quiet";
 	private static final String VERBOSE_LONG 				= "verbose";
+
+
+	private static String inModel;
 
 	private static class OptionComarator<T extends Option> implements Comparator<T> {
 		private static final String OPTS_ORDER = "fstriomnvq";
@@ -93,7 +91,19 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	 */
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
+		// Launch the transformation
 		int res = ToolRunner.run(conf, new ATLMRHBaseMaster(), args);
+
+
+		// cleanUp the transformation environment
+
+		Logger.getGlobal().log(Level.INFO, "Cleaning up after job finish - START");
+
+		KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inModel).appendSegment(ATLMapReduceTask.TRACES_NSURI));
+		KyanosUtil.ResourceUtil.INSTANCE.deleteResourceIfExists(URI.createURI(inModel).appendSegment("traces").appendSegment("map"));
+
+		Logger.getGlobal().log(Level.INFO, "Cleaning up reducer - END");
+
 		System.exit(res);
 	}
 
@@ -125,6 +135,8 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 			String targetmmLocation = commandLine.getOptionValue(TARGET_PACKAGE);
 			//String recordsLocation = commandLine.getOptionValue(RECORDS_FILE);
 			String inputLocation = commandLine.getOptionValue(INPUT_MODEL);
+			// dirty just for test
+			inModel = inputLocation;
 			String outputLocation = commandLine.getOptionValue(OUTPUT_MODEL);
 
 			int recommendedMappers = 1;
@@ -162,26 +174,28 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 
 			// mapper job initialization
 
+			TableMapReduceUtil.initTableMapperJob(
+					tableName.getNameAsString(),
+					scan,
+					TableATLMRMapper.class,
+					LongWritable.class,
+					Text.class,
+					job,
+					true,
+					ATLMRTableInputFormat2.class
+					);
+
 			//			TableMapReduceUtil.initTableMapperJob(
 			//					tableName.getNameAsString(), // tableName
 			//					scan, // scanner
 			//					TableATLMRMapper.class, // main class
 			//					LongWritable.class, // outputKeyClass
 			//					Text.class,// output value class
-			//					job,// the Job
-			//					true, // adding dependency Jars
-			//					ATLMRTableInputFormat.class // Custom input format
+			//					job// the Job
 			//					);
 
-			TableMapReduceUtil.initTableMapperJob(
-					tableName.getNameAsString(), // tableName
-					scan, // scanner
-					TableATLMRMapper.class, // main class
-					LongWritable.class, // outputKeyClass
-					Text.class,// output value class
-					job
-					);
-
+			// adding hbase resources to mapreduce
+			HBaseConfiguration.addHbaseResources(job.getConfiguration());
 
 			//			job.setMapperClass(ATLMRMapper.class);
 			job.setReducerClass(ATLMRHBaseReducer.class);
@@ -197,6 +211,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 			job.getConfiguration().set(TARGET_PACKAGE, targetmmLocation);
 			job.getConfiguration().set(INPUT_MODEL, inputLocation);
 			job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
+			job.getConfiguration().set(RECOMMENDED_MAPPERS, Integer.toString(recommendedMappers));
 
 			// CLeaning the resources if they already exist
 			// target URI
@@ -325,47 +340,47 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	}
 
 
-	/**
-	 * Custom implementation of input data for NeoEMF models
-	 * @author Amine BENELALLAM
-	 *
-	 */
-	public class ATLMRTableInputFormat extends TableInputFormatBase {
+	//	/**
+	//	 * Custom implementation of input data for NeoEMF models
+	//	 * @author Amine BENELALLAM
+	//	 *
+	//	 */
+	//	public class ATLMRTableInputFormat extends TableInputFormat {
+	//
+	//
+	//		public ATLMRTableInputFormat() {
+	//			// TODO Auto-generated constructor stub
+	//			super();
+	//		}
+	//		@Override
+	//		public List<InputSplit> getSplits(JobContext job) throws IOException {
+	//
+	//			if (getHTable() == null) {
+	//				throw new IOException("No table was provided.");
+	//			}
+	//
+	//			Pair<byte[][],byte[][]> keys=getHTable().getStartEndKeys();
+	//
+	//			if (keys == null || keys.getFirst() == null || keys.getFirst().length == 0) {
+	//				throw new IOException("Expecting at least one region.");
+	//			}
+	//
+	//			List<InputSplit> splits = super.getSplits(job);
+	//			Scan myScan = getScan();
+	//
+	//			try {
+	//
+	//				long rowCount = new AggregationClient(job.getConfiguration()).rowCount(getHTable(), new LongColumnInterpreter() , myScan);
+	//
+	//				int numberOfSplits = Math.round(rowCount/Integer.valueOf(job.getConfiguration().get(ATLMRHBaseMaster.RECOMMENDED_MAPPERS)));
+	//
+	//			} catch (Throwable e) {
+	//				// TODO Auto-generated catch block
+	//				e.printStackTrace();
+	//			}
+	//			return splits;
+	//
+	//		}
+	//	}
 
-		@Override
-		public List<InputSplit> getSplits(JobContext job) throws IOException {
-
-			if (getHTable() == null) {
-				throw new IOException("No table was provided.");
-			}
-
-			Pair<byte[][],byte[][]> keys=getHTable().getStartEndKeys();
-
-			if (keys == null || keys.getFirst() == null || keys.getFirst().length == 0) {
-				throw new IOException("Expecting at least one region.");
-			}
-
-			List<InputSplit> splits = super.getSplits(job);
-
-			Scan myScan = getScan();
-			byte [] start;
-			byte [] end;
-
-			try {
-
-				//long rowCount = new AggregationClient(getConf()).rowCount(getHTable(), new LongColumnInterpreter() , myScan);
-				byte startRow[] = myScan.getStartRow(), stopRow[] = myScan.getStopRow();
-
-				//int numberOfSplits = Math.round(rowCount/Integer.valueOf(getConf().get(RECOMMENDED_MAPPERS)));
-
-			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-
-			return splits;
-
-		}
-	}
 }

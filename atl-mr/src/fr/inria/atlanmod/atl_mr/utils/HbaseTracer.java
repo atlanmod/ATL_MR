@@ -48,6 +48,7 @@ public class HbaseTracer implements Tracer{
 			traceConnection =  HConnectionManager.createConnection(conf);
 
 			if (!admin.tableExists(tableName)) {
+				@SuppressWarnings("deprecation")
 				HTableDescriptor desc = new HTableDescriptor(tableName);
 				HColumnDescriptor inverseFamily = new HColumnDescriptor(EINVERSE_FAMILY);
 				desc.addFamily(inverseFamily);

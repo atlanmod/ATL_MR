@@ -2,6 +2,7 @@ package fr.inria.atlanmod.atl_mr.hbase;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,8 @@ import fr.inria.atlanmod.kyanos.core.KyanosEObject;
 public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 
 	private ATLMapReduceTask mapTask = new ATLMapReduceTask();
+	private Random randomGen =  new Random();
+
 	//private BinaryResourceImpl tracesResource = new BinaryResourceImpl();
 
 	@Override
@@ -37,7 +40,10 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 
 		try {
 			mapTask.setup(context.getConfiguration(), true);
-			mapTask.setTracer(new HbaseTraceCreator(mapTask.getTraceResource().getURI()));
+			mapTask.setTracer(new HbaseTraceCreator(mapTask.getInModel().
+					getResource().getURI().
+					appendSegment("traces"))
+					);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,10 +63,10 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 			String objId = Bytes.toString(row.get());
 
 			EObject currentObj = inModel.getResource().getEObject(objId);
-			System.out.println("****"+currentObj+"****");
+			//System.out.println("****"+currentObj+"****");
 			Logger.getGlobal().log(Level.FINEST, "\tmatchSingleObject - START");
 
-			System.out.println(executionEnv.matchSingleObject(currentObj, currentObj.eClass().getName()));
+			executionEnv.matchSingleObject(currentObj, currentObj.eClass().getName());
 			Logger.getGlobal().log(Level.FINEST, "\tmatchSingleObject - END");
 
 			Logger.getGlobal().log(Level.FINEST, "Mapping - END");
@@ -73,23 +79,36 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 	protected void cleanup(Context context) throws IOException, InterruptedException {
 		ExecEnv execEnv = mapTask.getExecutionEnv();
 		Tracer.Creator traceCreator = (Creator) mapTask.getTracer();
-		Logger.getGlobal().log(Level.INFO, "Cleaning up mapper - START");
-
+		Logger.getGlobal().log(Level.INFO, "Local Resolve - START");
+		int mappers = Integer.valueOf(context.getConfiguration().get(ATLMRHBaseMaster.RECOMMENDED_MAPPERS));
+		int elements =0;
 		try {
 			for (TracedRule rule : execEnv.getMatches().getRules()) {
 				Logger.getGlobal().log(Level.INFO, "processing rule"+rule );
 				for (TraceLink link : rule.getLinks()) {
 					addMapping (traceCreator, link);
-					if (execEnv.preApplySingleTrace(link)) {
-						context.write(new LongWritable(1), new Text(execEnv.getCurrentFLink().kyanosId()));
+					if (! execEnv.preApplySingleTrace(link)) {
+						context.write(new LongWritable(randomGen.nextInt(mappers)), new Text(execEnv.getCurrentFLink().kyanosId()));
+						mapTask.getTraceResource().getContents().add(mapTask.getExecutionEnv().getCurrentFLink());
+						//mapTask.getExecutionEnv().getSerializableLinks().add(mapTask.getExecutionEnv().getCurrentFLink());
+						elements++;
 					}
 				}
 			}
 
+			Logger.getGlobal().log(Level.INFO, "Local Resolve  - END");
+
+			Logger.getGlobal().log(Level.INFO, "Cleaning up mapper - START");
+
 			Resource resource = mapTask.getOutModel().getResource();
 			resource.save(Collections.emptyMap());
-			mapTask.getTraceResource().save(Collections.emptyMap());
-			mapTask.getTraceResource().getContents().addAll(mapTask.getExecutionEnv().getSerializableLinks());
+			//mapTask.getTraceResource().save(Collections.emptyMap());
+			// implement an ADDALL and A REMOVE for the getEcontents EList
+			//			List contents = mapTask.getTraceResource().getContents();
+			//			for (EObject flink : mapTask.getExecutionEnv().getSerializableLinks() ) {
+			//				mapTask.getTraceResource().getContents().add(flink);
+			//			}
+			//			System.out.println("the number of elements to be added are "+ Boolean.toString(mapTask.getExecutionEnv().getSerializableLinks().size() == elements));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -28,7 +28,6 @@ public class HbaseTraceCreator extends HbaseTracer implements Creator {
 			table.put(put);
 			return true;
 		} catch (IOException e) {
-
 			e.printStackTrace();
 		}
 		return false;

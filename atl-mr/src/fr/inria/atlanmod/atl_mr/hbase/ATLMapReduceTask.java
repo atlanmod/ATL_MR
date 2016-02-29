@@ -2,9 +2,11 @@ package fr.inria.atlanmod.atl_mr.hbase;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.hadoop.conf.Configuration;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -21,6 +23,7 @@ import org.eclipse.m2m.atl.emftvm.util.ModuleResolver;
 
 import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 import fr.inria.atlanmod.atl_mr.utils.Tracer;
+import fr.inria.atlanmod.kyanos.core.KyanosResource;
 
 public class ATLMapReduceTask {
 
@@ -172,8 +175,19 @@ public class ATLMapReduceTask {
 
 		// Load models
 
+		Map<Object,Object> readOnlyOptions = new HashedMap<Object, Object>();
+		readOnlyOptions.put(KyanosResource.OPTIONS_HBASE_READ_ONLY, true);
 		inModel = EmftvmFactory.eINSTANCE.createModel();
-		inModel.setResource(rs.getResource(inMURI, true));
+		Resource inResource = rs.createResource(inMURI);
+		inModel.setResource(inResource);
+		try { //
+			inResource.load(readOnlyOptions);
+			//	inResource.load(Collections.EMPTY_MAP);
+		} catch (IOException e) {
+			//
+			ATLMRUtils.showError(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
 		executionEnv.registerInputModel(IMName, inModel);
 
 		Resource outResource = rs.createResource(outMURI);
@@ -187,12 +201,14 @@ public class ATLMapReduceTask {
 
 		executionEnv.setExecutionMode(ExecMode.MR);
 		executionEnv.registerOutputModel(OMName, outModel);
-		executionEnv.preMatchAllSingle();
-
+		if (mapState) {
+			executionEnv.preMatchAllSingle();
+		}
 		setTraceResource(rs.createResource(inMURI.appendSegment(TRACES_NSURI)));
 		try {
 			getTraceResource().load(Collections.EMPTY_MAP);
-		} catch (IOException e) {
+		} catch (Exception e) {
+			ATLMRUtils.showError(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
