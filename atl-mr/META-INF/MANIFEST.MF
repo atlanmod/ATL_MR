@@ -10,7 +10,11 @@ Require-Bundle: org.eclipse.m2m.atl.emftvm,
  org.eclipse.core.resources,
  org.eclipse.emf.validation,
  org.objectweb.asm,
- fr.inria.atlanmod.neoemf.hbase
-Bundle-Version: 0.0.0.qualifier
+ fr.inria.atlanmod.instantiator.neoEMF;bundle-version="0.1.0"
+Bundle-Version: 0.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
+Import-Package: fr.inria.atlanmod.neoemf.core
+Bundle-Name: ATL-MR Plugin
+Bundle-Vendor: AtlanMod Inria
+Bundle-Activator: fr.inria.atlanmod.atl_mr.ATLMRPlugin
