@@ -4,7 +4,9 @@
 /working/*
 !/working/.dummy
 
-/dist/
+/dist/**.jar
 /atl-mr-neoEMF.zip
 /dist-fat/
 /target/
+/dist/
+/lib/
