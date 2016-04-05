@@ -34,18 +34,7 @@ public class RunC2R {
 		ExecEnv env = EmftvmFactory.eINSTANCE.createExecEnv();
 		ResourceSet rs = new ResourceSetImpl();
 		//
-		//		// enable extended metadata
-		//		final ExtendedMetaData extendedMetaData = new BasicExtendedMetaData(rs.getPackageRegistry());
-		//		rs.getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA,
-		//		    extendedMetaData);
-		//
-		//		Resource emftvmResource = rs.getResource(URI.createURI("data/Families2Persons/Families2Persons.emftvm"), true);
-		//		ATLMRUtils.importToXML(emftvmResource);
-		//		// Load metamodels
-		//		Metamodel metaModel = EmftvmFactory.eINSTANCE.createMetamodel();
-		//		metaModel.setResource(rs.getResource(URI.createURI("http://www.eclipse.org/m2m/atl/2011/EMFTVM"), true));
-		//		env.registerMetaModel("METAMODEL", metaModel);
-		//		registerPackages(rs, metaModel.getResource());
+
 		URI inMMURI =URI.createURI( "./data/Class2Relational/Class.ecore");
 
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();

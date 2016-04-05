@@ -26,15 +26,15 @@ public class RunF2P {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl());
 		//		//EmftvmFactory.eINSTANCE;
-		//
+
 		ExecEnv env = EmftvmFactory.eINSTANCE.createExecEnv();
 		ResourceSet rs = new ResourceSetImpl();
-		//
+
 		//		// enable extended metadata
 		//		final ExtendedMetaData extendedMetaData = new BasicExtendedMetaData(rs.getPackageRegistry());
 		//		rs.getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA,
@@ -42,6 +42,7 @@ public class RunF2P {
 		//
 		//		Resource emftvmResource = rs.getResource(URI.createURI("data/Families2Persons/Families2Persons.emftvm"), true);
 		//		ATLMRUtils.importToXML(emftvmResource);
+		//
 		//		// Load metamodels
 		//		Metamodel metaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		//		metaModel.setResource(rs.getResource(URI.createURI("http://www.eclipse.org/m2m/atl/2011/EMFTVM"), true));
@@ -49,6 +50,7 @@ public class RunF2P {
 		//		registerPackages(rs, metaModel.getResource());
 		URI inMMURI =URI.createURI( "./data/Families2Persons/Families.ecore");
 
+		//
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		inMetaModel.setResource(rs.getResource(inMMURI, true));
 		env.registerMetaModel("Families", inMetaModel);
@@ -78,6 +80,7 @@ public class RunF2P {
 		ModuleResolver mr = new DefaultModuleResolver("data/Families2Persons/", new ResourceSetImpl());
 		TimingData td = new TimingData();
 		env.loadModule(mr, "Families2Persons");
+
 		td.finishLoading();
 		env.run(td);
 		td.finish();

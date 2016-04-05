@@ -1,0 +1,24 @@
+-- @atlcompiler emftvm
+
+-- @nsURI IN=http://fr.inria.atlanmod/dag
+-- @nsURI OUT=http://fr.inria.atlanmod/sortedDag
+
+
+module sortedDag;
+
+create OUT : S from IN : T;
+
+rule dag2sortedDad {
+	from 
+		d : IN!DAG
+	to 
+		sd : OUT!SortedGraph
+}
+
+rule vertice2node {
+	from 
+		v : IN!Vertice
+	to
+		n : OUT!Node(
+			)
+}

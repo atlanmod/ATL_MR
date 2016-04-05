@@ -340,47 +340,6 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	}
 
 
-	//	/**
-	//	 * Custom implementation of input data for NeoEMF models
-	//	 * @author Amine BENELALLAM
-	//	 *
-	//	 */
-	//	public class ATLMRTableInputFormat extends TableInputFormat {
-	//
-	//
-	//		public ATLMRTableInputFormat() {
-	//			// TODO Auto-generated constructor stub
-	//			super();
-	//		}
-	//		@Override
-	//		public List<InputSplit> getSplits(JobContext job) throws IOException {
-	//
-	//			if (getHTable() == null) {
-	//				throw new IOException("No table was provided.");
-	//			}
-	//
-	//			Pair<byte[][],byte[][]> keys=getHTable().getStartEndKeys();
-	//
-	//			if (keys == null || keys.getFirst() == null || keys.getFirst().length == 0) {
-	//				throw new IOException("Expecting at least one region.");
-	//			}
-	//
-	//			List<InputSplit> splits = super.getSplits(job);
-	//			Scan myScan = getScan();
-	//
-	//			try {
-	//
-	//				long rowCount = new AggregationClient(job.getConfiguration()).rowCount(getHTable(), new LongColumnInterpreter() , myScan);
-	//
-	//				int numberOfSplits = Math.round(rowCount/Integer.valueOf(job.getConfiguration().get(ATLMRHBaseMaster.RECOMMENDED_MAPPERS)));
-	//
-	//			} catch (Throwable e) {
-	//				// TODO Auto-generated catch block
-	//				e.printStackTrace();
-	//			}
-	//			return splits;
-	//
-	//		}
-	//	}
+
 
 }
