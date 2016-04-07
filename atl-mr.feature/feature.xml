@@ -2,7 +2,7 @@
 <feature
       id="atl.mr.feature"
       label="AT-MR-Feature"
-      version="0.2.0.qualifier"
+      version="0.2.1.qualifier"
       provider-name="ATLANMOD">
 
    <description url="http://www.example.com/description">
@@ -22,8 +22,8 @@
 *   http://www.apache.org/licenses/LICENSE-2.0
 ********************************************************************************
 * Contributors:
-*	   Amine Benelallam (AtlanMod) - Initial API	 
-*     Abel G{/&apos;o}mez (AtlanMod) - Additional modifications  
+*    Amine Benelallam (AtlanMod) - Initial API  
+*     Abel G{o}mez (AtlanMod) - Additional modifications  
 ********************************************************************************
    </copyright>
 
@@ -35,7 +35,7 @@
          id="atl-mr"
          download-size="0"
          install-size="0"
-         version="0.2.0.qualifier"
+         version="0.2.1.qualifier"
          unpack="false"/>
 
 </feature>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.m2m.atl.emftvm.distributed.feature_0.2.0.201511171255.jar" id="org.eclipse.m2m.atl.emftvm.distributed.feature" version="0.2.0.201511171255">
+   <feature url="features/org.eclipse.m2m.atl.emftvm.distributed.feature_0.2.0.201604071446.jar" id="org.eclipse.m2m.atl.emftvm.distributed.feature" version="0.2.0.201604071446">
       <category name="emftvm+"/>
    </feature>
-   <feature url="features/atl.mr.feature_0.2.0.201511171255.jar" id="atl.mr.feature" version="0.2.0.201511171255">
+   <feature url="features/atl.mr.feature_0.2.1.201604071446.jar" id="atl.mr.feature" version="0.2.1.201604071446">
       <category name="atl-mr"/>
    </feature>
    <category-def name="atl-mr" label="atl-mr"/>

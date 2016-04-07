@@ -10,7 +10,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="atl-mr"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="dist.emftvm,"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="dist.emftvm,dist,"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/atl-mr/build.xml}"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.ant.ui.remoteAntProcessFactory"/>
 </launchConfiguration>

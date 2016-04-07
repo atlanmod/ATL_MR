@@ -1,5 +1,7 @@
 package fr.inria.atlanmod.atl_mr.utils;
 
+import java.util.Iterator;
+
 import org.apache.hadoop.conf.Configuration;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -119,12 +121,14 @@ public class ATLMRUtils {
 	 * @param resource
 	 */
 	public static void registerPackages(ResourceSet resourceSet, Resource resource) {
-		EObject eObject = resource.getContents().get(0);
-		if (eObject instanceof EPackage) {
-			EPackage p = (EPackage) eObject;
-			resourceSet.getPackageRegistry().put(p.getNsURI(), p);
+		Iterator<EObject> it = resource.getAllContents();
+		while (it.hasNext()) {
+			EObject eObject = it.next();
+			if (eObject instanceof EPackage) {
+				EPackage p = (EPackage) eObject;
+				resourceSet.getPackageRegistry().put(p.getNsURI(), p);
+			}
 		}
-
 	}
 
 	/**
