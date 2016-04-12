@@ -95,5 +95,6 @@
 	<classpathentry kind="lib" path="lib/bundles/netty-3.6.2.Final.jar"/>
 	<classpathentry kind="lib" path="lib/bundles/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/bundles/snappy-java-1.0.4.1.jar"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=atl-mr&amp;ivyXmlPath=ivy.xml&amp;confs=*"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
