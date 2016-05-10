@@ -31,17 +31,16 @@
 	<target name="compile" depends="init" description="compile the source ">
 		<javac includeantruntime="false" srcdir="${src.dir}" 
                        destdir="${build.dir}" classpathref="classpath" />
+		<echo file="${build.dir}/resources/plugin.properties">_UI_DiagnosticRoot_diagnostic=_UI_DiagnosticRoot_diagnostic</echo>
 	</target>
 
 	<!-- Group all dependencies into a big dependency-all.jar -->
 	<target name="copy-dependencies">
-
 		<jar jarfile="${dist.lib.dir}/dependencies-all.jar">
 			<zipgroupfileset dir="${lib.dir}">
 				<include name="**/*.jar" />
 			</zipgroupfileset>
 		</jar>
-
 	</target>
 
 	<!-- jar it, extract above dependency-all.jar and zip it with project files -->
@@ -53,7 +52,7 @@
 				<attribute name="Main-Class" value="${main.class}" />
 			</manifest>
 			<zipfileset src="${dist.lib.dir}/dependencies-all.jar" 
-                                excludes="META-INF/*.SF" />
+                                excludes="META-INF/*.SF,META-INF/*.DSA,META-INF/*.RSA" />
 		</jar>
 		<delete dir="${lib.dir}"/>
 	</target>

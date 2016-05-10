@@ -6,6 +6,7 @@
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="atl-mr">
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../../eclipse/"/>
+    <property name="workspace_loc:com.mondo.modelio.test/transformation" value="../../../workspaces/D-ATL_WS/com.mondo.modelio.test/transformation"/>
     <property name="workspace_loc:atl-mr/working" value="working"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
@@ -13,15 +14,16 @@
     <import file="dist.xml"/>
     <path id="Plug-in Dependencies.libraryclasspath">
         <pathelement location="../../../../../org.eclipse.m2m.atl.emftvm"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore_2.11.1.v20150805-0538.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.common_2.11.0.v20150805-0538.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore_2.11.2.v20160208-0816.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.common_2.11.1.v20160208-0816.jar"/>
         <pathelement location="../../../../../org.eclipse.m2m.atl.emftvm.trace"/>
-        <pathelement location="../../../../../fr.inria.atlanmod.kyanos"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore.xmi_2.11.1.v20150805-0538.jar"/>
+        <pathelement location="../../../../../fr.inria.atlanmod.neoemf.hbase"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.runtime_3.10.0.v20140318-2214.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/javax.annotation_1.2.0.v201401042248.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/javax.inject_1.0.0.v20091030.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.osgi_3.10.2.v20150203-1939.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.equinox.weaving.hook_1.1.100.weaving-hook-20140821.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.fx.osgi_2.1.0.201508240501.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.osgi.compatibility.state_1.0.1.v20140709-1414.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.jobs_3.6.1.v20141014-1248.jar"/>
@@ -30,10 +32,16 @@
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.equinox.preferences_3.5.200.v20140224-1527.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.contenttype_3.4.200.v20140207-1251.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.equinox.app_1.3.200.v20130910-1609.jar"/>
-        <pathelement location="../../../../../org.eclipse.m2m.atl.common"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.m2m.atl.common_3.6.0.v201505221133.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.resources_3.9.1.v20140825-1431.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.validation_1.8.0.201405281429.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.objectweb.asm_5.0.1.v201404251740.jar"/>
+        <pathelement location="../../../../../fr.inria.atlanmod.instantiator.neoEMF"/>
+        <pathelement location="../../../../../classMetamodel"/>
+        <pathelement location="../../../../../relationalMetamodel"/>
+        <pathelement location="../../../../../fr.inria.atlanmod.dag"/>
+        <pathelement location="../../../../../fr.inria.atlanmod.dag.sort"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.emf.ecore.xmi_2.11.1.v20160208-0816.jar"/>
     </path>
     <path id="Ivy.libraryclasspath">
         <pathelement location="../../../.ivy2/cache/commons-cli/commons-cli/jars/commons-cli-1.2.jar"/>
@@ -145,6 +153,24 @@
         <pathelement location="bin"/>
         <path refid="Ivy.libraryclasspath"/>
     </path>
+    <path id="fr.inria.atlanmod.dag.classpath">
+        <pathelement location="${fr.inria.atlanmod.dag.location}/bin"/>
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+        <path refid="Ivy.libraryclasspath"/>
+    </path>
+    <path id="run.topoSort-hbase.classpath">
+        <path refid="fr.inria.atlanmod.dag.classpath"/>
+        <path refid="atl-mr.classpath"/>
+    </path>
+    <path id="fr.inria.atlanmod.dag.sort.classpath">
+        <pathelement location="${fr.inria.atlanmod.dag.sort.location}/bin"/>
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.sortedDag-hbase.classpath">
+        <path refid="fr.inria.atlanmod.dag.sort.classpath"/>
+        <path refid="fr.inria.atlanmod.dag.classpath"/>
+        <path refid="atl-mr.classpath"/>
+    </path>
     <path id="classMetamodel.classpath">
         <pathelement location="${classMetamodel.location}/bin"/>
         <path refid="Plug-in Dependencies.libraryclasspath"/>
@@ -198,9 +224,15 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
+    <target name="modelioATLMRMaster">
+        <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
+            <arg line="-f data/modelio/test.emftvm -s data/modelio/modelio.ecore -t data/modelio/modelio.ecore  -i data/modelio/Package.xmi -r data/modelio/Package.xmi.rec -o data/modelio/Package.out.xmi"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
     <target name="checkStyleRecordBuilder">
         <java classname="fr.inria.atlanmod.atl_mr.builder.RecordBuilder" failonerror="true" fork="yes">
-            <arg line="-s data/checkstyle/inputs/java.ecore -i data/checkstyle/inputs/boolInst.xmi"/>
+            <arg line="-s data/checkstyle/inputs/java.ecore   -i data/checkstyle/inputs/boolInst.xmi"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
@@ -209,10 +241,30 @@
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
+    <target name="modelioRecordBuilder">
+        <java classname="fr.inria.atlanmod.atl_mr.builder.RecordBuilder" failonerror="true" fork="yes">
+            <arg line="-s data/modelio/modelio.ecore -i data/modelio/Package.xmi"/>
+            <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
     <target name="CheckStyleATLMRMaster">
         <java classname="fr.inria.atlanmod.atl_mr.ATLMRMaster" failonerror="true" fork="yes">
             <arg line="-f data/checkstyle/transformations/checkstyle.emftvm -s data/checkstyle/inputs/java.ecore -t data/checkstyle/inputs/anomalies.ecore  -i data/checkstyle/inputs/boolInst.xmi -r data/checkstyle/inputs/boolInst.xmi.rec"/>
             <classpath refid="atl-mr.classpath"/>
+        </java>
+    </target>
+    <target name="topoSort-hbase">
+        <java classname="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster" dir="${workspace_loc:com.mondo.modelio.test/transformation}" failonerror="true" fork="yes">
+            <jvmarg line="-Drebel.log=true"/>
+            <arg line="-f topoSort.emftvm&#10;-s fr.inria.atlanmod.dag.impl.DagPackageImpl&#10;-t fr.inria.atlanmod.dag.impl.DagPackageImpl&#10;-i neoemfhbase://localhost:2181/dag2/dag_model0_gen0_1000&#10;-o neoemfhbase://localhost:2181/sortedDag/model0_gen0_1000&#10;-m 3"/>
+            <classpath refid="run.topoSort-hbase.classpath"/>
+        </java>
+    </target>
+    <target name="sortedDag-hbase">
+        <java classname="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster" dir="${workspace_loc:com.mondo.modelio.test/transformation}" failonerror="true" fork="yes">
+            <jvmarg line="-Drebel.log=true"/>
+            <arg line="-f sortedDag.emftvm&#10;-s fr.inria.atlanmod.dag.impl.DagPackageImpl&#10;-t fr.inria.atlanmod.sortedDag.impl.SortedDagPackageImpl&#10;-i neoemfhbase://localhost:2181/dag/model0_gen0_1000&#10;-o neoemfhbase://localhost:2181/sortedDag/model0_gen0_1000_out&#10;-m 1"/>
+            <classpath refid="run.sortedDag-hbase.classpath"/>
         </java>
     </target>
     <target name="recordbuilder-flow2data">
@@ -260,26 +312,26 @@
     <target name="class2relational-hbase">
         <java classname="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster" failonerror="true" fork="yes">
             <jvmarg line="-Drebel.log=true"/>
-            <arg line="-f data/Class2Relational/Class2Relational.emftvm &#10;-s fr.metamodel.impl.ClassPackageImpl&#10;-t Relational.impl.RelationalPackageImpl&#10;-i kyanoshbase://localhost:2181/Class/model0_gen0_1000&#10;-o kyanoshbase://localhost:2181/Relational/model0_gen0_1000"/>
+            <arg line="-f data/Class2Relational/Class2Relational.emftvm &#10;-s fr.metamodel.impl.ClassPackageImpl&#10;-t Relational.impl.RelationalPackageImpl&#10;-i neoemfhbase://localhost:2181/Class/model0_gen0_10000&#10;-o neoemfhbase://localhost:2181/Relational/model0_gen0_10000&#10;-m 3"/>
             <classpath refid="run.class2relational-hbase.classpath"/>
         </java>
     </target>
     <target name="NeoEMFHBaseMigrator">
         <java classname="fr.inria.atlanmod.atl_mr.utils.NeoEMFHBaseMigrator" dir="${workspace_loc:atl-mr/working}" failonerror="true" fork="yes">
             <jvmarg line="-verbose:clas"/>
-            <arg line="-mip ../data/Class2Relational/models/result0_1000000.xmi &#10;-mpck fr.metamodel.impl.ClassPackageImpl&#10;-mop kyanoshbase://localhost/class2relational/1000000"/>
+            <arg line="-mip ../data/Class2Relational/models/result0_1000000.xmi &#10;-mpck fr.metamodel.impl.ClassPackageImpl&#10;-mop neoemfhbase://localhost/class2relational/1000000"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
     <target name="Builder_ATLMR_HBase">
         <java classname="fr.inria.atlanmod.atl_mr.builder.HbaseRecordBuilder" failonerror="true" fork="yes">
-            <arg line="-i kyanoshbase://localhost/class2relational.sample  -o ./data/sample.hbase.rec -p fr.metamodel.impl.ClassPackageImpl"/>
+            <arg line="-i neoemfhbase://localhost/class2relational.sample  -o ./data/sample.hbase.rec -p fr.metamodel.impl.ClassPackageImpl"/>
             <classpath refid="atl-mr.classpath"/>
         </java>
     </target>
     <target name="ATLMRHBaseMaster_hbase">
         <java classname="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster" failonerror="true" fork="yes">
-            <arg line="-f ./data/Class2Relational/Class2Relational.emftvm -s fr.metamodel.impl.ClassPackageImpl -t Relational.impl.RelationalPackageImpl -i kyanoshbase://localhost/Class_model0_gen0_1000 -o kyanoshbase://localhost/Class_model0_gen0_1000.out"/>
+            <arg line="-f ./data/Class2Relational/Class2Relational.emftvm -s fr.metamodel.impl.ClassPackageImpl -t Relational.impl.RelationalPackageImpl -i neoemfhbase://localhost/Class_model0_gen0_1000 -o neoemfhbase://localhost/Class_model0_gen0_1000.out"/>
             <classpath refid="run.ATLMRHBaseMaster_hbase.classpath"/>
         </java>
     </target>

@@ -23,7 +23,7 @@
 	</target>
 
 	<target name="dist.emftvm" depends="check.emftvm" unless="${emftvm.exists}">
-		<pde.exportPlugins useworkspacecompiledclasses="true" destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm,org.eclipse.m2m.atl.emftvm.trace,fr.inria.atlanmod.neoemf.hbase" useJARFormat="true" qualifier="atlmr" />
+		<pde.exportPlugins useworkspacecompiledclasses="true" destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm,org.eclipse.m2m.atl.emftvm.trace,fr.inria.atlanmod.neoemf.hbase,fr.inria.atlanmod.dag,fr.inria.atlanmod.dag.sort" useJARFormat="true" qualifier="atlmr" />
 	</target>
 
 	<target name="dist">
@@ -60,7 +60,7 @@
 		
 		<pathconvert property="libsjars.hbase" pathsep="," dirsep="/">
 			<map from="${dist.libs.ivy}/default" to="libs/ivy/default" />
-			<fileset dir="${dist.libs.ivy}/default" includes="hbase*.jar,zookeeper*.jar" />
+			<fileset dir="${dist.libs.ivy}/default" excludes="*-javadoc*.jar,*-source*.jar,hadoop*.jar,hbase*.jar,zookeeper*.jar" />
 		</pathconvert>
 		
 		<pathconvert property="classpath.plugins" pathsep=":" dirsep="/">
@@ -75,11 +75,12 @@
 				
 		<pathconvert property="classpath.hbase" pathsep=":" dirsep="/">
 			<map from="${dist.libs.ivy}/default" to="libs/ivy/default" />
-			<fileset dir="${dist.libs.ivy}/default" includes="hbase*.jar,zookeeper*.jar" />
+			<fileset dir="${dist.libs.ivy}/default" excludes="*-javadoc*.jar,*-source*.jar,hadoop*.jar,hbase*.jar,zookeeper*.jar" />
 		</pathconvert>
 		
-		<antcall target="create.debug" />
+		<antcall target="create.debug"/>
 		<antcall target="create.sh" />
+		<antcall target="copyToDocker"/>
 	</target>
 
 	<target name="clean-dist">
@@ -98,51 +99,42 @@ JARS=${classpath.plugins}}:${classpath.atlmr}:${classpath.hbase}
 LIBJARS=${libjars.plugins},${libsjars.atlmr},${libsjars.hbase}
 
 
-while [[ $# > 1 ]]
-do
-key="$1"
-shift
+			while [[ $# > 1 ]]
+			do
+			key="$1"
+			shift
 
-case $key in
-    -f | --file)
-    TRANSFORMATION="$1"
-    shift
-    ;;
-    -s | --source-metamodel)
-    SOURCEMM="$1"
-    shift
-    ;;
-    -t | --target-metamodel)
-    TARGETMM="$1"
-    shift
-    ;;
-    -i | --input)
-    INPUT="$1"
-    shift
-    ;;
-	-a | --additional-jars)
-	JARS=$JARS:$1
-	LIBJARS=$LIBJARS,${1/:/,}
-	echo $JARS
-	echo $LIBJARS		
-	shift
-	;;	
-	;;	
-    *)
-    ;;
-esac
-done
+			case $key in
+			    -f | --file)
+			    TRANSFORMATION="$1"
+			    shift
+			    ;;
+			    -s | --source-metamodel)
+			    SOURCEMM="$1"
+			    shift
+			    ;;
+			    -t | --target-metamodel)
+			    TARGETMM="$1"
+			    shift
+			    ;;
+			    -i | --input)
+			    INPUT="$1"
+			    shift
+			    ;;
+			    -a | --additional-jars)
+			    JARS=$JARS:$1
+			    LIBJARS=$LIBJARS,${1/:/,}
+			    echo $JARS
+			    echo $LIBJARS		
+			    shift
+			    ;;		
+			    *)
+
+			;;
+			esac
+			done
 			
 RECORDS=records.rec
-
-java -cp ${ant.project.name}.jar:$JARS fr.inria.atlanmod.atl_mr.builder.HbaseRecordBuilder -p $SOURCEMM -i $INPUT -o $RECORDS
-
-URIRECORDS=/user/$USER/$RECORDS
-
-hdfs dfs -mkdir -p /user/$USER/`dirname $RECORDS`
-hdfs dfs -copyFromLocal -f $RECORDS $URIRECORDS
-
-MAPPERS=`yarn node -list | grep -c -E '^\s+\w+:[0-9]+\s+RUNNING\s+'`
 
 yarn jar ${ant.project.name}.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $YARNARGS -r $URIRECORDS -m $MAPPERS
 		</echo>
@@ -157,55 +149,48 @@ JARS=libs/atlmr/plugins/*:libs/plugins/*:libs/ivy/default/*
 LIBJARS=${libjars.plugins},${libsjars.atlmr}
 
 
-while [[ $# > 1 ]]
-do
-key="$1"
-shift
+			while [[ $# > 1 ]]
+			do
+			key="$1"
+			shift
 
-case $key in
-    -f | --file)
-    TRANSFORMATION="$1"
-    shift
-    ;;
-    -s | --source-metamodel)
-    SOURCEMM="$1"
-    shift
-    ;;
-    -t | --target-metamodel)
-    TARGETMM="$1"
-    shift
-    ;;
-    -i | --input)
-    INPUT="$1"
-    shift
-    ;;
-	-a | --additional-jars)
-	JARS=$JARS:$1
-	LIBJARS=$LIBJARS,${1/:/,}
-	echo $JARS
-	echo $LIBJARS		
-	shift
-	;;			
-    *)
-    ;;
-esac
-done
-			
-RECORDS=records.rec
+			case $key in
+			    -f | --file)
+			    TRANSFORMATION="$1"
+			    shift
+			    ;;
+			    -s | --source-metamodel)
+			    SOURCEMM="$1"
+			    shift
+			    ;;
+			    -t | --target-metamodel)
+			    TARGETMM="$1"
+			    shift
+			    ;;
+			    -i | --input)
+			    INPUT="$1"
+			    shift
+			    ;;
+			    -a | --additional-jars)
+			    JARS=$JARS:$1
+			    LIBJARS=$LIBJARS,${1/:/,}
+			    echo $JARS
+			    echo $LIBJARS		
+			    shift
+			    ;;		
+			    *)
 
-java -Xdebug -Xrunjdwp:transport=dt_socket,address=localhost:8998,server=y,suspend=y -cp ${ant.project.name}.jar:$JARS fr.inria.atlanmod.atl_mr.builder.HbaseRecordBuilder -p $SOURCEMM -i $INPUT -o $RECORDS
-
-URIRECORDS=/user/$USER/$RECORDS
-
-hdfs dfs -mkdir -p /user/$USER/`dirname $RECORDS`
-hdfs dfs -copyFromLocal -f $RECORDS $URIRECORDS
-
-MAPPERS=`yarn node -list | grep -c -E '^\s+\w+:[0-9]+\s+RUNNING\s+'`
+			;;
+			esac
+			done
 
 yarn jar ${ant.project.name}.jar -libjars "$LIBJARS" -files "$SOURCEMM#$SOURCEMM,$TARGETMM#$TARGETMM,$TRANSFORMATION#$TRANSFORMATION,$INPUT#$INPUT" $YARNARGS -r $URIRECORDS -m $MAPPERS
 		</echo>
 	</target>
-
-
+	<target name="copyToDocker">
+		 <exec executable="/bin/bash">
+		    <arg value="./copy.sh"/>
+		 </exec>
+	</target>
 </project>
 
