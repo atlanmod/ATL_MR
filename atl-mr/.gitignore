@@ -10,4 +10,4 @@
 /target/
 /dist/
 /lib/
-/run-configurations/
+/run-configurations/*.launch
