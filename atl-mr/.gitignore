@@ -11,3 +11,4 @@
 /dist/
 /lib/
 /run-configurations/*.launch
+/updates/*
