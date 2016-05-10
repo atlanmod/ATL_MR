@@ -56,7 +56,10 @@ public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {
 
 		Logger.getGlobal().log(Level.INFO, "\t GLobal Resolve - START");
 		for (Text value : values) {
-			resolveLink((FLink)traceResource.getEObject(value.toString()));
+			FLink fLink=  (FLink)traceResource.getEObject(value.toString());
+			if (fLink != null) {
+				resolveLink(fLink);
+			}
 		}
 		Logger.getGlobal().log(Level.INFO, "\t GLobal Resolve - END");
 
@@ -94,11 +97,19 @@ public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {
 		if (ft.isMany()) {
 			EList<NeoEMFEObject> resolvings =  new BasicEList<NeoEMFEObject>();
 			for (String neoemfId : prop.getResolvings()) {
-				resolvings.add((NeoEMFEObject) tracer.resolve(neoemfId));
+				NeoEMFEObject res = (NeoEMFEObject) tracer.resolve(neoemfId);
+				if (res != null) {
+					resolvings.add((NeoEMFEObject) tracer.resolve(neoemfId));
+				}
 			}
 			((List<NeoEMFEObject>) keObject.eGet(ft)).addAll(resolvings);
 		} else {
-			keObject.eSet(ft, tracer.resolve(prop.getResolvings().get(0)));
+			//TODO if the Resolving is not in  target resource, it should be cleaned or skipped
+			String neoEmfId = prop.getResolvings().get(0);
+			NeoEMFEObject res = (NeoEMFEObject) tracer.resolve(prop.getResolvings().get(0));
+			if (res != null) {
+				keObject.eSet(ft, tracer.resolve(neoEmfId));
+			}
 		}
 
 	}

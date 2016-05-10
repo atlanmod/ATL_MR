@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -40,7 +40,7 @@ public class ATLMapReduceTask {
 
 	private String moduleName;
 
-	private static Logger logger = Logger.getGlobal();
+	private static Logger logger = Logger.getLogger(ATLMapReduceTask.class);
 
 	private Model outModel;
 
@@ -135,8 +135,10 @@ public class ATLMapReduceTask {
 		// setting up the registry for use
 		ATLMRUtils.configureRegistry(configuration);
 
+
 		URI transformationURI = URI.createURI(configuration.get(ATLMRHBaseMaster.TRANSFORMATION));
 
+		getLogger().info("Recovering the transformation URI"+transformationURI.toString());
 		String sourceMMpackage = configuration.get(ATLMRHBaseMaster.SOURCE_PACKAGE);
 		String targetMMpackage = configuration.get(ATLMRHBaseMaster.TARGET_PACKAGE);
 
@@ -148,7 +150,7 @@ public class ATLMapReduceTask {
 		moduleName = resolveModuleName(transformationURI.toString());
 		mr = new DefaultModuleResolver(resolveModulePath(transformationURI.toString()), rs);
 		Module module = mr.resolveModule(moduleName);
-
+		getLogger().info("The transformation module"+moduleName+" has been resolved");
 		String SMMNanme = module.getInputModels().get(0).getMetaModelName();
 		String IMName = module.getInputModels().get(0).getModelName();
 		String TMMName = module.getOutputModels().get(0).getMetaModelName();
@@ -165,7 +167,7 @@ public class ATLMapReduceTask {
 		Metamodel outMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		outMetaModel.setResource(rs.createResource(dummyURI(".ecore")));
 		outMetaModel.getResource().getContents().add(invokePackageInit(targetMMpackage));
-
+		getLogger().info( "Registering source and target metamodels: "+sourceMMpackage+"/"+targetMMpackage);
 		ATLMRUtils.registerPackages(rs, outMetaModel.getResource());
 
 		executionEnv.registerMetaModel(SMMNanme, inMetaModel);

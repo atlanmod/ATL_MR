@@ -6,6 +6,8 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 
@@ -43,6 +45,7 @@ public class ATLMRTableInputFormat2 extends TableInputFormat {
 	 */
 	@Override
 	public List<InputSplit> getSplits(JobContext job) throws IOException {
+		Logger log = Logger.getGlobal();
 		HTable table = getHTable();
 		if (getHTable() == null) {
 			throw new IOException("No table was provided.");
@@ -51,7 +54,15 @@ public class ATLMRTableInputFormat2 extends TableInputFormat {
 		Pair<byte[][],byte[][]> keys=table.getStartEndKeys();
 
 		if (keys == null || keys.getFirst() == null || keys.getFirst().length == 0) {
-			throw new IOException("Expecting at least one region.");
+			if (keys == null) {
+				log.log(Level.SEVERE, "keys are null");
+			} else if (keys.getFirst() == null) {
+				log.log(Level.SEVERE, "first key is null");
+			} else {
+				log.log(Level.SEVERE, "the lenght of first key is null");
+			}
+
+			throw new IOException("Expecting at least one region for table: "+ getHTable().getName().getNameAsString());
 		}
 
 		List<InputSplit> splits = super.getSplits(job);

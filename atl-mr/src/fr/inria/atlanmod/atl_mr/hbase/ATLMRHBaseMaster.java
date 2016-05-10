@@ -145,7 +145,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 			}
 
 			Configuration conf = this.getConf();
-			Job job = Job.getInstance(conf, JOB_NAME);
+			Job job = Job.getInstance(super.getConf(), JOB_NAME);
 
 			//hbase connection configuration
 			Configuration hbaseConf = HBaseConfiguration.create();

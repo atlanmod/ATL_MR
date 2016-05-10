@@ -1,6 +1,5 @@
 package fr.inria.atlanmod.atl_mr.utils;
 
-
 import org.eclipse.emf.ecore.EObject;
 
 public interface Tracer {

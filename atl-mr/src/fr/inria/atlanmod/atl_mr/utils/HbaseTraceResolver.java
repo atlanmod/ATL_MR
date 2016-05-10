@@ -38,10 +38,12 @@ public class HbaseTraceResolver extends HbaseTracer implements Tracer.Resolver{
 	@Override
 	public EObject resolve(String sourceElement, int index) {
 
-
 		try {
 			Result result;
 			result = table.get(new Get(Bytes.toBytes(sourceElement)));
+			if (result.getValue(EINVERSE_FAMILY, TARGET_COLUMN) == null) {
+				return null;
+			}
 			String targetId = toPrettyStrings(result.getValue(EINVERSE_FAMILY, TARGET_COLUMN))[0];
 			return resource.getEObject(targetId);
 
