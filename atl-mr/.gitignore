@@ -12,3 +12,4 @@
 /lib/
 /run-configurations/*.launch
 /updates/*
+/run-configurations/
