@@ -120,9 +120,9 @@ public class ATLMRMaster extends Configured implements Tool {
 					.toString());
 
 			int recommendedMappers = 1;
-			//			if (commandLine.hasOption(RECOMMENDED_MAPPERS)) {
-			//				recommendedMappers = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
-			//			}
+			if (commandLine.hasOption(RECOMMENDED_MAPPERS)) {
+				recommendedMappers = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
+			}
 
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(conf, DEFAULT_JOB_NAME);

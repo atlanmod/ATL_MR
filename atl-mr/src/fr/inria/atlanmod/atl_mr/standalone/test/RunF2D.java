@@ -29,23 +29,10 @@ public class RunF2D {
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("emftvm", new EMFTVMResourceFactoryImpl());
-		//		//EmftvmFactory.eINSTANCE;
-		//
+
 		ExecEnv env = EmftvmFactory.eINSTANCE.createExecEnv();
 		ResourceSet rs = new ResourceSetImpl();
-		//
-		//		// enable extended metadata
-		//		final ExtendedMetaData extendedMetaData = new BasicExtendedMetaData(rs.getPackageRegistry());
-		//		rs.getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA,
-		//		    extendedMetaData);
-		//
-		//		Resource emftvmResource = rs.getResource(URI.createURI("data/Families2Persons/Families2Persons.emftvm"), true);
-		//		ATLMRUtils.importToXML(emftvmResource);
-		//		// Load metamodels
-		//		Metamodel metaModel = EmftvmFactory.eINSTANCE.createMetamodel();
-		//		metaModel.setResource(rs.getResource(URI.createURI("http://www.eclipse.org/m2m/atl/2011/EMFTVM"), true));
-		//		env.registerMetaModel("METAMODEL", metaModel);
-		//		registerPackages(rs, metaModel.getResource());
+
 		URI inMMURI =URI.createURI( "./data/Flow2Data/FlowGraph.ecore");
 
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
@@ -53,27 +40,22 @@ public class RunF2D {
 		env.registerMetaModel("GRP", inMetaModel);
 		registerPackages(rs, inMetaModel.getResource());
 
-		//		URI outMMURI = URI.createURI("./data/Flow2Data/FlowGraph.ecore");
-		//
-		//		Metamodel outMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
-		//		outMetaModel.setResource(rs.getResource(outMMURI, true));
-		//		env.registerMetaModel("GRP", outMetaModel);
-		//registerPackages(rs, outMetaModel.getResource());
-		// Load models
 
-		URI inMURI = URI.createURI("./data/Flow2Data/Test1-ControlFlowGraph-with-Vars.xmi", true);
+		URI inMURI = URI.createURI("./data/Flow2Data/ControlFlowGraph-with-Vars.xmi", true);
 
 		Model inModel = EmftvmFactory.eINSTANCE.createModel();
 		inModel.setResource(rs.getResource(inMURI, true));
 		env.registerInputModel("IN", inModel);
 
-		URI outMURI = URI.createFileURI("./data/Flow2Data/Test1-ControlFlowGraph-with-Vars.out.xmi");
+		URI outMURI = URI.createFileURI("./data/Flow2Data/ControlFlowGraph-with-Vars.out.xmi");
 
 		Model outModel = EmftvmFactory.eINSTANCE.createModel();
 		outModel.setResource(rs.createResource(outMURI));
 		env.registerOutputModel("OUT", outModel);
 
 		// Load and run module
+
+		long tStart = System.currentTimeMillis();
 		ModuleResolver mr = new DefaultModuleResolver("./data/Flow2Data/", new ResourceSetImpl());
 		TimingData td = new TimingData();
 		env.loadModule(mr, "Flow2Data_tvm");
@@ -82,6 +64,11 @@ public class RunF2D {
 		td.finish();
 		// Save models
 		outModel.getResource().save(Collections.emptyMap());
+		long tEnd = System.currentTimeMillis();
+		long tDelta = tEnd - tStart;
+		double elapsedSeconds = tDelta / 1000.0;
+		System.out.println("Elapsed time in seconds: "+elapsedSeconds);
+
 	}
 
 	private static void registerPackages(ResourceSet rs, Resource resource) {
@@ -91,6 +78,7 @@ public class RunF2D {
 			EPackage p = (EPackage)eObject;
 			rs.getPackageRegistry().put(p.getNsURI(), p);
 		}
+
 	}
 
 }
