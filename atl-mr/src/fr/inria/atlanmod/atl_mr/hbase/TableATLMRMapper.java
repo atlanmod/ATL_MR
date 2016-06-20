@@ -39,6 +39,7 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 		Logger.getGlobal().log(Level.INFO, "Setting up mapper - START");
 
 		try {
+			mapTask.setContext(context);
 			mapTask.setup(context.getConfiguration(), true);
 			mapTask.setTracer(new HbaseTraceCreator(mapTask.getInModel().
 					getResource().getURI().
