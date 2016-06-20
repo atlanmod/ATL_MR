@@ -55,12 +55,14 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	static final String TARGET_PACKAGE 						= "t";
 	static final String INPUT_MODEL 						= "i";
 	static final String OUTPUT_MODEL 						= "o";
-
+	static final String COUNTERS 							= "c";
 	public static final String RECOMMENDED_MAPPERS 			= "m";
+
+
 	private static final String RECORDS_PER_MAPPER	 		= "n";
 	private static final String QUIET 						= "q";
 	private static final String VERBOSE 					= "v";
-	private static final String COUNTERS 					= "c";
+
 
 	private static final String TRANSFORMATION_LONG 		= "file";
 	private static final String SOURCE_PACKAGE_LONG 		= "source-package";
@@ -77,7 +79,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	private static String inModel;
 
 	private static class OptionComarator<T extends Option> implements Comparator<T> {
-		private static final String OPTS_ORDER = "fstriomnvq";
+		private static final String OPTS_ORDER = "fstriomnvqc";
 
 		@Override
 		public int compare(T o1, T o2) {
@@ -334,6 +336,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 		options.addOption(targetmmOpt);
 		options.addOption(inputOpt);
 		options.addOption(outputOpt);
+		options.addOption(countersOption);
 		options.addOptionGroup(loggingGroup);
 		options.addOptionGroup(mappersGroup);
 	}
@@ -349,8 +352,5 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 
 		return strBld.toString();
 	}
-
-
-
 
 }

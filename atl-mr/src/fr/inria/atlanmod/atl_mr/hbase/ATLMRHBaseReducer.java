@@ -35,6 +35,7 @@ public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {
 	@Override
 	protected void setup(Context context) {
 		Logger.getGlobal().log(Level.INFO, "Setting up reducer - START");
+		reduceTask.setContext(context);
 		reduceTask.setup(context.getConfiguration(), false);
 		reduceTask.getExecutionEnv().setExecutionPhase(ExecPhase.POST);
 		reduceTask.setTracer(new HbaseTraceResolver(reduceTask.getTraceResource().getURI(),

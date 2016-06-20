@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -47,6 +48,24 @@ public class ATLMapReduceTask {
 	private Resource traceResource;
 
 	private Tracer tracer;
+
+	private TaskAttemptContext context;
+
+	/**
+	 *
+	 * @return the Job Context
+	 */
+	public TaskAttemptContext getContext() {
+		return context;
+	}
+
+	/**
+	 * The job context
+	 * @param context
+	 */
+	public void setContext(TaskAttemptContext context) {
+		this.context = context;
+	}
 
 	/**
 	 * @return the executionEnvironment
@@ -139,13 +158,13 @@ public class ATLMapReduceTask {
 		URI transformationURI = URI.createURI(configuration.get(ATLMRHBaseMaster.TRANSFORMATION));
 
 		getLogger().info("Recovering the transformation URI"+transformationURI.toString());
-		String sourceMMpackage = configuration.get(ATLMRHBaseMaster.SOURCE_PACKAGE);
-		String targetMMpackage = configuration.get(ATLMRHBaseMaster.TARGET_PACKAGE);
+		String sourceMMpackage		= configuration.get(ATLMRHBaseMaster.SOURCE_PACKAGE);
+		String targetMMpackage 		= configuration.get(ATLMRHBaseMaster.TARGET_PACKAGE);
+		boolean hasCounters 		= Boolean.valueOf(configuration.get(ATLMRHBaseMaster.COUNTERS));
+		URI inMURI 					= URI.createURI(configuration.get(ATLMRHBaseMaster.INPUT_MODEL));
+		URI outMURI 				= URI.createURI(configuration.get(ATLMRHBaseMaster.OUTPUT_MODEL));
 
-		URI inMURI = URI.createURI(configuration.get(ATLMRHBaseMaster.INPUT_MODEL));
-		URI outMURI = URI.createURI(configuration.get(ATLMRHBaseMaster.OUTPUT_MODEL));
 
-		// TODO: Check this
 		// assuming that module has the same name as the transformation...
 		moduleName = resolveModuleName(transformationURI.toString());
 		mr = new DefaultModuleResolver(resolveModulePath(transformationURI.toString()), rs);
@@ -177,13 +196,16 @@ public class ATLMapReduceTask {
 
 		// Load models
 
-		Map<Object,Object> readOnlyOptions = new HashedMap<Object, Object>();
-		readOnlyOptions.put(NeoEMFResource.OPTIONS_HBASE_READ_ONLY, true);
+		Map<Object,Object> sourceModelOptions = new HashedMap<Object, Object>();
+		sourceModelOptions.put(NeoEMFResource.OPTIONS_HBASE_READ_ONLY, true);
+		if (hasCounters) {
+			sourceModelOptions.put(NeoEMFResource.OPTIONS_HBASE_JOB_CONTEXT, this.getContext());
+		}
 		inModel = EmftvmFactory.eINSTANCE.createModel();
 		Resource inResource = rs.createResource(inMURI);
 		inModel.setResource(inResource);
 		try { //
-			inResource.load(readOnlyOptions);
+			inResource.load(sourceModelOptions);
 			//	inResource.load(Collections.EMPTY_MAP);
 		} catch (IOException e) {
 			//
@@ -192,9 +214,13 @@ public class ATLMapReduceTask {
 		}
 		executionEnv.registerInputModel(IMName, inModel);
 
+		Map<Object,Object> targetModelOptions = new HashedMap<Object, Object>();
+		if (hasCounters) {
+			targetModelOptions.put(NeoEMFResource.OPTIONS_HBASE_JOB_CONTEXT, this.getContext());
+		}
 		Resource outResource = rs.createResource(outMURI);
 		try {
-			outResource.load(Collections.EMPTY_MAP);
+			outResource.load(targetModelOptions);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
