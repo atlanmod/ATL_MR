@@ -60,6 +60,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	private static final String RECORDS_PER_MAPPER	 		= "n";
 	private static final String QUIET 						= "q";
 	private static final String VERBOSE 					= "v";
+	private static final String COUNTERS 					= "c";
 
 	private static final String TRANSFORMATION_LONG 		= "file";
 	private static final String SOURCE_PACKAGE_LONG 		= "source-package";
@@ -70,6 +71,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	private static final String RECORDS_PER_MAPPER_LONG	 	= "records-per-mapper";
 	private static final String QUIET_LONG 					= "quiet";
 	private static final String VERBOSE_LONG 				= "verbose";
+	private static final String COUNTERS_LONG 				= "counters";
 
 
 	private static String inModel;
@@ -143,7 +145,10 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 			if (commandLine.hasOption(RECOMMENDED_MAPPERS)) {
 				recommendedMappers = ((Number) commandLine.getParsedOptionValue(RECOMMENDED_MAPPERS)).intValue();
 			}
-
+			boolean counters = false;
+			if (commandLine.hasOption(COUNTERS)) {
+				counters = true;
+			}
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(super.getConf(), JOB_NAME);
 
@@ -212,6 +217,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 			job.getConfiguration().set(INPUT_MODEL, inputLocation);
 			job.getConfiguration().set(OUTPUT_MODEL, outputLocation);
 			job.getConfiguration().set(RECOMMENDED_MAPPERS, Integer.toString(recommendedMappers));
+			job.getConfiguration().set(COUNTERS, Boolean.toString(counters));
 
 			// CLeaning the resources if they already exist
 			// target URI
@@ -313,6 +319,11 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 		verboseOption.setLongOpt(VERBOSE_LONG);
 		verboseOption.setDescription("Verbose mode. Optional, disabled by default.");
 		verboseOption.setArgs(0);
+
+		Option countersOption = OptionBuilder.create(COUNTERS);
+		countersOption.setLongOpt(COUNTERS_LONG);
+		countersOption.setDescription("Resource statistics mode. Optional, disabled by default.");
+		countersOption.setArgs(0);
 
 		OptionGroup loggingGroup = new OptionGroup();
 		loggingGroup.addOption(quietOption);
