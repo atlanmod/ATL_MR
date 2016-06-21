@@ -15,7 +15,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.atlanmod.atl_mr.hbase.ATLMRHBaseMaster"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f topoSort.emftvm&#10;-s fr.inria.atlanmod.dag.impl.DagPackageImpl&#10;-t fr.inria.atlanmod.dag.impl.DagPackageImpl&#10;-i neoemfhbase://localhost:2181/dag/model0_gen0_1000&#10;-o neoemfhbase://localhost:2181/sortedDag/model0_gen0_1000&#10;-m 3"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f topoSort.emftvm&#10;-s fr.inria.atlanmod.dag.impl.DagPackageImpl&#10;-t fr.inria.atlanmod.dag.impl.DagPackageImpl&#10;-i neoemfhbase://localhost:2181/dag/model0_gen0_1000&#10;-o neoemfhbase://localhost:2181/sortedDag/model0_gen0_1000&#10;-m 3&#10;-c&#10;-v"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="atl-mr"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Drebel.log=true"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:com.mondo.modelio.test/transformation}"/>
