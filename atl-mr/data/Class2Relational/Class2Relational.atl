@@ -23,9 +23,19 @@ helper def: objectIdType : Class!DataType =
 	--Class!DataType.allInstances()->select(e | e.name = 'Integer')->first();
 	Class!DataType.allInstances()->first();
 	
+rule Package2Schema {
+	from 
+		p : Class!Package
+	to 
+		s : Relational!Schema (
+			tables <- p.classes-> reject(c | c.isAbstract),
+			types <- p.types
+		)
+}
 rule Class2Table {
+	
 	from
-		c : Class!Class
+		c : Class!Class (not c.isAbstract)
 	to
 		out : Relational!Table (
 			name <- c.name,
@@ -57,9 +67,6 @@ rule DataTypeAttribute2Column {
 		out : Relational!Column (
 			name <- a.name,
 			type <- a.type
--- explicit use of implicit tracking links (first expected syntax, then present actual syntax)
---			owner <- [Class2Type.key]a.owner
---			owner <- thisModule.resolveTemp(a.owner, 'key')
 		)
 }
 
