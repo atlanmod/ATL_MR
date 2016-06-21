@@ -23,7 +23,7 @@
 	</target>
 
 	<target name="dist.emftvm" depends="check.emftvm" unless="${emftvm.exists}">
-		<pde.exportPlugins useworkspacecompiledclasses="true" destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm,org.eclipse.m2m.atl.emftvm.trace,fr.inria.atlanmod.neoemf.hbase,fr.inria.atlanmod.dag,fr.inria.atlanmod.dag.sort" useJARFormat="true" qualifier="atlmr" />
+		<pde.exportPlugins useworkspacecompiledclasses="true" destination="${dist.libs.atlmr}" exportSource="false" exportType="directory" plugins="org.eclipse.m2m.atl.emftvm,org.eclipse.m2m.atl.emftvm.trace,fr.inria.atlanmod.neoemf.hbase,fr.inria.atlanmod.dag,fr.inria.atlanmod.dag.sort,classMetamodel,relationalMetamodel" useJARFormat="true" qualifier="atlmr" />
 	</target>
 
 	<target name="dist">

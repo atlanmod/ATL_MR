@@ -23,6 +23,9 @@ helper def: objectIdType : Class!DataType =
 	--Class!DataType.allInstances()->select(e | e.name = 'Integer')->first();
 	Class!DataType.allInstances()->first();
 	
+helper context Class!Package def : getMultivalued : Sequence(Class!Attribute) = 
+	self.classes -> reject (c | c.isAbstract) -> collect (cc | cc.attr -> select (a | a.multiValued)) -> flatten();
+
 rule Package2Schema {
 	from 
 		p : Class!Package
