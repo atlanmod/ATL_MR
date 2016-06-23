@@ -1,4 +1,4 @@
-package fr.inria.atlanmod.atl_mr.utils;
+package fr.inria.atlanmod.atl_mr.hbase.trace;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

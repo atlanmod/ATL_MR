@@ -22,9 +22,9 @@ import org.eclipse.m2m.atl.emftvm.trace.TargetElement;
 import org.eclipse.m2m.atl.emftvm.trace.TraceLink;
 import org.eclipse.m2m.atl.emftvm.trace.TracedRule;
 
-import fr.inria.atlanmod.atl_mr.utils.HbaseTraceCreator;
-import fr.inria.atlanmod.atl_mr.utils.Tracer;
-import fr.inria.atlanmod.atl_mr.utils.Tracer.Creator;
+import fr.inria.atlanmod.atl_mr.hbase.trace.HbaseTraceCreator;
+import fr.inria.atlanmod.atl_mr.hbase.trace.Tracer;
+import fr.inria.atlanmod.atl_mr.hbase.trace.Tracer.Creator;
 import fr.inria.atlanmod.neoemf.core.NeoEMFEObject;
 
 public class TableATLMRMapper extends TableMapper<LongWritable, Text> {

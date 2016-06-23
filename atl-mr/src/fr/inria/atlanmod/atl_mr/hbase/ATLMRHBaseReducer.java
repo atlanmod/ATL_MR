@@ -17,8 +17,8 @@ import org.eclipse.m2m.atl.emftvm.ExecPhase;
 import org.eclipse.m2m.atl.emftvm.ftrace.FLink;
 import org.eclipse.m2m.atl.emftvm.ftrace.FTraceProperty;
 
-import fr.inria.atlanmod.atl_mr.utils.HbaseTraceResolver;
-import fr.inria.atlanmod.atl_mr.utils.Tracer.Resolver;
+import fr.inria.atlanmod.atl_mr.hbase.trace.HbaseTraceResolver;
+import fr.inria.atlanmod.atl_mr.hbase.trace.Tracer.Resolver;
 import fr.inria.atlanmod.neoemf.core.NeoEMFEObject;
 
 public class ATLMRHBaseReducer extends Reducer<LongWritable,Text, Text, Text> {

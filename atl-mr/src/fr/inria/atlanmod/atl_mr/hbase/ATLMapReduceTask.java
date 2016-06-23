@@ -21,8 +21,8 @@ import org.eclipse.m2m.atl.emftvm.Module;
 import org.eclipse.m2m.atl.emftvm.util.DefaultModuleResolver;
 import org.eclipse.m2m.atl.emftvm.util.ModuleResolver;
 
+import fr.inria.atlanmod.atl_mr.hbase.trace.Tracer;
 import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
-import fr.inria.atlanmod.atl_mr.utils.Tracer;
 import fr.inria.atlanmod.neoemf.core.NeoEMFResource;
 
 public class ATLMapReduceTask {

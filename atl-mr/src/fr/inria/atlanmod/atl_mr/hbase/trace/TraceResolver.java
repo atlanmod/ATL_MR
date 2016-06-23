@@ -1,4 +1,4 @@
-package fr.inria.atlanmod.atl_mr.utils;
+package fr.inria.atlanmod.atl_mr.hbase.trace;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;

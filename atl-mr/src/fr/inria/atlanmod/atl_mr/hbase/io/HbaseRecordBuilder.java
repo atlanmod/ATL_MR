@@ -1,4 +1,4 @@
-package fr.inria.atlanmod.atl_mr.builder;
+package fr.inria.atlanmod.atl_mr.hbase.io;
 
 import java.io.BufferedWriter;
 import java.io.File;

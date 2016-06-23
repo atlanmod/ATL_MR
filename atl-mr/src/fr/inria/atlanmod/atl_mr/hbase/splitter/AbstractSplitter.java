@@ -43,7 +43,7 @@ public abstract class AbstractSplitter {
 	protected static final byte[] CONTAINING_FEATURE_QUALIFIER = Bytes.toBytes("g");
 
 	protected static final byte[] ORIGINAL_ID_FAMILY = Bytes.toBytes("of");
-	protected static final byte[] ORIGINAL_ID_QUALIFIER = Bytes.toBytes("oq");
+	protected static final byte[] ORIGINAL_ID_COLUMN = Bytes.toBytes("oc");
 
 	protected HConnection tableConnection;
 	protected HTable sourceTable;
@@ -57,8 +57,6 @@ public abstract class AbstractSplitter {
 	protected HashMap<String, List <CallSite>> footprints;
 	//protected Map<byte[], List<Dependency>> dependencyMap;
 	protected Map<byte[], SimpleDepsList> dependencyMap;
-
-	protected int [] splitsLength;
 
 	protected long modelSize;
 
@@ -158,20 +156,7 @@ public abstract class AbstractSplitter {
 		this.tableURI = tableURI;
 	}
 
-	protected int splitIndexWithMinsize() {
 
-		int index = 0;
-		long min = splitsLength [0];
-
-		for (int i = 1 ; i < splitsLength.length; i++ ){
-			if (splitsLength [i] < min ) {
-				min = splitsLength [i];
-				index = i;
-			}
-		}
-
-		return index;
-	}
 	protected boolean isHighLevel (byte[] objectId){
 		return true;
 	}

@@ -1,4 +1,4 @@
-package fr.inria.atlanmod.atl_mr.utils;
+package fr.inria.atlanmod.atl_mr.hbase.trace;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.eclipse.emf.common.util.URI;
 
-import fr.inria.atlanmod.atl_mr.utils.Tracer.Creator;
+import fr.inria.atlanmod.atl_mr.hbase.trace.Tracer.Creator;
 
 public class HbaseTraceCreator extends HbaseTracer implements Creator {
 
