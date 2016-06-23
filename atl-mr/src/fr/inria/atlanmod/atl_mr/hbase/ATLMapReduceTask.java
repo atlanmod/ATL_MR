@@ -10,7 +10,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.m2m.atl.emftvm.EmftvmFactory;
@@ -180,12 +179,12 @@ public class ATLMapReduceTask {
 
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		inMetaModel.setResource(rs.createResource(dummyURI(".ecore")));
-		inMetaModel.getResource().getContents().add(invokePackageInit(sourceMMpackage));
+		inMetaModel.getResource().getContents().add(ATLMRUtils.invokePackageInit(sourceMMpackage));
 		ATLMRUtils.registerPackages(rs, inMetaModel.getResource());
 		//ATLMRUtils.initPackages(rs);
 		Metamodel outMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		outMetaModel.setResource(rs.createResource(dummyURI(".ecore")));
-		outMetaModel.getResource().getContents().add(invokePackageInit(targetMMpackage));
+		outMetaModel.getResource().getContents().add(ATLMRUtils.invokePackageInit(targetMMpackage));
 		getLogger().info( "Registering source and target metamodels: "+sourceMMpackage+"/"+targetMMpackage);
 		ATLMRUtils.registerPackages(rs, outMetaModel.getResource());
 
@@ -245,16 +244,7 @@ public class ATLMapReduceTask {
 		return URI.createURI(UUID.randomUUID().toString()+extension);
 	}
 
-	private EObject invokePackageInit(String MMpackageName) {
-		EObject _package = null;
-		try {
-			_package = (EObject)ATLMapReduceTask.class.getClassLoader().loadClass(MMpackageName).getMethod("init").invoke(null);
-		} catch (Exception e) {
-			ATLMRUtils.showError(e.getLocalizedMessage());
-			e.printStackTrace();
-		}
-		return _package;
-	}
+
 
 	/**
 	 * Resolves the Module path from the transformation URI

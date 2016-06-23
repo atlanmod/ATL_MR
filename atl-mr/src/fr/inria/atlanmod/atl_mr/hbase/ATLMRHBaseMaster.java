@@ -40,7 +40,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.eclipse.emf.common.util.URI;
 
-import fr.inria.atlanmod.atl_mr.utils.ATLMRTableInputFormat2;
+import fr.inria.atlanmod.atl_mr.hbase.io.ATLMRTableInputFormat2;
 import fr.inria.atlanmod.neoemf.util.NeoEMFUtil;
 
 public class ATLMRHBaseMaster extends Configured implements Tool {

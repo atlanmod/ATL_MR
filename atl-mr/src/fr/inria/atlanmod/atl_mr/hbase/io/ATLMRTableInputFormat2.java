@@ -1,4 +1,4 @@
-package fr.inria.atlanmod.atl_mr.utils;
+package fr.inria.atlanmod.atl_mr.hbase.io;
 
 import java.io.IOException;
 import java.net.InetAddress;

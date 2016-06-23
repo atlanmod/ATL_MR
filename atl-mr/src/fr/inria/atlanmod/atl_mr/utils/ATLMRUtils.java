@@ -36,6 +36,17 @@ public class ATLMRUtils {
 		System.err.println(message);
 	}
 
+	public static EObject invokePackageInit(String MMpackageName) {
+		EObject _package = null;
+		try {
+			_package = (EObject)ATLMRUtils.class.getClassLoader().loadClass(MMpackageName).getMethod("init").invoke(null);
+		} catch (Exception e) {
+			ATLMRUtils.showError(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+		return _package;
+	}
+
 	public static String formatMillis(long millis) {
 		return String.format("%02d:%02d:%02d",
 				TimeUnit.MILLISECONDS.toHours(millis),

@@ -35,12 +35,12 @@ public class HbaseTracer implements Tracer{
 		this.traceURI = traceURI;
 
 		Configuration conf = HBaseConfiguration.create();
-		//TODO: add a configuration parser to the handle user specific conf
-		//TODO: hbase.zookeeper.quorum takes a list of
+		//TODO: add a configuration parser to the handle user specific configurations
+		//TODO: hbase.zookeeper.quorum takes a list of hostnames/IPs
 		conf.set("hbase.zookeeper.quorum", traceURI.host());
 		conf.set("hbase.zookeeper.property.clientPort", traceURI.port() != null ? traceURI.port() : "2181");
 
-		// setting up tehe table name
+		// setting up the table name
 		byte[] tableName = Bytes.toBytes(NeoEMFUtil.formatURI(traceURI.appendSegment("map")));
 		HBaseAdmin admin;
 		try {
