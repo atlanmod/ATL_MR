@@ -54,7 +54,7 @@ public abstract class AbstractSplitter {
 	/**
 	 * a footprints map organized by type
 	 */
-	protected HashMap<String, List <CallSite>> footprints;
+	protected HashMap<String, List<CallSite>> footprints;
 	//protected Map<byte[], List<Dependency>> dependencyMap;
 	protected Map<byte[], SimpleDepsList> dependencyMap;
 
