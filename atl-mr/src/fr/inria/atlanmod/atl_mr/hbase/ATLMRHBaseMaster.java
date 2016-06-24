@@ -41,6 +41,8 @@ import org.apache.hadoop.util.ToolRunner;
 import org.eclipse.emf.common.util.URI;
 
 import fr.inria.atlanmod.atl_mr.hbase.io.ATLMRTableInputFormat2;
+import fr.inria.atlanmod.atl_mr.hbase.splitter.AbstractSplitter;
+import fr.inria.atlanmod.atl_mr.hbase.splitter.GreedySplitterC2R;
 import fr.inria.atlanmod.neoemf.util.NeoEMFUtil;
 
 public class ATLMRHBaseMaster extends Configured implements Tool {
@@ -62,7 +64,8 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	private static final String RECORDS_PER_MAPPER	 		= "n";
 	private static final String QUIET 						= "q";
 	private static final String VERBOSE 					= "v";
-
+	private static final String RANDOM						= "r";
+	private static final String GREEDY						= "g";
 
 	private static final String TRANSFORMATION_LONG 		= "file";
 	private static final String SOURCE_PACKAGE_LONG 		= "source-package";
@@ -74,7 +77,8 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 	private static final String QUIET_LONG 					= "quiet";
 	private static final String VERBOSE_LONG 				= "verbose";
 	private static final String COUNTERS_LONG 				= "counters";
-
+	private static final String RANDOM_LONG					= "random";
+	private static final String GREEDY_LONG					= "greedy";
 
 	private static String inModel;
 
@@ -151,46 +155,75 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 			if (commandLine.hasOption(COUNTERS)) {
 				counters = true;
 			}
+
+			boolean isRandom = true;
+			if (commandLine.hasOption(GREEDY)) {
+				isRandom = false;
+			}
+
 			Configuration conf = this.getConf();
 			Job job = Job.getInstance(super.getConf(), JOB_NAME);
+			// Configure classes
+			job.setJarByClass(ATLMRHBaseMaster.class);
+			job.setNumReduceTasks(recommendedMappers);
+			job.setReducerClass(ATLMRHBaseReducer.class);
+			job.setOutputFormatClass(NullOutputFormat.class);
 
+			// setup mapper job configuration
 			//hbase connection configuration
 			Configuration hbaseConf = HBaseConfiguration.create();
 			URI modelURI =  URI.createURI(inputLocation);
 			hbaseConf.set("hbase.zookeeper.quorum", modelURI.host());
 			hbaseConf.set("hbase.zookeeper.property.clientPort", modelURI.port() != null ? modelURI.port() : "2181");
 
-			// A filter to skip the root value for distribution
-			FilterList filterList = new FilterList(new KeyOnlyFilter(),
-					new RowFilter(CompareOp.NOT_EQUAL, new RegexStringComparator("ROOT")));
-
 			Scan scan = new Scan();
 			// 500 is the recommended for MR,
 			// TODO check if it is a good fit for us
 			scan.setCaching(500);
 			scan.setCacheBlocks(false);
-			scan.setFilter(filterList);
-			//scan.setStartRow(Bytes.toBytes("ROOT"));
+			scan.setMaxVersions(1);
+			String cloneURI;
+			if (isRandom) {
+				// A filter to skip the root value for distribution
+				FilterList filterList = new FilterList(new KeyOnlyFilter(),
+						new RowFilter(CompareOp.NOT_EQUAL, new RegexStringComparator("ROOT")));
 
-			// Configure classes
-			job.setJarByClass(ATLMRHBaseMaster.class);
-			job.setNumReduceTasks(recommendedMappers);
+				scan.setFilter(filterList);
+				//scan.setStartRow(Bytes.toBytes("ROOT"));
+				cloneURI = formatURI(modelURI);
+				TableName tableName = TableName.valueOf(cloneURI);
+				// mapper job initialization
+				TableMapReduceUtil.initTableMapperJob(
+						tableName.getNameAsString(),
+						scan,
+						TableATLMRMapper.class,
+						LongWritable.class,
+						Text.class,
+						job,
+						true,
+						ATLMRTableInputFormat2.class
+						);
+			} else {
 
-			String cloneURI = formatURI(modelURI);
-			TableName tableName = TableName.valueOf(cloneURI);
+				scan.addColumn(AbstractSplitter.ORIGINAL_ID_FAMILY, AbstractSplitter.ORIGINAL_ID_COLUMN);
+				AbstractSplitter greedy = new GreedySplitterC2R(modelURI, 1000).split(recommendedMappers);
+				cloneURI = greedy.getSaltedTable().getName().getNameAsString();
 
-			// mapper job initialization
 
-			TableMapReduceUtil.initTableMapperJob(
-					tableName.getNameAsString(),
-					scan,
-					TableATLMRMapper.class,
-					LongWritable.class,
-					Text.class,
-					job,
-					true,
-					ATLMRTableInputFormat2.class
-					);
+				TableName tableName = TableName.valueOf(cloneURI);
+				// mapper job initialization
+				TableMapReduceUtil.initTableMapperJob(
+						tableName.getNameAsString(),
+						scan,
+						TableATLMRGreedyMapper.class,
+						LongWritable.class,
+						Text.class,
+						job,
+						true,
+						ATLMRTableInputFormat2.class
+						);
+
+			}
 
 			//			TableMapReduceUtil.initTableMapperJob(
 			//					tableName.getNameAsString(), // tableName
@@ -205,8 +238,7 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 			HBaseConfiguration.addHbaseResources(job.getConfiguration());
 
 			//			job.setMapperClass(ATLMRMapper.class);
-			job.setReducerClass(ATLMRHBaseReducer.class);
-			job.setOutputFormatClass(NullOutputFormat.class);
+
 
 			String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
 			String outDirName = "atlmr-out-" + timestamp + "-" + UUID.randomUUID();
@@ -331,6 +363,22 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 		loggingGroup.addOption(quietOption);
 		loggingGroup.addOption(verboseOption);
 
+		Option randomOption = OptionBuilder.create(RANDOM);
+		randomOption.setLongOpt(RANDOM_LONG);
+		randomOption.setDescription("Random data distribution mode. Optional, enable by default. Mutually exclusive with -g|--greedy.");
+		randomOption.setArgs(0);
+
+		Option greedyOption = OptionBuilder.create(GREEDY);
+		greedyOption.setLongOpt(GREEDY_LONG);
+		greedyOption.setDescription("Random data distribution mode. Optional, disabled by default. Mutually exclusive with -r|--random. ");
+		greedyOption.setArgs(0);
+
+		OptionGroup distributionGroup = new OptionGroup();
+		distributionGroup.addOption(greedyOption);
+		distributionGroup.addOption(randomOption);
+		//distributionGroup.setSelected(randomOption);
+
+
 		options.addOption(transformationOpt);
 		options.addOption(sourcemmOpt);
 		options.addOption(targetmmOpt);
@@ -339,6 +387,8 @@ public class ATLMRHBaseMaster extends Configured implements Tool {
 		options.addOption(countersOption);
 		options.addOptionGroup(loggingGroup);
 		options.addOptionGroup(mappersGroup);
+		options.addOptionGroup(distributionGroup);
+
 	}
 
 	private String formatURI(URI modelURI) {

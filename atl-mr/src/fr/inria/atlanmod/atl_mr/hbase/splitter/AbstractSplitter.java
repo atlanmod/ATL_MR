@@ -34,16 +34,16 @@ import fr.inria.atlanmod.neoemf.util.NeoEMFUtil;
 public abstract class AbstractSplitter {
 
 
-	protected static final byte[] PROPERTY_FAMILY =				Bytes.toBytes("p");
-	protected static final byte[] TYPE_FAMILY = 				Bytes.toBytes("t");
-	protected static final byte[] METAMODEL_QUALIFIER =			Bytes.toBytes("m");
-	protected static final byte[] ECLASS_QUALIFIER = 			Bytes.toBytes("e");
-	protected static final byte[] CONTAINMENT_FAMILY = 			Bytes.toBytes("c");
-	protected static final byte[] CONTAINER_QUALIFIER = 		Bytes.toBytes("n");
-	protected static final byte[] CONTAINING_FEATURE_QUALIFIER = Bytes.toBytes("g");
+	public static final byte[] PROPERTY_FAMILY =				Bytes.toBytes("p");
+	public static final byte[] TYPE_FAMILY = 				Bytes.toBytes("t");
+	public static final byte[] METAMODEL_QUALIFIER =			Bytes.toBytes("m");
+	public static final byte[] ECLASS_QUALIFIER = 			Bytes.toBytes("e");
+	public static final byte[] CONTAINMENT_FAMILY = 			Bytes.toBytes("c");
+	public static final byte[] CONTAINER_QUALIFIER = 		Bytes.toBytes("n");
+	public static final byte[] CONTAINING_FEATURE_QUALIFIER = Bytes.toBytes("g");
 
-	protected static final byte[] ORIGINAL_ID_FAMILY = Bytes.toBytes("of");
-	protected static final byte[] ORIGINAL_ID_COLUMN = Bytes.toBytes("oc");
+	public static final byte[] ORIGINAL_ID_FAMILY = Bytes.toBytes("of");
+	public static final byte[] ORIGINAL_ID_COLUMN = Bytes.toBytes("oc");
 
 	protected HConnection tableConnection;
 	protected HTable sourceTable;
@@ -94,11 +94,9 @@ public abstract class AbstractSplitter {
 
 		try {
 
-			// computing row count
-			modelSize  = new AggregationClient(conf).rowCount(sourceTable, new LongColumnInterpreter() , scan);
 			// setting up tables
 			admin = new HBaseAdmin(conf);
-			URI saltedURI = tableURI.appendFragment("salted");
+			URI saltedURI = tableURI.appendSegment("salted");
 			//tableConnection =  HConnectionManager.createConnection(conf);
 
 			if (!admin.tableExists(tableName)) {
@@ -118,6 +116,8 @@ public abstract class AbstractSplitter {
 			sourceTable = new HTable(conf, tableName);
 			saltedTable = new HTable(conf, saltedTableName);
 
+			// computing row count
+			modelSize  = new AggregationClient(conf).rowCount(sourceTable, new LongColumnInterpreter() , scan);
 
 			admin.close();
 
@@ -190,7 +190,7 @@ public abstract class AbstractSplitter {
 
 
 
-	abstract void split(int splits) throws Exception ;
+	abstract AbstractSplitter split(int splits) throws Exception ;
 
 
 	/**

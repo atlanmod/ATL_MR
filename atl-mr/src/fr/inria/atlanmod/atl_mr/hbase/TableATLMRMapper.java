@@ -29,8 +29,8 @@ import fr.inria.atlanmod.neoemf.core.NeoEMFEObject;
 
 public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 
-	private ATLMapReduceTask mapTask = new ATLMapReduceTask();
-	private Random randomGen =  new Random();
+	protected ATLMapReduceTask mapTask = new ATLMapReduceTask();
+	protected Random randomGen =  new Random();
 
 	//private BinaryResourceImpl tracesResource = new BinaryResourceImpl();
 
@@ -61,7 +61,7 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 		try {
 			Model inModel = mapTask.getInModel();
 			ExecEnv executionEnv = mapTask.getExecutionEnv();
-			String objId = Bytes.toString(row.get());
+			String objId = getObjectId(row);
 
 			EObject currentObj = inModel.getResource().getEObject(objId);
 			//System.out.println("****"+currentObj+"****");
@@ -74,6 +74,10 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected String getObjectId(ImmutableBytesWritable row) {
+		return Bytes.toString(row.get());
 	}
 
 	@Override
@@ -117,7 +121,7 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 		Logger.getGlobal().log(Level.INFO, "Cleaning up mapper - END");
 	}
 
-	private void addMapping(Creator traceCreator, TraceLink link) {
+	protected void addMapping(Creator traceCreator, TraceLink link) {
 
 		String source = ((NeoEMFEObject) link.getSourceElements().get(0).getRuntimeObject()).neoemfId();
 		String [] targets = resolveTargets (link.getTargetElements());
@@ -125,7 +129,7 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 
 	}
 
-	private String[] resolveTargets(EList<TargetElement> targetElements) {
+	protected String[] resolveTargets(EList<TargetElement> targetElements) {
 
 		String[] targets = new String[targetElements.size()];
 		int index = 0;

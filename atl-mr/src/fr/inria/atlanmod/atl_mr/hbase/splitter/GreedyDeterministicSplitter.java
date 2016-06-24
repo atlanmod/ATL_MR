@@ -33,7 +33,7 @@ public class GreedyDeterministicSplitter extends AbstractSplitter {
 	}
 
 	@Override
-	void split(int splits) throws Exception {
+	public AbstractSplitter split(int splits) throws Exception {
 		Queue<byte[]> buffer = new LinkedList<byte[]>();
 		long sizeBuff = 0;
 		avgSize = Math.abs((modelSize/splits));
@@ -60,6 +60,7 @@ public class GreedyDeterministicSplitter extends AbstractSplitter {
 			assignElement (buffer.remove(), buffer);
 		}
 		sizeBuff =0;
+		return this;
 
 	}
 
@@ -95,25 +96,31 @@ public class GreedyDeterministicSplitter extends AbstractSplitter {
 			// updating the dependency cache
 			String clazz = resolveInstanceNameOf(row);
 			result= sourceTable.get(new Get(row));
-			for (CallSite cs : footprints.get(clazz)) {
-				EStructuralFeature feat = cs.getFeature();
-				byte[] value = result.getValue(PROPERTY_FAMILY, Bytes.toBytes(feat.getName()));
 
-				if (! feat.isMany()) {
-					updateSingleDependency(value, splitId);
-				} else {
-					for (String singleValue : NeoEMFUtil.EncoderUtil.toStringsReferences(value)) {
-						updateSingleDependency(Bytes.toBytes(singleValue), splitId);
+			if (footprints.containsKey(row)) {
+
+				for (CallSite cs : footprints.get(clazz)) {
+					EStructuralFeature feat = cs.getFeature();
+					byte[] value = result.getValue(PROPERTY_FAMILY, Bytes.toBytes(feat.getName()));
+
+					if (value == null)
+					{
+						continue; // skip if value is null
+					}
+					if (! feat.isMany()) {
+						updateSingleDependency(value, splitId);
+					} else {
+						for (String singleValue : NeoEMFUtil.EncoderUtil.toStringsReferences(value)) {
+							updateSingleDependency(Bytes.toBytes(singleValue), splitId);
+						}
 					}
 				}
 			}
-
 			// Adding the salted elements to target table
 
 			Put put = new Put(salted(row,splitId));
 			put.add(ORIGINAL_ID_FAMILY, ORIGINAL_ID_COLUMN, row);
 			saltedTable.put(put);
-
 			// update the splits length
 			splitsLength[splitId]++;
 

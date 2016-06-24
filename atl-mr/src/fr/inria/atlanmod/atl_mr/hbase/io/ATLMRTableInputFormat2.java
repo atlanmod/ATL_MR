@@ -78,7 +78,7 @@ public class ATLMRTableInputFormat2 extends TableInputFormat {
 
 		// splitting the current
 		try {
-
+			// Optimize this, run the aggregation client only once, in case the distribution mode is greedy
 			long rowCount = new AggregationClient(job.getConfiguration()).rowCount(getHTable(), new LongColumnInterpreter() , myScan);
 			int rowsPerSplit = Math.round(rowCount/rec_map) + 1;
 			int subSplitsCount = Math.round(rec_map/splits.size());
