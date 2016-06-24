@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -32,6 +33,7 @@ import fr.inria.atlanmod.neoemf.util.NeoEMFURI;
 
 public class ATLMRUtils {
 
+	private static final int  ID_LENGTH = 23;
 	public static void showError(String message) {
 		System.err.println(message);
 	}
@@ -46,7 +48,12 @@ public class ATLMRUtils {
 		}
 		return _package;
 	}
-
+	public static byte[] saltId(byte[] row, int splitId) {
+		return Bytes.toBytes(String.format("%02d", splitId) + Bytes.toString(row));
+	}
+	public static byte[] unsaltId(byte[] row) {
+		return Bytes.tail(row, ID_LENGTH);
+	}
 	public static String formatMillis(long millis) {
 		return String.format("%02d:%02d:%02d",
 				TimeUnit.MILLISECONDS.toHours(millis),

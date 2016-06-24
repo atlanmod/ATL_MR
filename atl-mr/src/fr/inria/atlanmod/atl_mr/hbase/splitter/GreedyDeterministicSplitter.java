@@ -11,6 +11,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+import fr.inria.atlanmod.atl_mr.utils.ATLMRUtils;
 import fr.inria.atlanmod.neoemf.util.NeoEMFUtil;
 
 public class GreedyDeterministicSplitter extends AbstractSplitter {
@@ -118,7 +119,7 @@ public class GreedyDeterministicSplitter extends AbstractSplitter {
 			}
 			// Adding the salted elements to target table
 
-			Put put = new Put(salted(row,splitId));
+			Put put = new Put(ATLMRUtils.saltId(row,splitId));
 			put.add(ORIGINAL_ID_FAMILY, ORIGINAL_ID_COLUMN, row);
 			saltedTable.put(put);
 			// update the splits length
@@ -135,9 +136,7 @@ public class GreedyDeterministicSplitter extends AbstractSplitter {
 		return splitId;
 	}
 
-	private byte[] salted(byte[] row, int splitId) {
-		return Bytes.toBytes(String.format("%02d", splitId) + Bytes.toString(row));
-	}
+
 
 	protected void addSaltedToTable(byte[] row, int splitId) {
 		// TODO Auto-generated method stub
