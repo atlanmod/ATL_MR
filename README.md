@@ -1,8 +1,8 @@
-# ATL/MapReduce
+# ATL-MapReduce
 
-ATL/MapReduce (ATL/MR) is a prototype tool for running complex **ATL** transformation in the cloud using **Hadoop** MapReduce.
-ATL/MapReduce is implemented on top  of an extended ATL VM that can be found [here](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master).
-Coupling **ATL/MR** with the [the extended VM](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master) has proved a good performance, especially in terms of execution time. [In our experiments](http://www.emn.fr/z-info/atlanmod/index.php/Image:Atlmr-experiments-raw-data.zip), **ATL/MR** runs up to **~6x** faster compared to the regular VM while distributing it over 8 machines.  
+ATL-MapReduce (ATL-MR) is a prototype tool for running complex **ATL** transformation in the cloud using **Hadoop** MapReduce.
+ATL-MapReduce is implemented on top  of an extended ATL VM that can be found [here](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master).
+Coupling **ATL/MR** with the [the extended VM](https://github.com/atlanmod/org.eclipse.atl.atlMR/tree/master) has proved a good performance, especially in terms of execution time. [In our experiments](http://www.emn.fr/z-info/atlanmod/index.php/Image:Atlmr-experiments-raw-data.zip), **ATL-MR** runs up to **~6x** faster compared to the regular VM while distributing it over 8 machines.  
 
 ## How to use
 
