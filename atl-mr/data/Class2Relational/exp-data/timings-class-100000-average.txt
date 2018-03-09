@@ -1,0 +1,6 @@
+2 	 4631
+0 	 414
+0 	 322
+0 	 258
+1 	 2883
+awk: cmd. line:1: (FILENAME=- FNR=6) fatal: division by zero attempted

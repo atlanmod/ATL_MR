@@ -35,7 +35,7 @@ public class RunC2R {
 		ResourceSet rs = new ResourceSetImpl();
 		//
 
-		URI inMMURI =URI.createURI( "./data/Class2Relational/Class.ecore");
+		URI inMMURI =URI.createURI( "./data/Class2Relational/class.ecore");
 
 		Metamodel inMetaModel = EmftvmFactory.eINSTANCE.createMetamodel();
 		inMetaModel.setResource(rs.getResource(inMMURI, true));

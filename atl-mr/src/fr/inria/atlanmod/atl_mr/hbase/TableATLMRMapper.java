@@ -63,11 +63,11 @@ public class TableATLMRMapper extends TableMapper<LongWritable, Text> {
 			ExecEnv executionEnv = mapTask.getExecutionEnv();
 			String objId = getObjectId(row);
 
-			EObject currentObj = inModel.getResource().getEObject(objId);
+			EObject currentObj = mapTask.getInModel().getResource().getEObject(objId);
 			//System.out.println("****"+currentObj+"****");
 			Logger.getGlobal().log(Level.FINEST, "\tmatchSingleObject - START");
 
-			executionEnv.matchSingleObject(currentObj, currentObj.eClass().getName());
+			mapTask.getExecutionEnv().matchSingleObject(currentObj, currentObj.eClass().getName());
 			Logger.getGlobal().log(Level.FINEST, "\tmatchSingleObject - END");
 
 			Logger.getGlobal().log(Level.FINEST, "Mapping - END");

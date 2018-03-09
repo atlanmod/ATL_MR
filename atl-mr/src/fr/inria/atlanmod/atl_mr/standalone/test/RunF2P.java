@@ -64,7 +64,7 @@ public class RunF2P {
 		registerPackages(rs, outMetaModel.getResource());
 		// Load models
 
-		URI inMURI = URI.createURI("data/Families2Persons/result1000000_0.xmi", true);
+		URI inMURI = URI.createURI("data/Families2Persons/sample-Families.xmi", true);
 
 		Model inModel = EmftvmFactory.eINSTANCE.createModel();
 		inModel.setResource(rs.getResource(inMURI, true));
